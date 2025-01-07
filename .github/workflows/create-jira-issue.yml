@@ -17,7 +17,7 @@ jobs: # 3
       - name: Create Issue
         uses: atlassian/gajira-create@v3
         with:
-          project: PROJ # 10 - 프로젝트 key
-          issuetype: Task # 11 - 이슈 타입
+          project: TASK # 10 - 프로젝트 key
+          issuetype: Backend Task # 11 - 이슈 타입
           summary: '${{ github.event.issue.title }}'
           description: '${{ github.event.issue.html_url }}'
