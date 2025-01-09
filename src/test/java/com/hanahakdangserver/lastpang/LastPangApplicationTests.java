@@ -1,4 +1,4 @@
-package com.lastpang.lastpang;
+package com.hanahakdangserver.lastpang;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
