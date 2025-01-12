@@ -5,21 +5,22 @@ import java.time.LocalDate;
 import com.hanahakdangserver.utils.TimeBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity(name = "uuser")
-
 public class User extends TimeBaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +40,7 @@ public class User extends TimeBaseEntity {
   private String password;
 
   @Column(nullable = false)
-  private LocalDate birthDt;
+  private LocalDate birthDate;
 
   @Column(length = 2048)
   private String profileImageUrl;
@@ -48,17 +49,13 @@ public class User extends TimeBaseEntity {
   private boolean isApproved;
 
   @Column(nullable = false)
-  private Boolean isActive = true;
+  private Boolean isActive;
 
-  @Builder
-  public User(Role role, String name, String email, String password, LocalDate birthDt,
-       String profileImageUrl) {
-    this.role = role;
-    this.email = email;
-    this.password = password;
-    this.name = name;
-    this.birthDt = birthDt;
-    this.profileImageUrl = profileImageUrl;
-    this.isApproved = (role == Role.MENTOR);
-  }
+    public static class UserBuilder {
+      public User build() {
+        this.isApproved = (this.role == Role.MENTOR);
+        this.isActive = true;
+        return new User(id, role, name, email, password, birthDate, profileImageUrl, isApproved, isActive);
+      }
+    }
 }

@@ -5,13 +5,24 @@ import java.time.LocalDate;
 import com.hanahakdangserver.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Entity
 public class CareerInfo {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +33,10 @@ public class CareerInfo {
   private User mentorId;
 
   @Column(nullable = false)
-  private LocalDate startDt;
+  private LocalDate startDate;
 
   @Column(nullable = false)
-  private LocalDate endDt;
+  private LocalDate endDate;
 
   @Column(nullable = false)
   private String companyName;

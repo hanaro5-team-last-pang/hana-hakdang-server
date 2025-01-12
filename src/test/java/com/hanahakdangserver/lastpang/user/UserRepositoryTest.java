@@ -20,11 +20,11 @@ public class UserRepositoryTest {
   public void testUserSave() {
 
     User user = User.builder()
-        .role(Role.MENTOR)
+        .role(Role.MENTEE)
         .name("홍길동")
         .email("honggildong@example.com")
         .password("hashedpassword123")
-        .birthDt(LocalDate.of(1990, 5, 15))
+        .birthDate(LocalDate.of(1990, 5, 15))
         .profileImageUrl("http://example.com/profile.jpg")
         .build();
 

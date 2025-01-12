@@ -13,12 +13,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 public class Notification {
   @Id
@@ -30,6 +34,7 @@ public class Notification {
   private User userId;
 
   @Column
+  @Builder.Default
   private boolean isSeen = false;
 
   @Column(nullable = false, length = 255)
