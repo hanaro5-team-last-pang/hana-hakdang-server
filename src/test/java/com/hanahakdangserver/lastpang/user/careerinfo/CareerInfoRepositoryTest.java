@@ -1,7 +1,7 @@
-package com.hanahakdangserver.lastpang.card.repository;
+package com.hanahakdangserver.lastpang.user.careerinfo;
 
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,23 +13,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import com.hanahakdangserver.user.card.entity.Card;
-import com.hanahakdangserver.user.card.repository.CardRepository;
+import com.hanahakdangserver.user.careerinfo.entity.CareerInfo;
+import com.hanahakdangserver.user.careerinfo.repository.CareerInfoRepository;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.enums.Role;
 import com.hanahakdangserver.user.repository.UserRepository;
 
 @DataJpaTest
-public class CardRepositoryTest {
+public class CareerInfoRepositoryTest {
 
   @Autowired
-  private CardRepository cardRepository;
+  private CareerInfoRepository careerInfoRepository;
+
   @Autowired
   private UserRepository userRepository;
 
   private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-  User user;
+  private User user;
 
   @BeforeEach
   void setUp() {
@@ -42,33 +42,31 @@ public class CardRepositoryTest {
         .profileImageUrl("http://example.com/profile.jpg")
         .build();
     userRepository.save(user);
-  }
 
-  @DisplayName("명함 생성 테스트")
-  @Test
-  public void testCardSave() {
-    // when
-    Map<String, String> simpleInfo = Map.of(
-        "introduction", "백엔드 개발자입니다.",
-        "hobby", "코딩하기"
-    );
-
-    Map<String, String> detailInfo = Map.of(
-        "experience", "20년 경력을 소유한 프론트엔드 개발자",
-        "skill", "JAVA, SPRING BOOT"
-    );
-
-    Card card = Card.builder()
-        .mentor(user)
-        .shortIntroduction("안녕하세요 홍홍 멘토입니다.")
-        .simpleInfo(simpleInfo)
-        .detailInfo(detailInfo)
+    CareerInfo careerInfo = CareerInfo.builder()
+        .mentor(user) // User 객체는 예시로 가정
+        .startDate(LocalDate.of(2000, 1, 1))
+        .endDate(LocalDate.of(2023, 12, 31))
+        .companyName("디지하나")
+        .department("개발")
+        .task("Software Development")
+        .certifiacteUrl("https://example.com/certificate")
         .build();
 
-    Card savedCard = cardRepository.save(card);
+    careerInfoRepository.save(careerInfo);
+  }
+
+  @DisplayName("findByMentorId 메서드 테스트")
+  @Test
+  void testFindByMentorId() {
+    Long mentorId = user.getId();
+
+    // when
+    Optional<CareerInfo> careerInfo = careerInfoRepository.findByMentorId(mentorId);
 
     // then
-    assertThat(savedCard).isNotNull();
-    assertThat(savedCard.getId()).isNotNull();
+    assertThat(careerInfo).isPresent();
+    assertThat(careerInfo.get().getMentor().getId()).isEqualTo(mentorId);
+    assertThat(careerInfo.get().getTask()).isEqualTo("Software Development");
   }
 }

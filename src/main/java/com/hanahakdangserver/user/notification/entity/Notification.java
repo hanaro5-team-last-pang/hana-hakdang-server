@@ -22,8 +22,9 @@ import com.hanahakdangserver.user.entity.User;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
+@AllArgsConstructor
+@Builder
 public class Notification {
 
   @Id
@@ -35,6 +36,7 @@ public class Notification {
   private User user;
 
   @Column
+  @Builder.Default
   private boolean isSeen = false;
 
   @Column(nullable = false, length = 255)
@@ -46,12 +48,4 @@ public class Notification {
   @CreatedDate
   @Column(updatable = false)
   private LocalDateTime createdAt;
-
-  @Builder
-  public Notification(User user, boolean isSeen, String type, String content) {
-    this.user = user;
-    this.isSeen = isSeen;
-    this.type = type;
-    this.content = content;
-  }
 }

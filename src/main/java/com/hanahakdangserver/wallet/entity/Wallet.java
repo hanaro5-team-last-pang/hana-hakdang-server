@@ -18,8 +18,9 @@ import com.hanahakdangserver.user.entity.User;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
+@AllArgsConstructor
+@Builder
 public class Wallet {
 
   @Id
@@ -36,11 +37,4 @@ public class Wallet {
   @Column(name = "account_id", nullable = false, length = 255)
   private String accountId;
 
-
-  @Builder
-  public Wallet(User user, Long balance, String accountId) {
-    this.user = user;
-    this.balance = balance;
-    this.accountId = accountId;
-  }
 }

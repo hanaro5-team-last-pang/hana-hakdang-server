@@ -21,8 +21,9 @@ import com.hanahakdangserver.user.entity.User;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
+@AllArgsConstructor
+@Builder
 public class CareerInfo {
 
   @Id
@@ -50,15 +51,4 @@ public class CareerInfo {
 
   @Column(nullable = false, length = 2048)
   private String certifiacteUrl;
-
-  @Builder
-  public CareerInfo(User mentor, LocalDate startDate, LocalDate endDate, String companyName,
-      String task, String certifiacteUrl) {
-    this.mentor = mentor;
-    this.startDate = startDate;
-    this.endDate = endDate;
-    this.companyName = companyName;
-    this.task = task;
-    this.certifiacteUrl = certifiacteUrl;
-  }
 }

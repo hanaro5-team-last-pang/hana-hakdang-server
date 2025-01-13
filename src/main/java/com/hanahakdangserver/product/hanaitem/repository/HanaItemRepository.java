@@ -16,7 +16,7 @@ public interface HanaItemRepository extends JpaRepository<HanaItem, Long> {
    * @param tagId
    * @return 해당 태그를 가진 HanaItem 리스트
    */
-  @Query("SELECT h FROM HanaItem h WHERE h.tagId.id = :tagId")
+  @Query("SELECT h FROM HanaItem h WHERE h.tag.id = :tagId")
   List<HanaItem> findAllByTagId(@Param("tagId") Long tagId);
 
 }

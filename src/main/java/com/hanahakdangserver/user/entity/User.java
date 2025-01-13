@@ -14,14 +14,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import com.hanahakdangserver.user.enums.Role;
 import com.hanahakdangserver.utils.TimeBaseEntity;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity(name = "uuser")
+@AllArgsConstructor
+@Builder
 public class User extends TimeBaseEntity {
 
   @Id
@@ -48,21 +50,10 @@ public class User extends TimeBaseEntity {
   private String profileImageUrl;
 
   @Column
+  @Builder.Default
   private boolean isApproved = false;
 
   @Column(nullable = false)
+  @Builder.Default
   private Boolean isActive = true;
-
-  @Builder
-  public User(Role role, boolean isApproved, String name, String email, String password,
-      LocalDate birthDate,
-      String profileImageUrl) {
-    this.role = role;
-    this.isApproved = isApproved;
-    this.email = email;
-    this.password = password;
-    this.name = name;
-    this.birthDate = birthDate;
-    this.profileImageUrl = profileImageUrl;
-  }
 }

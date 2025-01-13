@@ -24,8 +24,9 @@ import com.hanahakdangserver.utils.TimeBaseEntity;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
+@AllArgsConstructor
+@Builder
 public class Card extends TimeBaseEntity {
 
   @Id
@@ -40,20 +41,10 @@ public class Card extends TimeBaseEntity {
   private String shortIntroduction;
 
   @Type(JsonType.class)
-  @Column(columnDefinition = "jsonb") // PostgreSQL의 JSONB 사용
+  @Column(columnDefinition = "TEXT")
   private Map<String, String> simpleInfo;
 
   @Type(JsonType.class)
-  @Column(columnDefinition = "jsonb")
+  @Column(columnDefinition = "TEXT")
   private Map<String, String> detailInfo;
-
-  @Builder
-  public Card(User mentor, String shortIntroduction, Map<String, String> simpleInfo,
-      Map<String, String> detailInfo) {
-    this.mentor = mentor;
-    this.shortIntroduction = shortIntroduction != null ? shortIntroduction
-        : "안녕하세요! " + (mentor != null ? mentor.getName() : " ") + " 멘토 입니다";
-    this.simpleInfo = simpleInfo;
-    this.detailInfo = detailInfo;
-  }
 }
