@@ -1,10 +1,11 @@
-package com.hanahakdangserver.lastpang.user;
+package com.hanahakdangserver.lastpang.user.repository;
 
 import java.time.LocalDate;
 
-import com.hanahakdangserver.user.Role;
-import com.hanahakdangserver.user.User;
-import com.hanahakdangserver.user.UserRepository;
+import com.hanahakdangserver.user.enums.Role;
+import com.hanahakdangserver.user.entity.User;
+import com.hanahakdangserver.user.repository.UserRepository;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 public class UserRepositoryTest {
+
   @Autowired
   private UserRepository userRepository;
 

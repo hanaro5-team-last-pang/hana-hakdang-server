@@ -1,7 +1,7 @@
-package com.hanahakdangserver.user.card;
+package com.hanahakdangserver.user.notification.entity;
 
-import com.hanahakdangserver.user.User;
-import com.hanahakdangserver.utils.TimeBaseEntity;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,40 +11,47 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+
+import com.hanahakdangserver.user.entity.User;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-public class Card extends TimeBaseEntity {
+public class Notification {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   @JoinColumn(nullable = false)
-  private User mentorId;
+  private User user;
 
-  @Column(nullable = false, length = 100)
-  private String shortIntroduction;
+  @Column
+  private boolean isSeen = false;
 
-  @Column(columnDefinition = "TEXT")
-  private String simpleInfo;
+  @Column(nullable = false, length = 255)
+  private String type;
 
-  @Column(columnDefinition = "TEXT")
-  private String detailInfo;
+  @Column(nullable = false, length = 255)
+  private String content;
 
-  @PrePersist
-  public void setDefaultShortIntroduction() {
-    if (this.shortIntroduction == null || this.shortIntroduction.isEmpty()) {
-      this.shortIntroduction = "안녕하세요! " + mentorId.getName() + " 멘토입니다.";
-    }
+  @CreatedDate
+  @Column(updatable = false)
+  private LocalDateTime createdAt;
+
+  @Builder
+  public Notification(User user, boolean isSeen, String type, String content) {
+    this.user = user;
+    this.isSeen = isSeen;
+    this.type = type;
+    this.content = content;
   }
 }

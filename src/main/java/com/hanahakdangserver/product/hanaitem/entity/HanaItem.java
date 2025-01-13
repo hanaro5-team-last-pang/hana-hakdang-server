@@ -1,6 +1,5 @@
-package com.hanahakdangserver.wallet;
+package com.hanahakdangserver.product.hanaitem.entity;
 
-import com.hanahakdangserver.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,30 +7,37 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import com.hanahakdangserver.product.tag.entity.Tag;
+import com.hanahakdangserver.utils.TimeBaseEntity;
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-public class Wallet {
+public class HanaItem extends TimeBaseEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)
-  private User userId;
+  private Tag tagId;
 
-  @Column(name = "balance", nullable = false)
-  private Long balance;
+  @Column(nullable = false, length = 255)
+  private String itemTitle;
 
-  @Column(name = "account_id", nullable = false, length = 255)
-  private String accountId;
+  @Column(columnDefinition = "TEXT")
+  private String itemContent;
+
+  @Column(length = 2048)
+  private String hanaUrl;
 }

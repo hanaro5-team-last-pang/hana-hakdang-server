@@ -1,8 +1,7 @@
-package com.hanahakdangserver.user;
+package com.hanahakdangserver.user.entity;
 
 import java.time.LocalDate;
 
-import com.hanahakdangserver.utils.TimeBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,12 +15,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import com.hanahakdangserver.user.enums.Role;
+import com.hanahakdangserver.utils.TimeBaseEntity;
+
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity(name = "uuser")
 public class User extends TimeBaseEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -46,16 +48,21 @@ public class User extends TimeBaseEntity {
   private String profileImageUrl;
 
   @Column
-  private boolean isApproved;
+  private boolean isApproved = false;
 
   @Column(nullable = false)
-  private Boolean isActive;
+  private Boolean isActive = true;
 
-    public static class UserBuilder {
-      public User build() {
-        this.isApproved = (this.role == Role.MENTOR);
-        this.isActive = true;
-        return new User(id, role, name, email, password, birthDate, profileImageUrl, isApproved, isActive);
-      }
-    }
+  @Builder
+  public User(Role role, boolean isApproved, String name, String email, String password,
+      LocalDate birthDate,
+      String profileImageUrl) {
+    this.role = role;
+    this.isApproved = isApproved;
+    this.email = email;
+    this.password = password;
+    this.name = name;
+    this.birthDate = birthDate;
+    this.profileImageUrl = profileImageUrl;
+  }
 }

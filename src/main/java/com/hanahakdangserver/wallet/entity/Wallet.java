@@ -1,9 +1,5 @@
-package com.hanahakdangserver.user.notification;
+package com.hanahakdangserver.wallet.entity;
 
-import java.time.LocalDateTime;
-
-import com.hanahakdangserver.user.User;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,33 +13,34 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
+
+import com.hanahakdangserver.user.entity.User;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-public class Notification {
+public class Wallet {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)
-  private User userId;
+  private User user;
 
-  @Column
-  @Builder.Default
-  private boolean isSeen = false;
+  @Column(name = "balance", nullable = false)
+  private Long balance;
 
-  @Column(nullable = false, length = 255)
-  private String type;
+  @Column(name = "account_id", nullable = false, length = 255)
+  private String accountId;
 
-  @Column(nullable = false, length = 255)
-  private String content;
 
-  @CreatedDate
-  @Column(updatable = false)
-  private LocalDateTime createdAt;
+  @Builder
+  public Wallet(User user, Long balance, String accountId) {
+    this.user = user;
+    this.balance = balance;
+    this.accountId = accountId;
+  }
 }
