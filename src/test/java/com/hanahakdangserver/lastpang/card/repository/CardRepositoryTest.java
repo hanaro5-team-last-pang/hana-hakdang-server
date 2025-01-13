@@ -31,7 +31,7 @@ public class CardRepositoryTest {
     user = User.builder()
         .role(Role.MENTEE)
         .name("홍길동")
-        .email("honggildong@example.com")
+        .email("honggildong123@example.com")
         .password("hashedpassword123")
         .birthDate(LocalDate.of(1990, 5, 15))
         .profileImageUrl("http://example.com/profile.jpg")
@@ -45,13 +45,13 @@ public class CardRepositoryTest {
     // 먼저 User 객체를 저장 또는 찾습니다.
 
     Map<String, String> simpleInfo = Map.of(
-        "introduction", "짧은 소개입니다.",
-        "hobby", "요리하기"
+        "introduction", "백엔드 개발자입니다.",
+        "hobby", "코딩하기"
     );
 
     Map<String, String> detailInfo = Map.of(
-        "experience", "5년 경력의 요리 전문가",
-        "specialty", "한식 및 디저트"
+        "experience", "20년 경력을 소유한 프론트엔드 개발자",
+        "skill", "JAVA, SPRING BOOT"
     );
 
     Card card = Card.builder()
