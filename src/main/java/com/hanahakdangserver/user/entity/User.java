@@ -14,10 +14,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import com.hanahakdangserver.user.enums.Role;
-import com.hanahakdangserver.utils.TimeBaseEntity;
+import com.hanahakdangserver.mixin.TimeBaseEntity;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

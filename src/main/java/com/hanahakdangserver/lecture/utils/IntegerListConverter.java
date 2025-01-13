@@ -1,11 +1,11 @@
 package com.hanahakdangserver.lecture.utils;
 
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter
 public class IntegerListConverter implements AttributeConverter<List<Integer>, String> {

@@ -1,5 +1,8 @@
-package com.hanahakdangserver.faq.entity;
+package com.hanahakdangserver.notification.entity;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,32 +16,36 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
-import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.user.entity.User;
-import com.hanahakdangserver.mixin.TimeBaseEntity;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @AllArgsConstructor
 @Builder
-public class Faq extends TimeBaseEntity {
+public class Notification {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @JoinColumn(nullable = false)
   private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "lecture_id")
-  private Lecture lecture;
+  @Column
+  @Builder.Default
+  private boolean isSeen = false;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = 255)
+  private String type;
+
+  @Column(nullable = false, length = 255)
   private String content;
 
-
+  @CreatedDate
+  @Column(updatable = false)
+  private LocalDateTime createdAt;
 }

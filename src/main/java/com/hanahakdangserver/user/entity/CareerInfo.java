@@ -1,5 +1,8 @@
-package com.hanahakdangserver.faq.entity;
+package com.hanahakdangserver.user.entity;
 
+import java.time.LocalDate;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,31 +17,36 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import com.hanahakdangserver.lecture.entity.Lecture;
-import com.hanahakdangserver.user.entity.User;
-import com.hanahakdangserver.mixin.TimeBaseEntity;
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @AllArgsConstructor
 @Builder
-public class Faq extends TimeBaseEntity {
+public class CareerInfo {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "lecture_id")
-  private Lecture lecture;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @JoinColumn(nullable = false)
+  private User mentor;
 
   @Column(nullable = false)
-  private String content;
+  private LocalDate startDate;
 
+  @Column(nullable = false)
+  private LocalDate endDate;
 
+  @Column(nullable = false)
+  private String companyName;
+
+  @Column(nullable = false)
+  private String department;
+
+  @Column(nullable = false)
+  private String task;
+
+  @Column(nullable = false, length = 2048)
+  private String certifiacteUrl;
 }

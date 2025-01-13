@@ -1,5 +1,9 @@
-package com.hanahakdangserver.faq.entity;
+package com.hanahakdangserver.card.entity;
 
+import java.util.Map;
+
+import com.vladmihalcea.hibernate.type.json.JsonType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,8 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
-import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
 
@@ -23,22 +27,24 @@ import com.hanahakdangserver.mixin.TimeBaseEntity;
 @Entity
 @AllArgsConstructor
 @Builder
-public class Faq extends TimeBaseEntity {
+public class Card extends TimeBaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @JoinColumn(nullable = false)
+  private User mentor;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "lecture_id")
-  private Lecture lecture;
+  @Column(nullable = false, length = 100)
+  private String shortIntroduction;
 
-  @Column(nullable = false)
-  private String content;
+  @Type(JsonType.class)
+  @Column(columnDefinition = "TEXT")
+  private Map<String, String> simpleInfo;
 
-
+  @Type(JsonType.class)
+  @Column(columnDefinition = "TEXT")
+  private Map<String, String> detailInfo;
 }

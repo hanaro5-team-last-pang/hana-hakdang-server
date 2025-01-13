@@ -1,4 +1,4 @@
-package com.hanahakdangserver.faq.entity;
+package com.hanahakdangserver.product.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,8 +14,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import com.hanahakdangserver.lecture.entity.Lecture;
-import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
 
 @Getter
@@ -23,22 +21,22 @@ import com.hanahakdangserver.mixin.TimeBaseEntity;
 @Entity
 @AllArgsConstructor
 @Builder
-public class Faq extends TimeBaseEntity {
+public class HanaItem extends TimeBaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  @JoinColumn(nullable = false)
+  private Tag tag;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "lecture_id")
-  private Lecture lecture;
+  @Column(nullable = false, length = 255)
+  private String itemTitle;
 
-  @Column(nullable = false)
-  private String content;
+  @Column(columnDefinition = "TEXT")
+  private String itemContent;
 
-
+  @Column(length = 2048)
+  private String hanaUrl;
 }

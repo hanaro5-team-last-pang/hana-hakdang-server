@@ -13,9 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
-import com.hanahakdangserver.lecture.entity.Lecture;
-import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
 
 @Getter
@@ -23,22 +22,18 @@ import com.hanahakdangserver.mixin.TimeBaseEntity;
 @Entity
 @AllArgsConstructor
 @Builder
-public class Faq extends TimeBaseEntity {
+public class Answer extends TimeBaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "lecture_id")
-  private Lecture lecture;
+  @JoinColumn(name = "faq_id", nullable = false)
+  @NonNull
+  private Faq faq;
 
   @Column(nullable = false)
   private String content;
-
 
 }
