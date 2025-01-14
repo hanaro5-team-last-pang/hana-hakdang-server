@@ -32,7 +32,9 @@ jobs:
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
       - name: Test with Gradle Wrapper
-        run: SPRING_PROFILES_ACTIVE=test ./gradlew --info test
+        env:
+          SPRING_PROFILES_ACTIVE: test
+        run: ./gradlew --info test
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5
