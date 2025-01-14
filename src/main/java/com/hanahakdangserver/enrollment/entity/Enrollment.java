@@ -1,4 +1,4 @@
-package com.hanahakdangserver.lecture.enrollment.entity;
+package com.hanahakdangserver.enrollment.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

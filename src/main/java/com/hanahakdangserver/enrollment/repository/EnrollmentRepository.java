@@ -1,9 +1,9 @@
-package com.hanahakdangserver.lecture.enrollment.repository;
+package com.hanahakdangserver.enrollment.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.hanahakdangserver.lecture.enrollment.entity.Enrollment;
+import com.hanahakdangserver.enrollment.entity.Enrollment;
 
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
