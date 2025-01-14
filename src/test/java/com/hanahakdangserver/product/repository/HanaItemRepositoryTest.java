@@ -1,6 +1,7 @@
 package com.hanahakdangserver.product.repository;
 
-import java.util.List;
+import com.hanahakdangserver.product.entity.HanaItem;
+import com.hanahakdangserver.product.entity.Tag;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import com.hanahakdangserver.product.entity.HanaItem;
-import com.hanahakdangserver.product.entity.Tag;
+import java.util.List;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+
 public class HanaItemRepositoryTest {
 
   @Autowired
@@ -24,46 +25,51 @@ public class HanaItemRepositoryTest {
   @Autowired
   private TagRepository tagRepository;
 
-  private Tag tag;
+  private Tag tag1, tag2;
 
   @BeforeEach
   void setUp() {
-    tag = Tag.builder()
-        .tagName("예적금")
+    // 태그 생성 및 저장
+    tag1 = Tag.builder()
+        .tagName("정기예금")
         .build();
-    tagRepository.save(tag);
+    tag2 = Tag.builder()
+        .tagName("외화상품")
+        .build();
+    tagRepository.save(tag1);
+    tagRepository.save(tag2);
 
     // HanaItem 생성 및 저장
-    HanaItem hanaItem1 = HanaItem.builder()
-        .tag(tag)
-        .itemTitle("예금 상품 추천")
-        .itemContent("예금 내용")
-        .hanaUrl("https://www.naver.com/")
+    HanaItem item1 = HanaItem.builder()
+        .tag(tag1)
+        .itemTitle("Item1")
+        .itemContent("Content1")
+        .hanaUrl("https://example.com/item1")
+        .build();
+    HanaItem item2 = HanaItem.builder()
+        .tag(tag2)
+        .itemTitle("Item2")
+        .itemContent("Content2")
+        .hanaUrl("https://example.com/item2")
         .build();
 
-    HanaItem hanaItem2 = HanaItem.builder()
-        .tag(tag)
-        .itemTitle("적금 상품 추천")
-        .itemContent("적금 내용")
-        .hanaUrl("https://www.naver.com/")
-        .build();
-
-    hanaItemRepository.save(hanaItem1);
-    hanaItemRepository.save(hanaItem2);
+    hanaItemRepository.save(item1);
+    hanaItemRepository.save(item2);
   }
 
-  @DisplayName("findAllByTagId 메서드 테스트")
+  @DisplayName("findAllByTagIds 메서드 테스트")
   @Test
-  void testFindAllByTagId() {
-    Long tagId = tag.getId();
+  void testFindAllByTagIds() {
+    // Given
+    List<Integer> tagIds = List.of(tag1.getId().intValue(), tag2.getId().intValue());
 
-    // when
-    List<HanaItem> items = hanaItemRepository.findAllByTagId(tagId);
+    // When
+    List<HanaItem> items = hanaItemRepository.findAllByTagIds(tagIds);
 
-    // then
+    // Then
     assertThat(items).isNotNull();
     assertThat(items.size()).isEqualTo(2);
-    assertThat(items.get(0).getTag().getId()).isEqualTo(tagId);
-    assertThat(items.get(1).getTag().getId()).isEqualTo(tagId);
+    assertThat(items.get(0).getTag().getId()).isIn(tagIds.stream().map(Long::valueOf).toList());
+    assertThat(items.get(1).getTag().getId()).isIn(tagIds.stream().map(Long::valueOf).toList());
   }
 }
