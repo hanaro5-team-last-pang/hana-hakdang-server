@@ -70,7 +70,6 @@ public class LectureService {
               .title(lectureRequest.getTitle())
               .startTime(lectureRequest.getStart_time())
               .duration(lectureRequest.getDuration())
-              .price(lectureRequest.getPrice())
               .maxParticipants(lectureRequest.getMax_participants())
               .description(lectureRequest.getDescription())
               .tagList(lectureRequest.getTags())
