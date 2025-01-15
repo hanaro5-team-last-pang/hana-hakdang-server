@@ -22,7 +22,7 @@ import com.hanahakdangserver.mixin.TimeBaseEntity;
 @Entity
 @AllArgsConstructor
 @Builder
-public class Classroom extends TimeBaseEntity {
+public class Classroom {
 
   @Id
   private Long id;
