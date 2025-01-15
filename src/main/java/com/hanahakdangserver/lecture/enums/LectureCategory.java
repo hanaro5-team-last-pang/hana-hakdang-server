@@ -12,13 +12,19 @@ import lombok.ToString;
 @ToString
 public enum LectureCategory {
 
+  GLOBAL("글로벌"),
   FINANCIAL_PRODUCTS("금융 상품"),
+  ECONOMIC_ISSUE("금융 이슈 정리"),
   DIGITAL_EDUCATION("디지털 교육"),
+  REAL_ESTATE("부동산"),
   INHERITANCE("상속"),
   TRUST("신탁"),
+  PENSION("연금"),
   RETIREMENT_DESIGN("은퇴 설계"),
   COMPREHENSIVE_ASSET_MANAGEMENT("종합 자산 관리"),
-  STOCK_INVESTMENT("주식 투자");
+  FINANCIAL_MARKET_TREND("최신 금융시장 동향"),
+  INVESTMENT("투자"),
+  HANA_IF("하나금융연구소");
 
   private final String description;
 
