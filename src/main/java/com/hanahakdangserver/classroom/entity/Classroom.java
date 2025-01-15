@@ -24,18 +24,19 @@ import com.hanahakdangserver.mixin.TimeBaseEntity;
 @Builder
 public class Classroom extends TimeBaseEntity {
 
-  // TODO: snowflake 생성기로 대체
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "mentor_id", nullable = false)
-  private User mentor;
+//  @ManyToOne(fetch = FetchType.LAZY)
+//  @JoinColumn(name = "mentor_id", nullable = false)
+//  private User mentor;
 
   @Column(nullable = false)
   @Builder.Default
   private Boolean isUsed = true;
 
+  public void updateIsUsed(Boolean isUsed) {
+    this.isUsed = isUsed;
+  }
 
 }
