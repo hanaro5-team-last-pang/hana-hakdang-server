@@ -38,9 +38,6 @@ public class LectureRequest {
   @Schema(description = "강의 진행 시간", example = "2")
   private Integer duration;
 
-  @Schema(description = "강의 수강을 위한 크레딧 비용", example = "2000")
-  private Integer price;
-
   @Schema(description = "최대 수강 가능 인원", example = "4")
   @NotNull(message = "최대 수강 가능 인원 수를 입력해주세요.")
   private Integer max_participants;

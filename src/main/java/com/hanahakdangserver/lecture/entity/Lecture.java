@@ -57,9 +57,6 @@ public class Lecture extends TimeBaseEntity {
   private Integer duration;
 
   @Column(nullable = false)
-  private Integer price;
-
-  @Column(nullable = false)
   private Integer maxParticipants;
 
   @Column(columnDefinition = "text", nullable = true)
