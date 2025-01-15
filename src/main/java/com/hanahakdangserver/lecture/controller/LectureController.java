@@ -1,5 +1,6 @@
 package com.hanahakdangserver.lecture.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.hanahakdangserver.lecture.dto.LectureRequest;
@@ -44,7 +45,7 @@ public class LectureController {
   public ResponseEntity<String> registerNewLecture(
       @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
       @Valid @RequestPart(value = "data", required = false) LectureRequest lectureRequest
-  ) {
+  ) throws IOException {
 
 //    TODO : UserDetails 구현되면 유저 관련 추가 필요
 
