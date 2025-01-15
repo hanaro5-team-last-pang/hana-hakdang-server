@@ -1,5 +1,12 @@
 package com.hanahakdangserver.lecture.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.hanahakdangserver.classroom.entity.Classroom;
 import com.hanahakdangserver.classroom.repository.ClassroomRepository;
 import com.hanahakdangserver.classroom.utils.SnowFlakeGenerator;
@@ -10,10 +17,18 @@ import com.hanahakdangserver.lecture.repository.CategoryRepository;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.async.AsyncRequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+@Log4j2
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -24,6 +39,10 @@ public class LectureService {
   private final ClassroomRepository classroomRepository;
 
   private final SnowFlakeGenerator snowFlakeGenerator; // snowflake 생성기
+  private final S3AsyncClient s3AsyncClient;
+
+  @Value("${aws.s3.bucketName}")
+  private String bucket;
 
   /**
    * 강의 객체와 강의실 객체를 생성한 후 DB에 저장합니다.
@@ -31,7 +50,8 @@ public class LectureService {
    * @param lectureRequest 강의 생성 Request JSON
    */
   @Transactional
-  public void registerNewLecture(MultipartFile imgaeFile, LectureRequest lectureRequest) {
+  public void registerNewLecture(MultipartFile imageFile, LectureRequest lectureRequest)
+      throws IOException {
 
     Long uniqueId = snowFlakeGenerator.nextId(); // 강의실에 대해 전역적으로 고유한 Id 생성
 
@@ -41,7 +61,7 @@ public class LectureService {
 
     Category category = categoryRepository.findByName(lectureRequest.getCategory().getDescription()).orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다."));
 
-//    TODO: 썸네일 이미지 S3에 업로드 처리 로직 추가 필요
+    String thumbnailUrl = uploadImageFileToS3(imageFile);
 
     lectureRepository.save(
         Lecture.builder()
@@ -54,7 +74,62 @@ public class LectureService {
               .maxParticipants(lectureRequest.getMax_participants())
               .description(lectureRequest.getDescription())
               .tagList(lectureRequest.getTags())
+              .thumbnailUrl(thumbnailUrl)
             .build()
     );
+  }
+
+  /**
+   * 이미지를 S3 버킷에 업로드 하고 url 주소를 받아오는 메서드
+   *
+   * @param imageFile 업로드할 이미지 파일
+   * @return S3에 업로드된 url 반환
+   * @throws IOException
+   */
+  private String uploadImageFileToS3(MultipartFile imageFile) throws IOException {
+    ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+    try (InputStream inputStream = imageFile.getInputStream()) {
+      String originalFilename = imageFile.getOriginalFilename();
+      String uuid = UUID.randomUUID().toString();
+      String imageFileName = uuid + originalFilename;
+
+      PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+          .bucket(bucket)
+          .key(imageFileName)
+          .contentType(imageFile.getContentType())
+          .contentLength(imageFile.getSize())
+          .build();
+
+      // 파일 업로드 (비동기 처리)
+      CompletableFuture<PutObjectResponse> future = s3AsyncClient.putObject(
+          putObjectRequest,
+          AsyncRequestBody.fromInputStream(
+              inputStream,
+              imageFile.getSize(),
+              executorService
+          )
+      );
+
+      // 비동기 결과를 기다리고 응답 확인
+      PutObjectResponse response = future.join();
+
+      // 업로드 성공 여부 확인
+      if (response.sdkHttpResponse().isSuccessful()) {
+        // 업로드된 파일의 URL 가져오기
+        String imageUrl = String.format("https://%s.s3.%s.amazonaws.com/%s",
+            bucket,
+            Region.AP_NORTHEAST_2.toString().toLowerCase(),
+            imageFileName);
+        return imageUrl;
+
+      } else {
+        throw new RuntimeException("S3 업로드 실패: " + response.sdkHttpResponse().statusText().orElse("UNKNOWN ERROR"));
+      }
+
+    } catch (IOException e) {
+      log.warn("파일 업로드 실패: {}", e.getMessage());
+      throw new RuntimeException("S3 파일 업로드 중 오류 발생", e);
+    }
   }
 }

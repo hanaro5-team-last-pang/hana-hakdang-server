@@ -24,7 +24,7 @@ public class SecurityConfig {
         .formLogin(FormLoginConfigurer::disable) // 폼 로그인 비활성화; 임시
         .logout(AbstractHttpConfigurer::disable) // 로그아웃 비활성화; 임시
         .authorizeHttpRequests((authorize) -> authorize
-            .requestMatchers("/lecture/register/**").permitAll()
+            .requestMatchers("/lecture/**").permitAll()
             .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg").permitAll() // 임시
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .anyRequest().permitAll());
