@@ -46,6 +46,8 @@ public class LectureController {
       @Valid @RequestPart(value = "data", required = false) LectureRequest lectureRequest
   ) {
 
+//    TODO : UserDetails 구현되면 유저 관련 추가 필요
+
     lectureService.registerNewLecture(imageFile, lectureRequest);
 
     return ResponseEntity.ok("강의 생성 성공");

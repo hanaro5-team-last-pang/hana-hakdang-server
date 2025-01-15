@@ -33,9 +33,10 @@ public class Enrollment extends TimeBaseEntity {
   @JoinColumn(name = "lecture_id", nullable = false)
   private Lecture lecture;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  //  TODO : UserDetails 엔티티 구현되면 적용할 예정
+//  @ManyToOne(fetch = FetchType.LAZY)
+//  @JoinColumn(name = "user_id", nullable = false)
+//  private User user;
 
   @Column(nullable = false)
   private Integer amount;

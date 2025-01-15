@@ -27,6 +27,7 @@ public class Classroom {
   @Id
   private Long id;
 
+  //  TODO : UserDetails 엔티티 구현되면 적용할 예정
 //  @ManyToOne(fetch = FetchType.LAZY)
 //  @JoinColumn(name = "mentor_id", nullable = false)
 //  private User mentor;
