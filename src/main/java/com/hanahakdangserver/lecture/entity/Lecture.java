@@ -34,9 +34,9 @@ public class Lecture extends TimeBaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "mentor_id", nullable = false)
-  private User mentor;
+//  @ManyToOne(fetch = FetchType.LAZY)
+//  @JoinColumn(name = "mentor_id", nullable = false)
+//  private User mentor;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "classroom_id", nullable = false)
@@ -61,7 +61,7 @@ public class Lecture extends TimeBaseEntity {
   @Column(nullable = false)
   private Integer maxParticipants;
 
-  @Column(nullable = true)
+  @Column(columnDefinition = "text", nullable = true)
   private String description;
 
   @Convert(converter = IntegerListConverter.class)
@@ -73,7 +73,13 @@ public class Lecture extends TimeBaseEntity {
 
   @Column(nullable = false)
   @Builder.Default
+  private Boolean isFull = false;
+
+  @Column(nullable = false)
+  @Builder.Default
   private Boolean isCanceled = false;
 
-
+  public void updateIsFull(boolean isFull) {
+    this.isFull = isFull;
+  }
 }
