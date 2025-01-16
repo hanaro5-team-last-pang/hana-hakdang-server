@@ -6,9 +6,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +31,9 @@ public class User extends TimeBaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @OneToOne(optional = false, fetch = FetchType.LAZY)
+  private CareerInfo careerInfo;
+
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private Role role;
@@ -47,10 +52,6 @@ public class User extends TimeBaseEntity {
 
   @Column(length = 2048)
   private String profileImageUrl;
-
-  @Column
-  @Builder.Default
-  private boolean isApproved = false;
 
   @Column(nullable = false)
   @Builder.Default

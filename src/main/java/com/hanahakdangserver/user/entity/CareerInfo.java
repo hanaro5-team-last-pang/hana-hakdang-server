@@ -2,15 +2,11 @@ package com.hanahakdangserver.user.entity;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,25 +24,16 @@ public class CareerInfo {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-  @JoinColumn(nullable = false)
-  private User mentor;
-
   @Column(nullable = false)
   private LocalDate startDate;
 
   @Column(nullable = false)
-  private LocalDate endDate;
+  private String branchName;
 
   @Column(nullable = false)
-  private String companyName;
+  private String position;
 
   @Column(nullable = false)
-  private String department;
+  private String code;
 
-  @Column(nullable = false)
-  private String task;
-
-  @Column(nullable = false, length = 2048)
-  private String certifiacteUrl;
 }

@@ -15,7 +15,7 @@ public interface CareerInfoRepository extends JpaRepository<CareerInfo, Long> {
    *
    * @param mentorId
    */
-  @Query("SELECT c FROM CareerInfo c WHERE c.mentor.id = :mentorId")
-  Optional<CareerInfo> findByMentorId(@Param("mentorId") Long mentorId);
+//  @Query("SELECT c FROM CareerInfo c WHERE c.mentor.id = :mentorId")
+//  Optional<CareerInfo> findByMentorId(@Param("mentorId") Long mentorId);
 
 }
