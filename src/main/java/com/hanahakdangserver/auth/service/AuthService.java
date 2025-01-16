@@ -1,6 +1,10 @@
 package com.hanahakdangserver.auth.service;
 
+import java.util.logging.Logger;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,6 +24,7 @@ import com.hanahakdangserver.user.mapper.UserMapper;
 import com.hanahakdangserver.user.repository.UserRepository;
 import static com.hanahakdangserver.auth.utils.AuthUtils.generateToken;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -55,6 +60,8 @@ public class AuthService {
   }
 
   public ResponseEntity<String> login(LoginDTO loginDTO) {
+    log.debug("로그인 시도: 이메일={}, 비밀번호={}", loginDTO.getEmail(), loginDTO.getPassword());
+
     User user = userRepository.findByEmail(loginDTO.getEmail())
         .orElseThrow(() -> new UsernameNotFoundException("해당 이메일은 존재하지 않습니다."));
 
