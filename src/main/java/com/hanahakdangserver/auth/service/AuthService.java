@@ -39,13 +39,13 @@ public class AuthService {
   public ResponseEntity<String> signupMenti(MentiSignupRequest mentiSignupRe) {
     EmailDTO emailDTO = AuthMapper.toDTO(mentiSignupRe.getEmail());
 
-    if (checkDuplicateEmail(emailDTO)) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 이메일은 존재합니다.");
-    }
-
     if (!checkEqualPassword(mentiSignupRe.getPassword(),
         mentiSignupRe.getConfirmedPassword())) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비밀번호가 일치하지 않습니다.");
+    }
+
+    if (checkDuplicateEmail(emailDTO)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 이메일은 존재합니다.");
     }
 
     String check = redisService.getCheckByEmail(emailDTO.getEmail());
@@ -59,17 +59,14 @@ public class AuthService {
     return ResponseEntity.status(HttpStatus.CREATED).body("멘티 회원가입 성공");
   }
 
-  public ResponseEntity<String> login(LoginDTO loginDTO) {
-    log.debug("로그인 시도: 이메일={}", loginDTO.getEmail());
+  //비밀번호 일치 체크
+  public boolean checkEqualPassword(String password, String comfirmedPassword) {
+    return password.equals(comfirmedPassword);
+  }
 
-    User user = userRepository.findByEmail(loginDTO.getEmail())
-        .orElseThrow(() -> new UsernameNotFoundException("해당 이메일은 존재하지 않습니다."));
-
-    if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-      throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
-    }
-
-    return ResponseEntity.status(HttpStatus.OK).body("로그인 성공");
+  //이메일 중복 체크
+  public boolean checkDuplicateEmail(EmailDTO emailDTO) {
+    return !userRepository.findByEmail(emailDTO.getEmail()).isEmpty();
   }
 
   public IsSendEmailResponse sendEmail(EmailDTO emailDTO) {
@@ -89,13 +86,17 @@ public class AuthService {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("토큰 인증 실패");
   }
 
-  //이메일 중복 체크
-  public boolean checkDuplicateEmail(EmailDTO emailDTO) {
-    return !userRepository.findByEmail(emailDTO.getEmail()).isEmpty();
+  public ResponseEntity<String> login(LoginDTO loginDTO) {
+    log.debug("로그인 시도: 이메일={}", loginDTO.getEmail());
+
+    User user = userRepository.findByEmail(loginDTO.getEmail())
+        .orElseThrow(() -> new UsernameNotFoundException("해당 이메일은 존재하지 않습니다."));
+
+    if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+      throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+    }
+
+    return ResponseEntity.status(HttpStatus.OK).body("로그인 성공");
   }
 
-  //비밀번호 일치 체크
-  public boolean checkEqualPassword(String password, String comfirmedPassword) {
-    return password.equals(comfirmedPassword);
-  }
 }
