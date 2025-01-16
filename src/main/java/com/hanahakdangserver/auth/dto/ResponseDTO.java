@@ -1,19 +1,19 @@
 package com.hanahakdangserver.auth.dto;
 
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Getter
-@Builder
+
 @ToString
-public class isSendEmailResponse {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ResponseDTO<T> {
 
-  public boolean sendEmail;
-
+  private String message;
+  private T result;
 }

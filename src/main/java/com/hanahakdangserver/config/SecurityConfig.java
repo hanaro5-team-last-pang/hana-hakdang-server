@@ -24,11 +24,11 @@ public class SecurityConfig {
         .formLogin(FormLoginConfigurer::disable) // 폼 로그인 비활성화; 임시
         .logout(AbstractHttpConfigurer::disable) // 로그아웃 비활성화; 임시
         .authorizeHttpRequests((authorize) -> authorize
-            .requestMatchers("/signup/menti", "/check/**", "/send-email", "/verify-email")
-            .permitAll()
-            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
-            .permitAll() // 임시
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+//            .requestMatchers("/signup/menti", "/check/**", "/send-email", "/verify-email")
+//            .permitAll()
+//            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
+//            .permitAll() // 임시
+//            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .anyRequest().permitAll());
 
     return http.build();

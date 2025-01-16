@@ -31,7 +31,7 @@ public class User extends TimeBaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(optional = false, fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   private CareerInfo careerInfo;
 
   @Enumerated(EnumType.STRING)
