@@ -27,8 +27,7 @@ public class AuthController {
    * @return created 응답코드, message
    */
   @PostMapping("/signup/menti")
-  public ResponseEntity<String> signupMenti(
-      @Valid @RequestBody MentiSignupRequest mentiSignupRequest) {
+  public ResponseEntity<String> signupMenti(@RequestBody MentiSignupRequest mentiSignupRequest) {
     return authService.signupMenti(mentiSignupRequest);
   }
 
