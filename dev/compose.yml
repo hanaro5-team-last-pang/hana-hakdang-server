@@ -2,6 +2,7 @@ name: dev-storages
 services:
   broker:
     image: apache/kafka:3.9.0
+    platform: linux/amd64
     container_name: kafka_broker
     ports:
       - "9092:9092"
