@@ -60,7 +60,7 @@ public class AuthService {
   }
 
   public ResponseEntity<String> login(LoginDTO loginDTO) {
-    log.debug("로그인 시도: 이메일={}, 비밀번호={}", loginDTO.getEmail(), loginDTO.getPassword());
+    log.debug("로그인 시도: 이메일={}", loginDTO.getEmail());
 
     User user = userRepository.findByEmail(loginDTO.getEmail())
         .orElseThrow(() -> new UsernameNotFoundException("해당 이메일은 존재하지 않습니다."));
