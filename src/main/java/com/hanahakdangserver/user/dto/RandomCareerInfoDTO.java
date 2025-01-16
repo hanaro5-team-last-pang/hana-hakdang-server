@@ -1,5 +1,7 @@
 package com.hanahakdangserver.user.dto;
 
+import java.time.LocalDate;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,14 +9,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
 @Builder
 @ToString
-public class SignupResultDTO {
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class RandomCareerInfoDTO {
 
-  private boolean success;
-  private String message;
-
+  private LocalDate startDate;
+  private String position;
+  private String branchName;
 }
