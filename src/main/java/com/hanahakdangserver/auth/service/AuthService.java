@@ -3,14 +3,19 @@ package com.hanahakdangserver.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hanahakdangserver.auth.dto.EmailDTO;
-import com.hanahakdangserver.auth.dto.isSendEmailResponse;
+import com.hanahakdangserver.auth.dto.LoginDTO;
+import com.hanahakdangserver.auth.dto.IsSendEmailResponse;
 import com.hanahakdangserver.auth.mapper.AuthMapper;
 import com.hanahakdangserver.email.service.EmailService;
 import com.hanahakdangserver.user.dto.MentiSignupRequest;
+import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.mapper.UserMapper;
 import com.hanahakdangserver.user.repository.UserRepository;
 import static com.hanahakdangserver.auth.utils.AuthUtils.generateToken;
@@ -23,8 +28,8 @@ public class AuthService {
   private final UserRepository userRepository;
   private final RedisService redisService;
   private final EmailService emailService;
+  private final PasswordEncoder passwordEncoder;
 
-  //TODO : 멘티 회원가입. 후에 멘토 회원가입과 통합할 수 있는지 리팩터링 생각해보기
   @Transactional(readOnly = false)
   public ResponseEntity<String> signupMenti(MentiSignupRequest mentiSignupRe) {
     EmailDTO emailDTO = AuthMapper.toDTO(mentiSignupRe.getEmail());
@@ -43,16 +48,29 @@ public class AuthService {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이메일 인증이 완료되지 않았습니다.");
     }
 
-    userRepository.save(UserMapper.toMentiEntity(mentiSignupRe));
+    String encodedPassword = passwordEncoder.encode(mentiSignupRe.getPassword());
+    userRepository.save(UserMapper.toMentiEntity(encodedPassword, mentiSignupRe));
+
     return ResponseEntity.status(HttpStatus.CREATED).body("멘티 회원가입 성공");
   }
 
-  public isSendEmailResponse sendEmail(EmailDTO emailDTO) {
+  public ResponseEntity<String> login(LoginDTO loginDTO) {
+    User user = userRepository.findByEmail(loginDTO.getEmail())
+        .orElseThrow(() -> new UsernameNotFoundException("해당 이메일은 존재하지 않습니다."));
+
+    if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+      throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+    }
+
+    return ResponseEntity.status(HttpStatus.OK).body("로그인 성공");
+  }
+
+  public IsSendEmailResponse sendEmail(EmailDTO emailDTO) {
     String token = generateToken();
     redisService.saveEmailAndValues(emailDTO.getEmail(), token);
     emailService.send(emailDTO.getEmail(), token);
 
-    return new isSendEmailResponse(true);
+    return new IsSendEmailResponse(true);
   }
 
   public ResponseEntity<String> vertifyEmail(String email, String authToken) {

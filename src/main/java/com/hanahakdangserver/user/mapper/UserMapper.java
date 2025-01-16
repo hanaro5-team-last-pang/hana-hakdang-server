@@ -6,13 +6,13 @@ import com.hanahakdangserver.user.enums.Role;
 
 public class UserMapper {
 
-  public static User toMentiEntity(MentiSignupRequest menti) {
+  public static User toMentiEntity(String encodedPassword, MentiSignupRequest menti) {
     return User.builder()
         .id(menti.getId())
         .role(Role.MENTEE)
         .email(menti.getEmail())
         .name(menti.getName())
-        .password(menti.getPassword())
+        .password(encodedPassword)
         .birthDate(menti.getBirth())
         .build();
   }

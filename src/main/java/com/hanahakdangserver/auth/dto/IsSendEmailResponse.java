@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Builder
 @ToString
-public class isSendEmailResponse {
+public class IsSendEmailResponse {
 
   public boolean sendEmail;
 

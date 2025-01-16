@@ -9,12 +9,19 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -24,7 +31,7 @@ public class SecurityConfig {
         .formLogin(FormLoginConfigurer::disable) // 폼 로그인 비활성화; 임시
         .logout(AbstractHttpConfigurer::disable) // 로그아웃 비활성화; 임시
         .authorizeHttpRequests((authorize) -> authorize
-            .requestMatchers("/signup/menti", "/check/**", "/send-email", "/verify-email")
+            .requestMatchers("/signup/menti", "/check/**", "/send-email", "/verify-email", "/login")
             .permitAll()
             .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
             .permitAll() // 임시
