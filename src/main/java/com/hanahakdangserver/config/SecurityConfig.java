@@ -25,6 +25,9 @@ public class SecurityConfig {
         .logout(AbstractHttpConfigurer::disable) // 로그아웃 비활성화; 임시
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/swagger-ui/**")
+        .authorizeHttpRequests((authorize) -> authorize
+            .requestMatchers("/signup/menti", "/check/**", "/send-email", "/verify-email",
+                "/review/**", "faq/**", "answer/**")
             .permitAll()
             .requestMatchers("/signup/**", "/check/**", "/send-email", "/verify-email")
             .permitAll()
