@@ -15,7 +15,6 @@ import com.hanahakdangserver.lecture.entity.Category;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.repository.CategoryRepository;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +26,8 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+
+import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.CATEGORY_NOT_FOUND;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -60,7 +61,7 @@ public class LectureService {
     ); // 연관된 강의실 생성 -> DB에 저장
 
     Category category = categoryRepository.findByName(lectureRequest.getCategory().getDescription())
-        .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다."));
+        .orElseThrow(CATEGORY_NOT_FOUND::createResponseStatusException);
 
     String thumbnailUrl = uploadImageFileToS3(imageFile);
 
@@ -69,9 +70,9 @@ public class LectureService {
             .classroom(classroom)
             .category(category)
             .title(lectureRequest.getTitle())
-            .startTime(lectureRequest.getStart_time())
+            .startTime(lectureRequest.getStartTime())
             .duration(lectureRequest.getDuration())
-            .maxParticipants(lectureRequest.getMax_participants())
+            .maxParticipants(lectureRequest.getMaxParticipants())
             .description(lectureRequest.getDescription())
             .tagList(lectureRequest.getTags())
             .thumbnailUrl(thumbnailUrl)
