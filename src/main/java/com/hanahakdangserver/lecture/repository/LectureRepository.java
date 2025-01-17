@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.hanahakdangserver.lecture.entity.Lecture;
 
 @Repository
-public interface LectureRepository extends JpaRepository<Lecture, Long> {
+public interface LectureRepository extends JpaRepository<Lecture, Long>, LectureRepositoryCustom {
 
 //  // 제목으로 강의 검색
 //  @Query("SELECT l FROM Lecture l WHERE l.title LIKE %:title%")

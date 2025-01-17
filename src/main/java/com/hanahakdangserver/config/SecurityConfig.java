@@ -25,9 +25,10 @@ public class SecurityConfig {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/swagger-ui/**")
             .permitAll()
-            .requestMatchers("/signup/**", "/check/**", "/send-email", "/verify-email",
-                "/profile-card/**")
+            .requestMatchers("/signup/**", "/check/**", "/send-email", "/verify-email")
             .permitAll()
+            .requestMatchers("/lecture/**").permitAll() // TODO : 추후 authenticated로
+            .requestMatchers("/lectures/**").permitAll() // TODO : 추후 authenticated로
 //            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
 //            .permitAll() // 임시
 //            .requestMatchers(HttpMethod.OPTIONS, "/**")
