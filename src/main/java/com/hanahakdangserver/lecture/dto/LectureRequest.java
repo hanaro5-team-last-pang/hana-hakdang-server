@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
@@ -24,6 +26,7 @@ import lombok.ToString;
 @Getter
 @Builder
 @ToString
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Schema(description = "강의 등록 요청")
 public class LectureRequest {
 
@@ -39,14 +42,14 @@ public class LectureRequest {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonSerialize(using = LocalDateTimeSerializer.class)
-  private LocalDateTime start_time;
+  private LocalDateTime startTime;
 
   @Schema(description = "강의 진행 시간", example = "2")
   private Integer duration;
 
   @Schema(description = "최대 수강 가능 인원", example = "4")
   @NotNull(message = "최대 수강 가능 인원 수를 입력해주세요.")
-  private Integer max_participants;
+  private Integer maxParticipants;
 
   @Schema(description = "강의 설명", example = "안녕하세요~ 여러분의 멘토 정중일입니다.")
   private String description;
