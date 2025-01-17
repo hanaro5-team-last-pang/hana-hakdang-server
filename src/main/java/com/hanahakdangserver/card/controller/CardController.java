@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,7 @@ import com.hanahakdangserver.card.service.CardService;
 import com.hanahakdangserver.common.ResponseDTO;
 import static com.hanahakdangserver.card.enums.CardResponseSuccessEnum.GET_PROFILE_CARD_SUCCESS;
 
-@Slf4j
+@Log4j2
 @Tag(name = "명함 API", description = "명함 관련 API 목록")
 @RestController
 @RequiredArgsConstructor
@@ -29,10 +30,10 @@ public class CardController {
       @ApiResponse(responseCode = "200", description = "명함 조회를 성공했습니다."),
       @ApiResponse(responseCode = "400", description = "명함이 존재하지 않습니다.")
   })
-  @GetMapping("/profile-card/{user_id}")
+  @GetMapping("/profile-card/{userId}")
   public ResponseEntity<ResponseDTO<Object>> getProfileCard(
-      @PathVariable Long user_id) {
-    ProfileCardResponse cardResponse = cardService.getProfileCard(user_id);
+      @PathVariable Long userId) {
+    ProfileCardResponse cardResponse = cardService.getProfileCard(userId);
     log.debug("result : {}",
         GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse));
     return GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse);
