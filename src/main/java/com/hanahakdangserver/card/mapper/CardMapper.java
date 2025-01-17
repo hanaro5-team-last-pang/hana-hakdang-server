@@ -12,7 +12,7 @@ public class CardMapper {
 
   public static ProfileCardResponse toDTO(Card card) {
     return ProfileCardResponse.builder()
-        .mentoName(card.getMentor().getName())
+        .mentorName(card.getMentor().getName())
         .shortIntroduction(card.getShortIntroduction())
         .simpleInfo(card.getSimpleInfo())
         .detailInfo(card.getDetailInfo())
