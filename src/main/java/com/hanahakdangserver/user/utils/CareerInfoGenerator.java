@@ -4,40 +4,14 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.hanahakdangserver.user.dto.RandomCareerInfoDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
-import com.hanahakdangserver.user.dto.RandomCareerInfoDTO;
-
 @Log4j2
 public class CareerInfoGenerator {
-
-  @Getter
-  @ToString
-  @RequiredArgsConstructor
-  public enum PositionType {
-    STAFF("사원"),
-    ASSOCIATE("주임"),
-    SENIOR_ASSOCIATE("대리"),
-    MANAGER("과장"),
-    SENIOR_MANAGER("차장"),
-    EXECUTIVE_MANAGER("부장");
-
-    private final String description;
-
-  }
-
-  @Getter
-  @ToString
-  @RequiredArgsConstructor
-  public enum BranchType {
-    SEONG_SU_STATION("성수역점");
-
-    private final String branchName;
-  }
-
 
   protected static PositionType getRandomPosition() {
     int randomNum = ThreadLocalRandom.current().nextInt(PositionType.values().length);
@@ -75,6 +49,30 @@ public class CareerInfoGenerator {
         .position(getRandomPosition().name())
         .startDate(getRandomDate())
         .build();
+  }
+
+  @Getter
+  @ToString
+  @RequiredArgsConstructor
+  public enum PositionType {
+    STAFF("사원"),
+    ASSOCIATE("주임"),
+    SENIOR_ASSOCIATE("대리"),
+    MANAGER("과장"),
+    SENIOR_MANAGER("차장"),
+    EXECUTIVE_MANAGER("부장");
+
+    private final String description;
+
+  }
+
+  @Getter
+  @ToString
+  @RequiredArgsConstructor
+  public enum BranchType {
+    SEONG_SU_STATION("성수역점");
+
+    private final String branchName;
   }
 
 }

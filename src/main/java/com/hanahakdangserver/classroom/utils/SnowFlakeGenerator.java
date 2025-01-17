@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @Component
 public class SnowFlakeGenerator implements IdentifierGenerator {
+
   private static final int CASE_ONE_BITS = 10;
   private static final int CASE_TWO_BITS = 9;
   private static final int SEQUENCE_BITS = 4; // 중복 방지용
@@ -24,13 +25,14 @@ public class SnowFlakeGenerator implements IdentifierGenerator {
   private int case_two = 0;
   private volatile long lastTimestamp = -1L;
 
-  @Override
-  public Serializable generate(SharedSessionContractImplementor sharedSessionContractImplementor, Object o) throws HibernateException {
-    return nextId();
-  }
-
   private static long timestamp() {
     return Instant.now().toEpochMilli() - CUSTOM_EPOCH; // 41비트를 맞춰주기 위함
+  }
+
+  @Override
+  public Serializable generate(SharedSessionContractImplementor sharedSessionContractImplementor,
+      Object o) throws HibernateException {
+    return nextId();
   }
 
   public synchronized long nextId() {

@@ -3,7 +3,10 @@ package com.hanahakdangserver.lecture.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.hanahakdangserver.classroom.entity.Classroom;
 import com.hanahakdangserver.enrollment.entity.Enrollment;
+import com.hanahakdangserver.lecture.utils.IntegerListConverter;
+import com.hanahakdangserver.mixin.TimeBaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -20,11 +23,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import com.hanahakdangserver.classroom.entity.Classroom;
-import com.hanahakdangserver.lecture.utils.IntegerListConverter;
-import com.hanahakdangserver.user.entity.User;
-import com.hanahakdangserver.mixin.TimeBaseEntity;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -50,7 +48,7 @@ public class Lecture extends TimeBaseEntity {
   @JoinColumn(name = "category_id", nullable = false)
   private Category category;
 
-  @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "lecture", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Enrollment> enrollments;
 
   @Column(nullable = false)

@@ -59,21 +59,22 @@ public class LectureService {
         Classroom.builder().id(uniqueId).build()
     ); // 연관된 강의실 생성 -> DB에 저장
 
-    Category category = categoryRepository.findByName(lectureRequest.getCategory().getDescription()).orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다."));
+    Category category = categoryRepository.findByName(lectureRequest.getCategory().getDescription())
+        .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다."));
 
     String thumbnailUrl = uploadImageFileToS3(imageFile);
 
     lectureRepository.save(
         Lecture.builder()
-              .classroom(classroom)
-              .category(category)
-              .title(lectureRequest.getTitle())
-              .startTime(lectureRequest.getStart_time())
-              .duration(lectureRequest.getDuration())
-              .maxParticipants(lectureRequest.getMax_participants())
-              .description(lectureRequest.getDescription())
-              .tagList(lectureRequest.getTags())
-              .thumbnailUrl(thumbnailUrl)
+            .classroom(classroom)
+            .category(category)
+            .title(lectureRequest.getTitle())
+            .startTime(lectureRequest.getStart_time())
+            .duration(lectureRequest.getDuration())
+            .maxParticipants(lectureRequest.getMax_participants())
+            .description(lectureRequest.getDescription())
+            .tagList(lectureRequest.getTags())
+            .thumbnailUrl(thumbnailUrl)
             .build()
     );
   }
@@ -123,7 +124,8 @@ public class LectureService {
         return imageUrl;
 
       } else {
-        throw new RuntimeException("S3 업로드 실패: " + response.sdkHttpResponse().statusText().orElse("UNKNOWN ERROR"));
+        throw new RuntimeException(
+            "S3 업로드 실패: " + response.sdkHttpResponse().statusText().orElse("UNKNOWN ERROR"));
       }
 
     } catch (IOException e) {

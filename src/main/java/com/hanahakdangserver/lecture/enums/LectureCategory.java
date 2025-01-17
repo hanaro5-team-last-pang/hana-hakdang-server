@@ -29,8 +29,7 @@ public enum LectureCategory {
   private final String description;
 
   /**
-   * 입력되는 inputValue값과 일치하는 category가 있다면 LectureCategory 반환, 없다면 null 반환
-   * DTO에서 검증을 위해 추가한 역직렬화
+   * 입력되는 inputValue값과 일치하는 category가 있다면 LectureCategory 반환, 없다면 null 반환 DTO에서 검증을 위해 추가한 역직렬화
    *
    * @param inputValue LectureCategory로 예상되는 문자열
    * @return LectureCategory || null
