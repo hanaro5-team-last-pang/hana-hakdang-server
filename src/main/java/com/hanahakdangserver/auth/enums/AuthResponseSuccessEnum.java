@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 
-import com.hanahakdangserver.auth.dto.ResponseDTO;
+import com.hanahakdangserver.common.ResponseDTO;
 
 
 @Getter
@@ -21,7 +21,7 @@ public enum AuthResponseSuccessEnum {
   private final String message;
 
 
-  public ResponseEntity<ResponseDTO<Object>> createResponseEntity() {
+  public ResponseEntity<com.hanahakdangserver.common.ResponseDTO<Object>> createResponseEntity() {
     ResponseDTO<Object> response = ResponseDTO.builder().message(message).build();
     return ResponseEntity.status(httpStatus).body(response);
   }

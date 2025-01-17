@@ -14,18 +14,18 @@ import org.springframework.web.server.ResponseStatusException;
 import com.hanahakdangserver.auth.dto.EmailCheckDTO;
 import com.hanahakdangserver.auth.dto.EmailCheckRequest;
 import com.hanahakdangserver.auth.dto.EmailConfirmRequest;
+import com.hanahakdangserver.auth.dto.MenteeSignupRequest;
 import com.hanahakdangserver.auth.dto.MentorSignupRequest;
 import com.hanahakdangserver.auth.mapper.AuthMapper;
 import com.hanahakdangserver.email.service.EmailService;
 import com.hanahakdangserver.redis.RedisBoundHash;
-import com.hanahakdangserver.auth.dto.MenteeSignupRequest;
 import com.hanahakdangserver.user.dto.RandomCareerInfoDTO;
 import com.hanahakdangserver.user.entity.CareerInfo;
 import com.hanahakdangserver.user.mapper.CareerInfoMapper;
 import com.hanahakdangserver.user.mapper.UserMapper;
 import com.hanahakdangserver.user.repository.CareerInfoRepository;
-import com.hanahakdangserver.user.utils.CareerInfoGenerator;
 import com.hanahakdangserver.user.repository.UserRepository;
+import com.hanahakdangserver.user.utils.CareerInfoGenerator;
 import static com.hanahakdangserver.auth.enums.AuthResponseExceptionEnum.EMAIL_CHECK_EXPIRED;
 import static com.hanahakdangserver.auth.enums.AuthResponseExceptionEnum.EMAIL_DUPLICATED;
 import static com.hanahakdangserver.auth.enums.AuthResponseExceptionEnum.EMAIL_NOT_CONFIRMED;
@@ -39,14 +39,13 @@ import static com.hanahakdangserver.auth.utils.AuthUtils.generateToken;
 @Transactional(readOnly = true)
 public class AuthService {
 
-  @Value("${mail.expire-minute}")
-  private Long mailExpireTime;
-
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final CareerInfoRepository careerInfoRepository;
   private final RedisBoundHash<EmailCheckDTO> redisBoundHash;
   private final EmailService emailService;
+  @Value("${mail.expire-minute}")
+  private Long mailExpireTime;
 
 
   public AuthService(UserRepository userRepository, CareerInfoRepository careerInfoRepository,

@@ -16,9 +16,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import com.hanahakdangserver.user.enums.Role;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
+import com.hanahakdangserver.user.enums.Role;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,6 +34,7 @@ public class User extends TimeBaseEntity {
   private Long id;
 
   @OneToOne(fetch = FetchType.LAZY)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private CareerInfo careerInfo;
 
   @Enumerated(EnumType.STRING)

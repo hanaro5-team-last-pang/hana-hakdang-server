@@ -2,7 +2,6 @@ package com.hanahakdangserver.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -27,7 +26,7 @@ public class SecurityConfig {
             .requestMatchers("/swagger-ui/**")
             .permitAll()
             .requestMatchers("/signup/**", "/check/**", "/send-email", "/verify-email",
-                "/review/**", "faq/**", "answer/**")
+                "/profile-card/**")
             .permitAll()
 //            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
 //            .permitAll() // 임시
