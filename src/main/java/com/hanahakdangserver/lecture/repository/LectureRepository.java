@@ -1,9 +1,8 @@
 package com.hanahakdangserver.lecture.repository;
 
+import com.hanahakdangserver.lecture.entity.Lecture;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.hanahakdangserver.lecture.entity.Lecture;
 
 @Repository
 public interface LectureRepository extends JpaRepository<Lecture, Long>, LectureRepositoryCustom {

@@ -2,11 +2,10 @@ package com.hanahakdangserver.notification.repository;
 
 import java.util.List;
 
+import com.hanahakdangserver.notification.entity.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import com.hanahakdangserver.notification.entity.Notification;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 

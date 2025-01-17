@@ -1,5 +1,7 @@
 package com.hanahakdangserver.enrollment.entity;
 
+import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.mixin.TimeBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,10 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import com.hanahakdangserver.lecture.entity.Lecture;
-import com.hanahakdangserver.user.entity.User;
-import com.hanahakdangserver.mixin.TimeBaseEntity;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,9 +35,6 @@ public class Enrollment extends TimeBaseEntity {
 //  @ManyToOne(fetch = FetchType.LAZY)
 //  @JoinColumn(name = "user_id", nullable = false)
 //  private User user;
-
-  @Column(nullable = false)
-  private Integer amount;
 
   @Column(nullable = false)
   @Builder.Default

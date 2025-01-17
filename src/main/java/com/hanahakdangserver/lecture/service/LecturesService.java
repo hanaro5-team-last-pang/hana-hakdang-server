@@ -44,20 +44,21 @@ public class LecturesService {
           }
 
           return LectureDetailDTO.builder()
-                .lecture_id(lecture.getId())
-  //              .mentor_name(lecture.getMentor().getName())
-                .category(lecture.getCategory().getName())
-                .title(lecture.getTitle())
-                .start_date(lecture.getStartTime())
-                .duration(lecture.getDuration())
-                .curr_participants(currParticipants)
-                .max_participants(lecture.getMaxParticipants())
-                .is_full(lecture.getIsFull())
-                .thumbnail_img_url(lecture.getThumbnailUrl())
+              .lectureId(lecture.getId())
+              //              .mentorName(lecture.getMentor().getName())
+              .category(lecture.getCategory().getName())
+              .title(lecture.getTitle())
+              .startDate(lecture.getStartTime())
+              .duration(lecture.getDuration())
+              .currParticipants(currParticipants)
+              .maxParticipants(lecture.getMaxParticipants())
+              .isFull(lecture.getIsFull())
+              .thumbnailImgUrl(lecture.getThumbnailUrl())
               .build();
         }
     ).collect(Collectors.toList());
 
-    return LecturesResponse.builder().total_count(lectures.getTotalElements()).lecture_list(lectureDetails).build();
+    return LecturesResponse.builder().totalCount(lectures.getTotalElements())
+        .lectureList(lectureDetails).build();
   }
 }

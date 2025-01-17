@@ -19,5 +19,5 @@ public class HanaItemResponse {
   private String itemContent;
   private String hanaUrl;
   private Long lectureId; // 강의 ID
-  
+
 }
