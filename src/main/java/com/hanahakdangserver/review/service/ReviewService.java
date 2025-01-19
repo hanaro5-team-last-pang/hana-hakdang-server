@@ -3,12 +3,6 @@ package com.hanahakdangserver.review.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.review.dto.ReviewRequest;
@@ -18,6 +12,11 @@ import com.hanahakdangserver.review.mapper.ReviewMapper;
 import com.hanahakdangserver.review.repository.ReviewRepository;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -103,18 +102,18 @@ public class ReviewService {
    * @param mentorId
    * @return 강의에 대한 평균 평점
    */
-  public Double getMentorAverageScore(Long mentorId) {
-    log.info("Calculating average score for mentorId={}", mentorId);
-
-    List<Review> mentorReviews = reviewRepository.findReviewsByMentorId(mentorId);
-
-    double averageScore = mentorReviews.stream()
-        .mapToInt(Review::getScore)
-        .average()
-        .orElse(0.0);
-
-    log.info("Average score for mentorId={} is {}", mentorId, averageScore);
-
-    return averageScore;
-  }
+//  public Double getMentorAverageScore(Long mentorId) {
+//    log.info("Calculating average score for mentorId={}", mentorId);
+//
+//    List<Review> mentorReviews = reviewRepository.findReviewsByMentorId(mentorId);
+//
+//    double averageScore = mentorReviews.stream()
+//        .mapToInt(Review::getScore)
+//        .average()
+//        .orElse(0.0);
+//
+//    log.info("Average score for mentorId={} is {}", mentorId, averageScore);
+//
+//    return averageScore;
+//  }
 }
