@@ -2,7 +2,7 @@ package com.hanahakdangserver.lecture.controller;
 
 import java.io.IOException;
 
-import com.hanahakdangserver.auth.dto.ResponseDTO;
+import com.hanahakdangserver.common.ResponseDTO;
 import com.hanahakdangserver.lecture.dto.LectureRequest;
 import com.hanahakdangserver.lecture.service.LectureService;
 import io.swagger.v3.oas.annotations.Operation;
