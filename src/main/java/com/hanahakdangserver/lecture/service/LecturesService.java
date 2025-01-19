@@ -1,11 +1,13 @@
 package com.hanahakdangserver.lecture.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.LecturesResponse;
 import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.lecture.enums.LectureCategory;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -13,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.LECTURE_NOT_FOUND;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -30,35 +34,85 @@ public class LecturesService {
     Page<Lecture> lectures = lectureRepository.searchAllPossibleLectures(pageRequest);
 
     List<LectureDetailDTO> lectureDetails = lectures.getContent().stream().map(
-        lecture -> {
-
-          Integer currParticipants;
-
-          if (lecture.getIsFull()) {
-            currParticipants = lecture.getMaxParticipants();
-          } else {
-            // 연관된 enrollment의 개수를 계산
-            currParticipants = lecture.getEnrollments() != null
-                ? lecture.getEnrollments().size()
-                : 0;
-          }
-
-          return LectureDetailDTO.builder()
-              .lectureId(lecture.getId())
-              //              .mentorName(lecture.getMentor().getName())
-              .category(lecture.getCategory().getName())
-              .title(lecture.getTitle())
-              .startDate(lecture.getStartTime())
-              .duration(lecture.getDuration())
-              .currParticipants(currParticipants)
-              .maxParticipants(lecture.getMaxParticipants())
-              .isFull(lecture.getIsFull())
-              .thumbnailImgUrl(lecture.getThumbnailUrl())
-              .build();
-        }
+        lecture -> converLectureToDetailDTO(lecture, false)
     ).collect(Collectors.toList());
 
-    return LecturesResponse.builder().totalCount(lectures.getTotalElements())
-        .lectureList(lectureDetails).build();
+    return LecturesResponse.builder()
+        .totalCount(lectures.getTotalElements())
+        .lectureList(lectureDetails)
+        .build();
+  }
+
+  public LecturesResponse getCategoryLecturesList(List<LectureCategory> categoryList,
+      Integer pageNum) {
+
+    PageRequest pageRequest = PageRequest.of(pageNum, PAGE_SIZE);
+    Page<Lecture> lectures = lectureRepository.searchAllCategoryLectures(pageRequest, categoryList);
+
+    List<LectureDetailDTO> lectureDetails = lectures.getContent().stream().map(
+        lecture -> converLectureToDetailDTO(lecture, false)
+    ).collect(Collectors.toList());
+
+    return LecturesResponse.builder()
+        .totalCount(lectures.getTotalElements())
+        .lectureList(lectureDetails)
+        .build();
+  }
+
+  public LectureDetailDTO getLectureDetail(Long lectureId) {
+
+    Lecture lecture = lectureRepository.findById(lectureId)
+        .orElseThrow(LECTURE_NOT_FOUND::createResponseStatusException);
+
+    LocalDateTime now = LocalDateTime.now();
+
+    // 강의 시작시간이 현재 시간보다 같거나 작으면 강의의 isFull을 true(모집마감)으로 변경
+    if (lecture.getStartTime().isBefore(now) || lecture.getStartTime().isEqual(now)) {
+      lecture.updateIsFull(true);
+    }
+
+    return converLectureToDetailDTO(lecture, true);
+  }
+
+  /**
+   * Lecture 엔티티를 LectureDetailDTO로 변환
+   *
+   * @param lecture  DTO로 변환이 필요한 Lecture 엔티티
+   * @param isDetail DTO에 description이 필요한지 여부, false면 builder에 null이 들어감
+   * @return LectureDetailDTO
+   */
+  private LectureDetailDTO converLectureToDetailDTO(Lecture lecture, Boolean isDetail) {
+    Integer currParticipants;
+    String description;
+
+    if (lecture.getIsFull()) {
+      currParticipants = lecture.getMaxParticipants();
+    } else {
+      // 연관된 enrollment의 개수를 계산
+      currParticipants = lecture.getEnrollments() != null
+          ? lecture.getEnrollments().size()
+          : 0;
+    }
+
+    // isDetail이 true면 description 반환 필요
+    if (isDetail) {
+      description = lecture.getDescription();
+    } else {
+      description = null;
+    }
+
+    return LectureDetailDTO.builder()
+        .lectureId(lecture.getId())
+        //              .mentorName(lecture.getMentor().getName())
+        .category(lecture.getCategory().getName())
+        .title(lecture.getTitle())
+        .description(description)
+        .startDate(lecture.getStartTime())
+        .duration(lecture.getDuration())
+        .currParticipants(currParticipants)
+        .maxParticipants(lecture.getMaxParticipants())
+        .isFull(lecture.getIsFull())
+        .thumbnailImgUrl(lecture.getThumbnailUrl())
+        .build();
   }
 }

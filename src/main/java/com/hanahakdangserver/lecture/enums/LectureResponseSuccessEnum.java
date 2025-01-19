@@ -10,19 +10,15 @@ import org.springframework.http.ResponseEntity;
 @AllArgsConstructor
 public enum LectureResponseSuccessEnum {
   CREATE_LECTURE_SUCCESS(HttpStatus.CREATED, "강의 등록에 성공했습니다."),
-  GET_TOTAL_LIST_SUCCESS(HttpStatus.OK, "전체 강의 목록 조회에 성공했습니다.");
+  GET_TOTAL_LIST_SUCCESS(HttpStatus.OK, "전체 강의 목록 조회에 성공했습니다."),
+  GET_CATEGORY_LIST_SUCCESS(HttpStatus.OK, "카테고리별 강의 목록 조회에 성공했습니다."),
+  GET_LECTURE_DETAIL_SUCCESS(HttpStatus.OK, "특정 강의 상세 조회에 성공했습니다.");
 
   private final HttpStatus httpStatus;
   private final String message;
 
-  public ResponseEntity<ResponseDTO<Object>> createResponseEntity() {
-    ResponseDTO<Object> response = ResponseDTO.builder().message(message).build();
-
-    return ResponseEntity.status(httpStatus).body(response);
-  }
-
-  public ResponseEntity<ResponseDTO<Object>> createResponseEntity(Object data) {
-    ResponseDTO<Object> response = ResponseDTO.builder().message(message).result(data).build();
+  public <T> ResponseEntity<ResponseDTO<T>> createResponseEntity(T data) {
+    ResponseDTO<T> response = ResponseDTO.<T>builder().message(message).result(data).build();
     return ResponseEntity.status(httpStatus).body(response);
   }
 }
