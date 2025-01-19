@@ -7,6 +7,7 @@ import com.hanahakdangserver.classroom.entity.Classroom;
 import com.hanahakdangserver.enrollment.entity.Enrollment;
 import com.hanahakdangserver.lecture.utils.IntegerListConverter;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
+import com.hanahakdangserver.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

@@ -1,6 +1,6 @@
 package com.hanahakdangserver.lecture.enums;
 
-import com.hanahakdangserver.auth.dto.ResponseDTO;
+import com.hanahakdangserver.common.ResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

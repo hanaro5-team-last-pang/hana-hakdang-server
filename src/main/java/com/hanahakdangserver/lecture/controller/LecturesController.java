@@ -3,7 +3,7 @@ package com.hanahakdangserver.lecture.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hanahakdangserver.auth.dto.ResponseDTO;
+import com.hanahakdangserver.common.ResponseDTO;
 import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.LecturesResponse;
 import com.hanahakdangserver.lecture.enums.LectureCategory;
@@ -37,7 +37,7 @@ public class LecturesController {
       @ApiResponse(responseCode = "200", description = "전체 강의 목록 조회 성공")
   })
   @GetMapping
-  public ResponseEntity<ResponseDTO<Object>> getTotalLecturesList(
+  public ResponseEntity<ResponseDTO<LecturesResponse>> getTotalLecturesList(
       @RequestParam(value = "page", defaultValue = "0") Integer pageNum) {
 
     LecturesResponse lecturesResponse = lecturesService.getTotalLecturesList(pageNum);
@@ -50,7 +50,7 @@ public class LecturesController {
       @ApiResponse(responseCode = "200", description = "카테고리별 강의 목록 조회 성공")
   })
   @GetMapping("/category")
-  public ResponseEntity<ResponseDTO<Object>> getCategoryLecturesList(
+  public ResponseEntity<ResponseDTO<LecturesResponse>> getCategoryLecturesList(
       @RequestParam(value = "name") List<String> categories,
       @RequestParam(value = "page", defaultValue = "0") Integer pageNum
   ) {
