@@ -2,14 +2,19 @@ package com.hanahakdangserver.review.controller;
 
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.hanahakdangserver.review.dto.ReviewRequest;
 import com.hanahakdangserver.review.dto.ReviewResponse;
 import com.hanahakdangserver.review.service.ReviewService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,16 +68,15 @@ public class ReviewController {
     return ResponseEntity.noContent().build();
   }
 
-
   /**
    * 멘토의 전체 강의 리뷰 조회 및 평균 평점 제공 ok
    *
    * @param mentorId
    * @return 평균 평점
    */
-  @GetMapping("/mentor/{mentorId}")
-  public ResponseEntity<Double> getMentorAverageScore(@PathVariable Long mentorId) {
-    Double averageScore = reviewService.getMentorAverageScore(mentorId);
-    return ResponseEntity.ok(averageScore);
-  }
+//  @GetMapping("/mentor/{mentorId}")
+//  public ResponseEntity<Double> getMentorAverageScore(@PathVariable Long mentorId) {
+//    Double averageScore = reviewService.getMentorAverageScore(mentorId);
+//    return ResponseEntity.ok(averageScore);
+//  }
 }

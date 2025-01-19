@@ -1,6 +1,10 @@
 package com.hanahakdangserver.faq.service;
 
-import com.hanahakdangserver.faq.dto.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.hanahakdangserver.faq.dto.FaqRequest;
+import com.hanahakdangserver.faq.dto.FaqResponse;
 import com.hanahakdangserver.faq.entity.Answer;
 import com.hanahakdangserver.faq.entity.Faq;
 import com.hanahakdangserver.faq.mapper.FaqMapper;
@@ -10,14 +14,10 @@ import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +45,7 @@ public class FaqService {
         .orElseThrow(() -> new EntityNotFoundException("강의를 찾을 수 없습니다."));
 
     Faq faq = Faq.builder()
-        .user(user)
+//        .user(user)
         .lecture(lecture)
         .content(request.getContent())
         .build();

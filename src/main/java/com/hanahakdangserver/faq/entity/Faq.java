@@ -2,7 +2,6 @@ package com.hanahakdangserver.faq.entity;
 
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
-import com.hanahakdangserver.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,9 +27,9 @@ public class Faq extends TimeBaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+//  @ManyToOne(fetch = FetchType.LAZY)
+//  @JoinColumn(name = "user_id", nullable = false)
+//  private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "lecture_id")

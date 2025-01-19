@@ -9,7 +9,6 @@ import com.hanahakdangserver.faq.repository.AnswerRepository;
 import com.hanahakdangserver.faq.repository.FaqRepository;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
