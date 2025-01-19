@@ -42,7 +42,7 @@ public class LectureController {
       @ApiResponse(responseCode = "404", description = "해당 카테고리가 존재하지 않습니다.")
   })
   @PostMapping
-  public ResponseEntity<ResponseDTO<Object>> registerNewLecture(
+  public ResponseEntity<ResponseDTO<Void>> registerNewLecture(
       @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
       @Valid @RequestPart(value = "data", required = false) LectureRequest lectureRequest
   ) throws IOException {
@@ -51,6 +51,6 @@ public class LectureController {
 
     lectureService.registerNewLecture(imageFile, lectureRequest);
 
-    return CREATE_LECTURE_SUCCESS.createResponseEntity();
+    return CREATE_LECTURE_SUCCESS.createResponseEntity(null);
   }
 }

@@ -8,12 +8,15 @@ import java.util.Optional;
 import com.hanahakdangserver.enrollment.entity.QEnrollment;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.entity.QLecture;
+import com.hanahakdangserver.lecture.enums.LectureCategory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+@Log4j2
 @RequiredArgsConstructor
 public class LectureRepositoryImpl implements LectureRepositoryCustom {
 
@@ -69,4 +72,55 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
     return new PageImpl<>(resultList, pageRequest, totalCount);
   }
 
+  /**
+   * searchAllPossibleLectures() 메서드와 동일한 조건에서 카테고리 필터링 추가
+   *
+   * @param pageRequest  페이지네이션을 위한 Pageable 구현체
+   * @param categoryList 필터링 해야하는 카테고리 목록
+   * @return Page 객체 (쿼리 결과, (페이지 시작, 페이지 크기), 페이지네이션과 관계 없는 전체 결과 수)
+   */
+  @Override
+  public Page<Lecture> searchAllCategoryLectures(PageRequest pageRequest,
+      List<LectureCategory> categoryList) {
+
+    LocalDateTime now = LocalDateTime.now(clock);
+
+    // 카테고리 리스트에서 category name만 추출
+    List<String> categoryNames = categoryList.stream()
+        .map(LectureCategory::getDescription)
+        .toList();
+
+    List<Lecture> resultList = queryFactory
+        .selectDistinct(lecture)
+        .from(lecture)
+        .leftJoin(lecture.enrollments, enrollment)
+        .where(
+            lecture.startTime.goe(now),
+            lecture.isCanceled.isFalse(),
+            enrollment.isNull().or(enrollment.isCanceled.isFalse()),
+            lecture.category.name.in(categoryNames) // 주어진 카테고리에 해당하는 강의
+        )
+        .offset(pageRequest.getOffset())
+        .limit(pageRequest.getPageSize())
+        .fetch();
+
+    // 동일 조건으로 페이지네이션 없이 총 개수 계산
+    Long totalCount = Optional.ofNullable(
+        queryFactory
+            .select(lecture.countDistinct())
+            .from(lecture)
+            .leftJoin(lecture.enrollments, enrollment)
+            .where(
+                lecture.startTime.goe(now),
+                lecture.isCanceled.isFalse(),
+                enrollment.isNull().or(enrollment.isCanceled.isFalse()),
+                lecture.category.name.in(categoryNames)
+            )
+            .fetchOne()
+    ).orElse(0L); // 결과가 null일 경우 기본값 0 반환
+
+    log.info("resultList 길이: {}, 페이지네이션 없이 totalCount 크기: {}", resultList.size(), totalCount);
+
+    return new PageImpl<>(resultList, pageRequest, totalCount);
+  }
 }
