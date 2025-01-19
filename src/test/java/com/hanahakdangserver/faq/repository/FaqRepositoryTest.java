@@ -1,5 +1,9 @@
 package com.hanahakdangserver.faq.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.hanahakdangserver.classroom.entity.Classroom;
 import com.hanahakdangserver.classroom.repository.ClassroomRepository;
 import com.hanahakdangserver.faq.entity.Faq;
@@ -12,17 +16,12 @@ import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.enums.Role;
 import com.hanahakdangserver.user.repository.CareerInfoRepository;
 import com.hanahakdangserver.user.repository.UserRepository;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -82,7 +81,6 @@ public class FaqRepositoryTest {
     // 강의실 생성 및 저장
     Classroom classroom = Classroom.builder()
         .id(1L)
-        .mentor(user)
         .build();
     classroomRepository.save(classroom);
 
