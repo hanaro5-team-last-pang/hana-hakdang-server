@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.lecture.entity.LectureTag;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.product.dto.HanaItemResponse;
 import com.hanahakdangserver.product.entity.HanaItem;
+import com.hanahakdangserver.product.entity.Tag;
 import com.hanahakdangserver.product.repository.HanaItemRepository;
 
 @Service
@@ -31,7 +33,10 @@ public class HanaItemService {
   public List<HanaItemResponse> getItemsByLectureId(Long lectureId) {
     Lecture lecture = lectureRepository.findById(lectureId)
         .orElseThrow(() -> new EntityNotFoundException("강의를 조회하지 못 했습니다"));
-    List<Integer> tagIds = lecture.getTagList(); // 강의 테이블에서 태그 리스트 가져오기
+
+    List<LectureTag> tagList = lecture.getTagList(); // 강의 테이블에서 태그 리스트 가져오기
+    List<Long> tagIds = tagList.stream().map(LectureTag::getTag).map(Tag::getId)
+        .collect(Collectors.toList());
 
     List<HanaItem> items = hanaItemRepository.findAllByTagIds(tagIds);
 

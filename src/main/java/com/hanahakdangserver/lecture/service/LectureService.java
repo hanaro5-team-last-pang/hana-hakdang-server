@@ -25,9 +25,14 @@ import com.hanahakdangserver.classroom.utils.SnowFlakeGenerator;
 import com.hanahakdangserver.lecture.dto.LectureRequest;
 import com.hanahakdangserver.lecture.entity.Category;
 import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.lecture.entity.LectureTag;
 import com.hanahakdangserver.lecture.repository.CategoryRepository;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
+import com.hanahakdangserver.lecture.repository.LectureTagRepository;
+import com.hanahakdangserver.product.entity.Tag;
+import com.hanahakdangserver.product.repository.TagRepository;
 import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.CATEGORY_NOT_FOUND;
+import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.TAG_NOT_FOUND;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -38,6 +43,8 @@ public class LectureService {
   private final LectureRepository lectureRepository;
   private final CategoryRepository categoryRepository;
   private final ClassroomRepository classroomRepository;
+  private final TagRepository tagRepository;
+  private final LectureTagRepository lectureTagRepository;
 
   private final SnowFlakeGenerator snowFlakeGenerator; // snowflake 생성기
   private final S3AsyncClient s3AsyncClient;
@@ -66,7 +73,7 @@ public class LectureService {
     // TODO : 이미지 파일이 없을 경우 예외 처리 필요
     String thumbnailUrl = uploadImageFileToS3(imageFile);
 
-    lectureRepository.save(
+    Lecture lecture = lectureRepository.save(
         Lecture.builder()
             .classroom(classroom)
             .category(category)
@@ -75,10 +82,21 @@ public class LectureService {
             .duration(lectureRequest.getDuration())
             .maxParticipants(lectureRequest.getMaxParticipants())
             .description(lectureRequest.getDescription())
-            .tagList(lectureRequest.getTags())
             .thumbnailUrl(thumbnailUrl)
             .build()
     );
+
+    // LECTURE_TAG에도 저장
+    for (Long tagId : lectureRequest.getTags()) {
+      Tag tag = tagRepository.findById(tagId)
+          .orElseThrow(TAG_NOT_FOUND::createResponseStatusException);
+      lectureTagRepository.save(
+          LectureTag.builder()
+              .lecture(lecture)
+              .tag(tag)
+              .build()
+      );
+    }
   }
 
   /**
