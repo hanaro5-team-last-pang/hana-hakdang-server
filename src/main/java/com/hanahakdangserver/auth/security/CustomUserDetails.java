@@ -1,38 +1,47 @@
 package com.hanahakdangserver.auth.security;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.hanahakdangserver.user.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Spring Security의 UserDetails 인터페이스를 구현하여 User 엔티티에 맞게 커스터마이징한 클래스
  */
+@Builder
+@AllArgsConstructor
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-  private final User user;
+  @Getter
+  private Long id;
+  private String email;
+  private String password;
+  private Boolean isActive;
+  private final GrantedAuthority authority;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return user.getRole() == null ?
-        List.of() :
-        List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+    List<GrantedAuthority> authorities = new ArrayList<>();
+    authorities.add(authority); // authority가 하나라고 가정
+
+    return authorities;
   }
 
   @Override
   public String getPassword() {
-    return user.getPassword();
+    return password;
   }
 
   @Override
   public String getUsername() {
-    return user.getEmail();
+    return email;
   }
 
   @Override
@@ -53,10 +62,7 @@ public class CustomUserDetails implements UserDetails {
   //회원 이용(탈퇴)상태
   @Override
   public boolean isEnabled() {
-    return user.getIsActive();
+    return isActive;
   }
 
-  public User getUser() {
-    return user;
-  }
 }
