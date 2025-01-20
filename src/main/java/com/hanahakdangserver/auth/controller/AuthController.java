@@ -62,17 +62,4 @@ public class AuthController {
     return EMAIL_CONFIRMED.createResponseEntity();
   }
 
-  /**
-   * 유저(멘토,멘티) 로그인
-   *
-   * @param loginRequest
-   * @return Ok 응답코드, message
-   */
-  @Operation(summary = "로그인 요청")
-  @PostMapping("/login")
-  public ResponseEntity<ResponseDTO<Object>> login(@Valid @RequestBody LoginRequest loginRequest) {
-//    return authService.login(loginRequest);
-    return LOG_IN_SUCCESS.createResponseEntity();
-  }
-
 }

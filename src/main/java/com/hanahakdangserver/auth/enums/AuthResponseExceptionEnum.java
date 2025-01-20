@@ -15,7 +15,8 @@ public enum AuthResponseExceptionEnum {
   PASSWORD_NOT_MATCHED(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
   EMAIL_CHECK_EXPIRED(HttpStatus.BAD_REQUEST, "이메일 인증 시간이 만료됐습니다."),
   EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "이메일을 찾을 수 없습니다."),
-  TOKEN_NOT_MATCHED(HttpStatus.BAD_REQUEST, "토큰이 일치하지 않습니다.");
+  TOKEN_NOT_MATCHED(HttpStatus.BAD_REQUEST, "토큰이 일치하지 않습니다."),
+  USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "아이디 또는 비밀번호가 맞지 않습니다. 다시 확인해주세요.");
 
 
   private final HttpStatus httpStatus;
