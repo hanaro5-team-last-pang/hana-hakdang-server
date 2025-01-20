@@ -54,7 +54,7 @@ public class LectureController {
       @Valid @RequestPart(value = "data", required = false) LectureRequest lectureRequest
   ) throws IOException {
 
-    lectureService.registerNewLecture(userDetails.getUsername(), imageFile, lectureRequest);
+    lectureService.registerNewLecture(userDetails.getId(), imageFile, lectureRequest);
 
     return CREATE_LECTURE_SUCCESS.createResponseEntity(null);
   }

@@ -67,11 +67,11 @@ public class LectureService {
    * @param lectureRequest 강의 생성 Request JSON
    */
   @Transactional
-  public void registerNewLecture(String userEmail, MultipartFile imageFile,
+  public void registerNewLecture(Long userId, MultipartFile imageFile,
       LectureRequest lectureRequest)
       throws IOException {
 
-    User mentor = userRepository.findByEmail(userEmail)
+    User mentor = userRepository.findById(userId)
         .orElseThrow(USER_NOT_FOUND::createResponseStatusException);
 
     Long uniqueId = snowFlakeGenerator.nextId(); // 강의실에 대해 전역적으로 고유한 Id 생성
