@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -50,11 +51,12 @@ public class LectureRequest {
 
   @Schema(description = "최대 수강 가능 인원", example = "4")
   @NotNull(message = "최대 수강 가능 인원 수를 입력해주세요.")
+  @Max(value = 6, message = "최대 인원 수는 6명을 초과할 수 없습니다.")
   private Integer maxParticipants;
 
   @Schema(description = "강의 설명", example = "안녕하세요~ 여러분의 멘토 정중일입니다.")
   private String description;
 
   @Schema(description = "강의와 연관된 금융 상품 태그 ID 리스트", example = "[1, 2]")
-  private List<Integer> tags;
+  private List<Long> tags;
 }

@@ -20,6 +20,6 @@ public interface HanaItemRepository extends JpaRepository<HanaItem, Long> {
    * @return 해당 태그를 가진 HanaItem 리스트
    */
   @Query("SELECT h FROM HanaItem h WHERE h.tag.id IN :tagIds")
-  List<HanaItem> findAllByTagIds(@Param("tagIds") List<Integer> tagIds);
+  List<HanaItem> findAllByTagIds(@Param("tagIds") List<Long> tagIds);
 
 }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +21,6 @@ import lombok.NoArgsConstructor;
 
 import com.hanahakdangserver.classroom.entity.Classroom;
 import com.hanahakdangserver.enrollment.entity.Enrollment;
-import com.hanahakdangserver.lecture.utils.IntegerListConverter;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
 
 @Getter
@@ -67,9 +65,8 @@ public class Lecture extends TimeBaseEntity {
   @Column(columnDefinition = "text", nullable = true)
   private String description;
 
-  @Convert(converter = IntegerListConverter.class)
-  @Column(name = "tag_list", nullable = false)
-  private List<Integer> tagList;
+  @OneToMany(mappedBy = "lecture", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<LectureTag> tagList;
 
   @Column(nullable = true)
   private String thumbnailUrl;
