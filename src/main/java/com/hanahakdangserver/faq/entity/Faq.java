@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
+import com.hanahakdangserver.user.entity.User;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,9 +29,9 @@ public class Faq extends TimeBaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-//  @ManyToOne(fetch = FetchType.LAZY)
-//  @JoinColumn(name = "user_id", nullable = false)
-//  private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "lecture_id")

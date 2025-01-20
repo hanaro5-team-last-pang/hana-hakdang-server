@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
+import com.hanahakdangserver.user.entity.User;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,10 +33,9 @@ public class Enrollment extends TimeBaseEntity {
   @JoinColumn(name = "lecture_id", nullable = false)
   private Lecture lecture;
 
-  //  TODO : UserDetails 엔티티 구현되면 적용할 예정
-//  @ManyToOne(fetch = FetchType.LAZY)
-//  @JoinColumn(name = "user_id", nullable = false)
-//  private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
   @Column(nullable = false)
   @Builder.Default
