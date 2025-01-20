@@ -55,8 +55,8 @@ public class SecurityConfig {
             .permitAll()
             .requestMatchers("/signup/**", "/check/**", "/send-email", "/verify-email", "/login")
             .permitAll()
-            .requestMatchers("/lecture/**").permitAll() // TODO : 추후 authenticated로
-            .requestMatchers("/lectures/**").permitAll() // TODO : 추후 authenticated로
+            .requestMatchers("/lecture/**").hasRole("MENTOR")
+            .requestMatchers("/lectures/**").permitAll()
 //            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
 //            .permitAll() // 임시
 //            .requestMatchers(HttpMethod.OPTIONS, "/**")

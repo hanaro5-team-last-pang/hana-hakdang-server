@@ -96,7 +96,7 @@ public class LectureService {
     );
 
     // LECTURE_TAG에도 저장
-    for (Long tagId : lectureRequest.getTags()) {
+    lectureRequest.getTags().forEach(tagId -> {
       Tag tag = tagRepository.findById(tagId)
           .orElseThrow(TAG_NOT_FOUND::createResponseStatusException);
       lectureTagRepository.save(
@@ -105,7 +105,8 @@ public class LectureService {
               .tag(tag)
               .build()
       );
-    }
+    });
+
   }
 
   /**
