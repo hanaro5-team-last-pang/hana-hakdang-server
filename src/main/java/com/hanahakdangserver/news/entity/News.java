@@ -1,6 +1,8 @@
 package com.hanahakdangserver.news.entity;
 
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,5 +37,8 @@ public class News {
 
   @Column(nullable = false)
   private String newsThumbnailUrl;
+
+  @Column(nullable = false)
+  private LocalDateTime createdAt;
 
 }
