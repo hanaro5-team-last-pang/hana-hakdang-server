@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import com.hanahakdangserver.enrollment.entity.QEnrollment;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.entity.QLecture;
+import com.hanahakdangserver.lecture.entity.QLectureTag;
 import com.hanahakdangserver.lecture.enums.LectureCategory;
 import com.hanahakdangserver.product.entity.Tag;
 import com.hanahakdangserver.product.repository.TagRepository;
@@ -30,6 +32,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
 
   private final QLecture lecture = QLecture.lecture;
   private final QEnrollment enrollment = QEnrollment.enrollment;
+  private final QLectureTag lectureTag = QLectureTag.lectureTag;
 
   private final TagRepository tagRepository;
 
@@ -151,26 +154,28 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
     List<String> containedCategories = LectureCategory.getDescriptionContainsKeyword(keyword);
     log.info("keyword를 포함하는 카테고리 개수: {}", containedCategories.size());
 
-    // keyword를 포함하는 Tag 검색; 없으면 빈 리스트
+    // keyword를 포함하는 TagId 검색; 없으면 빈 리스트
     List<Long> containedTags = tagRepository.findByTagNameContaining(keyword).stream()
         .map(Tag::getId).collect(Collectors.toList());
     log.info("keyword를 포함하는 태그 개수: {}", containedTags.size());
 
-    // containedTags를 문자열 형태로 변환
-    String tagCondition = containedTags.stream()
-        .map(String::valueOf) // Long 값을 문자열로 변환
-        .collect(Collectors.joining(",")); // ','로 구분하여 결합
-
     // 키워드 조건
-    // 강의 제목, 강의 카테고리에 키워드가 포함되는지 여부
+    // 강의 제목, 강의 카테고리, 태그에 키워드가 포함되는지 여부
     // TODO : 멘토명도 추후 추가 필요
     BooleanExpression keywordCondition = lecture.title.containsIgnoreCase(keyword)
-        .or(lecture.category.name.in(containedCategories));
+        .or(lecture.category.name.in(containedCategories))
+        .or(lecture.id.in(
+            JPAExpressions
+                .select(lectureTag.lecture.id)
+                .from(lectureTag)
+                .where(lectureTag.tag.id.in(containedTags))
+        ));
 
     List<Lecture> resultList = queryFactory
         .selectDistinct(lecture)
         .from(lecture)
         .leftJoin(lecture.enrollments, enrollment)
+        .leftJoin(lecture.tagList, lectureTag)
         .where(
             lecture.startTime.goe(now),
             lecture.isCanceled.isFalse(),
@@ -187,6 +192,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
             .select(lecture.countDistinct())
             .from(lecture)
             .leftJoin(lecture.enrollments, enrollment)
+            .leftJoin(lecture.tagList, lectureTag)
             .where(
                 lecture.startTime.goe(now),
                 lecture.isCanceled.isFalse(),
