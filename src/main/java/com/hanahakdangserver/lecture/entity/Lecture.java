@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import com.hanahakdangserver.classroom.entity.Classroom;
 import com.hanahakdangserver.enrollment.entity.Enrollment;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
+import com.hanahakdangserver.user.entity.User;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,10 +35,9 @@ public class Lecture extends TimeBaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  //  TODO : UserDetails 엔티티 구현되면 적용할 예정
-//  @ManyToOne(fetch = FetchType.LAZY)
-//  @JoinColumn(name = "mentor_id", nullable = false)
-//  private User mentor;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "mentor_id", nullable = false)
+  private User mentor;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "classroom_id", nullable = false)

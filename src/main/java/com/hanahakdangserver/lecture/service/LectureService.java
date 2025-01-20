@@ -31,8 +31,11 @@ import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.lecture.repository.LectureTagRepository;
 import com.hanahakdangserver.product.entity.Tag;
 import com.hanahakdangserver.product.repository.TagRepository;
+import com.hanahakdangserver.user.entity.User;
+import com.hanahakdangserver.user.repository.UserRepository;
 import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.CATEGORY_NOT_FOUND;
 import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.TAG_NOT_FOUND;
+import static com.hanahakdangserver.user.enums.UserResponseExceptionEnum.USER_NOT_FOUND;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -45,6 +48,7 @@ public class LectureService {
   private final ClassroomRepository classroomRepository;
   private final TagRepository tagRepository;
   private final LectureTagRepository lectureTagRepository;
+  private final UserRepository userRepository;
 
   private final SnowFlakeGenerator snowFlakeGenerator; // snowflake 생성기
   private final S3AsyncClient s3AsyncClient;
@@ -58,8 +62,12 @@ public class LectureService {
    * @param lectureRequest 강의 생성 Request JSON
    */
   @Transactional
-  public void registerNewLecture(MultipartFile imageFile, LectureRequest lectureRequest)
+  public void registerNewLecture(String userEmail, MultipartFile imageFile,
+      LectureRequest lectureRequest)
       throws IOException {
+
+    User mentor = userRepository.findByEmail(userEmail)
+        .orElseThrow(USER_NOT_FOUND::createResponseStatusException);
 
     Long uniqueId = snowFlakeGenerator.nextId(); // 강의실에 대해 전역적으로 고유한 Id 생성
 
@@ -76,6 +84,7 @@ public class LectureService {
     Lecture lecture = lectureRepository.save(
         Lecture.builder()
             .classroom(classroom)
+            .mentor(mentor)
             .category(category)
             .title(lectureRequest.getTitle())
             .startTime(lectureRequest.getStartTime())
