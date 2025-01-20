@@ -2,12 +2,15 @@ package com.hanahakdangserver.auth.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanahakdangserver.auth.dto.EmailCheckRequest;
@@ -55,10 +58,14 @@ public class AuthController {
   }
 
   @Operation(summary = "이메일 인증 확인 요청", description = "이메일로 전송된 링크를 통해 요청되는 확인 절차입니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "이메일 인증 성공"),
+      @ApiResponse(responseCode = "400", description = "이메일 인증이 완료되지 않았습니다.")
+  })
   @PostMapping("/verify-email")
-  public ResponseEntity<ResponseDTO<Object>> verifyEmail(
-      @Valid @RequestBody EmailConfirmRequest emailConfirmRequest) {
-    authService.verifyEmail(emailConfirmRequest);
+  public ResponseEntity<ResponseDTO<Object>> verifyEmail(@RequestParam String email,
+      @RequestParam String authToken) {
+    authService.verifyEmail(email, authToken);
     return EMAIL_CONFIRMED.createResponseEntity();
   }
 
