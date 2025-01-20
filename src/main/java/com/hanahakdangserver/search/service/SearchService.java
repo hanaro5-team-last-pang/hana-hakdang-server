@@ -45,7 +45,7 @@ public class SearchService {
 
           return LectureResultDetailDTO.builder()
               .lectureId(result.getId())
-              //              .mentorName(lecture.getMentor().getName())
+              .mentorName(result.getMentor().getName())
               .category(result.getCategory().getName())
               .title(result.getTitle())
               .startDate(result.getStartTime())

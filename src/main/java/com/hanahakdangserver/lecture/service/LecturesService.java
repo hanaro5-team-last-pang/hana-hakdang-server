@@ -103,7 +103,7 @@ public class LecturesService {
 
     return LectureDetailDTO.builder()
         .lectureId(lecture.getId())
-        //              .mentorName(lecture.getMentor().getName())
+        .mentorName(lecture.getMentor().getName())
         .category(lecture.getCategory().getName())
         .title(lecture.getTitle())
         .description(description)

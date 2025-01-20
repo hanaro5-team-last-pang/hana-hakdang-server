@@ -2,6 +2,9 @@ package com.hanahakdangserver.lecture.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +34,7 @@ import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.lecture.repository.LectureTagRepository;
 import com.hanahakdangserver.product.entity.Tag;
 import com.hanahakdangserver.product.repository.TagRepository;
+import com.hanahakdangserver.redis.RedisString;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
 import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.CATEGORY_NOT_FOUND;
@@ -52,6 +56,7 @@ public class LectureService {
 
   private final SnowFlakeGenerator snowFlakeGenerator; // snowflake 생성기
   private final S3AsyncClient s3AsyncClient;
+  private final RedisString redisString;
 
   @Value("${aws.s3.bucketName}")
   private String bucket;
@@ -107,6 +112,19 @@ public class LectureService {
       );
     });
 
+    // 동시성 처리를 위해 Redis에 현재 수강신청한 인원 관리
+    String lectureKey = "lecture:" + lecture.getId(); // lecture id를 사용하여 Redis 키 생성
+
+    // TTL 계산: startTime에서 현재 시간 차이 + 1시간
+    Instant now = Instant.now();
+    Instant startTimeInstant = lecture.getStartTime()
+        .atZone(ZoneId.of("Asia/Seoul"))  // Asia/Seoul 타임존
+        .toInstant();
+
+    Duration ttlDuration = Duration.between(now, startTimeInstant);
+    ttlDuration = ttlDuration.plusHours(1);
+
+    redisString.putWithTTL(lectureKey, "0", ttlDuration); // 수강신청한 인원 수 0으로 초기화
   }
 
   /**
