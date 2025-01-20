@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -70,6 +71,9 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
             .fetchOne()
     ).orElse(0L); // 결과가 null일 경우 기본값 0 반환
 
+    log.info("[전체 강의 조회] resultList 길이: {}, 페이지네이션 없이 totalCount 크기: {}", resultList.size(),
+        totalCount);
+
     return new PageImpl<>(resultList, pageRequest, totalCount);
   }
 
@@ -120,7 +124,65 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
             .fetchOne()
     ).orElse(0L); // 결과가 null일 경우 기본값 0 반환
 
-    log.info("resultList 길이: {}, 페이지네이션 없이 totalCount 크기: {}", resultList.size(), totalCount);
+    log.info("[키워드별 강의 조회] resultList 길이: {}, 페이지네이션 없이 totalCount 크기: {}", resultList.size(),
+        totalCount);
+
+    return new PageImpl<>(resultList, pageRequest, totalCount);
+  }
+
+  /**
+   * searchAllPossibleLectures() 메서드와 동일한 조건에서 키워드 필터링 추가
+   *
+   * @param pageRequest 페이지네이션을 위한 Pageable 구현체
+   * @param keyword     검색어
+   * @return Page 객체 (쿼리 결과, (페이지 시작, 페이지 크기), 페이지네이션과 관계 없는 전체 결과 수)
+   */
+  @Override
+  public Page<Lecture> searchWithKeyword(PageRequest pageRequest, String keyword) {
+
+    LocalDateTime now = LocalDateTime.now(clock);
+
+    // keyword를 포함하는 LectureCategory 검색; 없으면 빈 리스트
+    List<String> containedCategories = LectureCategory.getDescriptionContainsKeyword(keyword);
+    log.info("keyword를 포함하는 카테고리 개수: {}", containedCategories.size());
+
+    // 키워드 조건
+    // 강의 제목, 강의 카테고리에 키워드가 포함되는지 여부
+    // TODO : 멘토명도 추후 추가 필요
+    BooleanExpression keywordCondition = lecture.title.containsIgnoreCase(keyword)
+        .or(lecture.category.name.in(containedCategories));
+
+    List<Lecture> resultList = queryFactory
+        .selectDistinct(lecture)
+        .from(lecture)
+        .leftJoin(lecture.enrollments, enrollment)
+        .where(
+            lecture.startTime.goe(now),
+            lecture.isCanceled.isFalse(),
+            enrollment.isNull().or(enrollment.isCanceled.isFalse()),
+            keywordCondition
+        )
+        .offset(pageRequest.getOffset())
+        .limit(pageRequest.getPageSize())
+        .fetch();
+
+    // 동일 조건으로 페이지네이션 없이 총 개수 계산
+    Long totalCount = Optional.ofNullable(
+        queryFactory
+            .select(lecture.countDistinct())
+            .from(lecture)
+            .leftJoin(lecture.enrollments, enrollment)
+            .where(
+                lecture.startTime.goe(now),
+                lecture.isCanceled.isFalse(),
+                enrollment.isNull().or(enrollment.isCanceled.isFalse()),
+                keywordCondition
+            )
+            .fetchOne()
+    ).orElse(0L); // 결과가 null일 경우 기본값 0 반환
+
+    log.info("[키워드 검색 강의 조회] resultList 길이: {}, 페이지네이션 없이 totalCount 크기: {}", resultList.size(),
+        totalCount);
 
     return new PageImpl<>(resultList, pageRequest, totalCount);
   }

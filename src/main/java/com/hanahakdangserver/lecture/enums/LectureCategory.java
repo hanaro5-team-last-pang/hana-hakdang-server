@@ -1,5 +1,8 @@
 package com.hanahakdangserver.lecture.enums;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -40,5 +43,18 @@ public enum LectureCategory {
         .filter(category -> category.name().equals(inputValue))
         .findFirst()
         .orElse(null);
+  }
+
+  /**
+   * description에 keyword가 포함된 LectureCategory 검색
+   *
+   * @param keyword 검색 키워드
+   * @return keyword를 포함하는 LectureCategory의 description을 List로 반환
+   */
+  public static List<String> getDescriptionContainsKeyword(String keyword) {
+    return Arrays.stream(LectureCategory.values())
+        .filter(category -> category.description.contains(keyword))
+        .map(LectureCategory::getDescription)
+        .collect(Collectors.toList());
   }
 }
