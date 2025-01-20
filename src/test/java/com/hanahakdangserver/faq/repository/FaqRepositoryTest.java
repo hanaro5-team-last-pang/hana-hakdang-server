@@ -4,6 +4,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.hanahakdangserver.classroom.entity.Classroom;
 import com.hanahakdangserver.classroom.repository.ClassroomRepository;
 import com.hanahakdangserver.config.ClockConfig;
@@ -16,15 +26,6 @@ import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.user.entity.CareerInfo;
 import com.hanahakdangserver.user.repository.CareerInfoRepository;
 import com.hanahakdangserver.user.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, ClockConfig.class}) // QueryDslConfig, ClockConfig를 가져옴
@@ -95,7 +96,6 @@ public class FaqRepositoryTest {
         .startTime(LocalDateTime.now())
         .duration(120)
         .maxParticipants(30)
-        .tagList(List.of(1, 2, 3))
         .build();
     lectureRepository.save(lecture);
 
