@@ -38,7 +38,7 @@ public class LectureController {
 
   @Operation(summary = "강의 등록", description = "멘토가 강의를 생성하고 등록을 시도한다.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "강의 등록 성공"),
+      @ApiResponse(responseCode = "201", description = "강의 등록에 성공했습니다."),
       @ApiResponse(responseCode = "404", description = "해당 카테고리가 존재하지 않습니다.")
   })
   @PostMapping

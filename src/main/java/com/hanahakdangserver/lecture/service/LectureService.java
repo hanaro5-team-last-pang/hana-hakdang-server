@@ -63,6 +63,7 @@ public class LectureService {
     Category category = categoryRepository.findByName(lectureRequest.getCategory().getDescription())
         .orElseThrow(CATEGORY_NOT_FOUND::createResponseStatusException);
 
+    // TODO : 이미지 파일이 없을 경우 예외 처리 필요
     String thumbnailUrl = uploadImageFileToS3(imageFile);
 
     lectureRepository.save(
