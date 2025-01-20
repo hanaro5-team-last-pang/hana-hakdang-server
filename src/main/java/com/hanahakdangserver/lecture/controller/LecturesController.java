@@ -3,11 +3,6 @@ package com.hanahakdangserver.lecture.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hanahakdangserver.common.ResponseDTO;
-import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
-import com.hanahakdangserver.lecture.dto.LecturesResponse;
-import com.hanahakdangserver.lecture.enums.LectureCategory;
-import com.hanahakdangserver.lecture.service.LecturesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,6 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hanahakdangserver.common.ResponseDTO;
+import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
+import com.hanahakdangserver.lecture.dto.LecturesResponse;
+import com.hanahakdangserver.lecture.enums.LectureCategory;
+import com.hanahakdangserver.lecture.service.LecturesService;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_CATEGORY_LIST_SUCCESS;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_LECTURE_DETAIL_SUCCESS;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_TOTAL_LIST_SUCCESS;

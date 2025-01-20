@@ -1,5 +1,10 @@
 package com.hanahakdangserver.faq.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.hanahakdangserver.faq.dto.AnswerRequest;
 import com.hanahakdangserver.faq.dto.AnswerResponse;
 import com.hanahakdangserver.faq.entity.Answer;
@@ -9,10 +14,6 @@ import com.hanahakdangserver.faq.repository.AnswerRepository;
 import com.hanahakdangserver.faq.repository.FaqRepository;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

@@ -7,14 +7,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.hanahakdangserver.classroom.entity.Classroom;
-import com.hanahakdangserver.classroom.repository.ClassroomRepository;
-import com.hanahakdangserver.classroom.utils.SnowFlakeGenerator;
-import com.hanahakdangserver.lecture.dto.LectureRequest;
-import com.hanahakdangserver.lecture.entity.Category;
-import com.hanahakdangserver.lecture.entity.Lecture;
-import com.hanahakdangserver.lecture.repository.CategoryRepository;
-import com.hanahakdangserver.lecture.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +19,14 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import com.hanahakdangserver.classroom.entity.Classroom;
+import com.hanahakdangserver.classroom.repository.ClassroomRepository;
+import com.hanahakdangserver.classroom.utils.SnowFlakeGenerator;
+import com.hanahakdangserver.lecture.dto.LectureRequest;
+import com.hanahakdangserver.lecture.entity.Category;
+import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.lecture.repository.CategoryRepository;
+import com.hanahakdangserver.lecture.repository.LectureRepository;
 import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.CATEGORY_NOT_FOUND;
 
 @Log4j2

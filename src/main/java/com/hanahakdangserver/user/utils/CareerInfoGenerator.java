@@ -4,11 +4,12 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.hanahakdangserver.user.dto.RandomCareerInfoDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
+
+import com.hanahakdangserver.user.dto.RandomCareerInfoDTO;
 
 @Log4j2
 public class CareerInfoGenerator {

@@ -4,11 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
-import com.hanahakdangserver.lecture.dto.LecturesResponse;
-import com.hanahakdangserver.lecture.entity.Lecture;
-import com.hanahakdangserver.lecture.enums.LectureCategory;
-import com.hanahakdangserver.lecture.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -16,6 +11,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
+import com.hanahakdangserver.lecture.dto.LecturesResponse;
+import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.lecture.enums.LectureCategory;
+import com.hanahakdangserver.lecture.repository.LectureRepository;
 import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.LECTURE_NOT_FOUND;
 
 @Log4j2

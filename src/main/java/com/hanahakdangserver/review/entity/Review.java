@@ -1,8 +1,5 @@
 package com.hanahakdangserver.review.entity;
 
-import com.hanahakdangserver.lecture.entity.Lecture;
-import com.hanahakdangserver.mixin.TimeBaseEntity;
-import com.hanahakdangserver.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,6 +13,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.mixin.TimeBaseEntity;
+import com.hanahakdangserver.user.entity.User;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
