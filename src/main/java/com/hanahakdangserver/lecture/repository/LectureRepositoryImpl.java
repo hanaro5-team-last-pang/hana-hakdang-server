@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,6 +18,8 @@ import com.hanahakdangserver.enrollment.entity.QEnrollment;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.entity.QLecture;
 import com.hanahakdangserver.lecture.enums.LectureCategory;
+import com.hanahakdangserver.product.entity.Tag;
+import com.hanahakdangserver.product.repository.TagRepository;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -27,6 +30,8 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
 
   private final QLecture lecture = QLecture.lecture;
   private final QEnrollment enrollment = QEnrollment.enrollment;
+
+  private final TagRepository tagRepository;
 
   /**
    * Lecture 테이블에서 현재 시간보다 크거나 같으면서(미래) isCanceled가 false이고(강의 취소 X) 연관된 Enrollment 중 수강 신청 취소 되지
@@ -145,6 +150,16 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
     // keyword를 포함하는 LectureCategory 검색; 없으면 빈 리스트
     List<String> containedCategories = LectureCategory.getDescriptionContainsKeyword(keyword);
     log.info("keyword를 포함하는 카테고리 개수: {}", containedCategories.size());
+
+    // keyword를 포함하는 Tag 검색; 없으면 빈 리스트
+    List<Long> containedTags = tagRepository.findByTagNameContaining(keyword).stream()
+        .map(Tag::getId).collect(Collectors.toList());
+    log.info("keyword를 포함하는 태그 개수: {}", containedTags.size());
+
+    // containedTags를 문자열 형태로 변환
+    String tagCondition = containedTags.stream()
+        .map(String::valueOf) // Long 값을 문자열로 변환
+        .collect(Collectors.joining(",")); // ','로 구분하여 결합
 
     // 키워드 조건
     // 강의 제목, 강의 카테고리에 키워드가 포함되는지 여부
