@@ -3,7 +3,6 @@ package com.hanahakdangserver.card.entity;
 import java.util.Map;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

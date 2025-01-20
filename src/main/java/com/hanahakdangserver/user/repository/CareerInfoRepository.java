@@ -1,7 +1,8 @@
 package com.hanahakdangserver.user.repository;
 
-import com.hanahakdangserver.user.entity.CareerInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.hanahakdangserver.user.entity.CareerInfo;
 
 public interface CareerInfoRepository extends JpaRepository<CareerInfo, Long> {
 

@@ -2,10 +2,11 @@ package com.hanahakdangserver.lecture.repository;
 
 import java.util.List;
 
-import com.hanahakdangserver.lecture.entity.Lecture;
-import com.hanahakdangserver.lecture.enums.LectureCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+
+import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.lecture.enums.LectureCategory;
 
 public interface LectureRepositoryCustom {
 

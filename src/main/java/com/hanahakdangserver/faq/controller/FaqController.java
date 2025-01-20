@@ -2,9 +2,6 @@ package com.hanahakdangserver.faq.controller;
 
 import java.util.List;
 
-import com.hanahakdangserver.faq.dto.FaqRequest;
-import com.hanahakdangserver.faq.dto.FaqResponse;
-import com.hanahakdangserver.faq.service.FaqService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.hanahakdangserver.faq.dto.FaqRequest;
+import com.hanahakdangserver.faq.dto.FaqResponse;
+import com.hanahakdangserver.faq.service.FaqService;
 
 @RestController
 @RequiredArgsConstructor

@@ -5,16 +5,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import com.hanahakdangserver.enrollment.entity.QEnrollment;
-import com.hanahakdangserver.lecture.entity.Lecture;
-import com.hanahakdangserver.lecture.entity.QLecture;
-import com.hanahakdangserver.lecture.enums.LectureCategory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+
+import com.hanahakdangserver.enrollment.entity.QEnrollment;
+import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.lecture.entity.QLecture;
+import com.hanahakdangserver.lecture.enums.LectureCategory;
 
 @Log4j2
 @RequiredArgsConstructor

@@ -2,9 +2,6 @@ package com.hanahakdangserver.lecture.controller;
 
 import java.io.IOException;
 
-import com.hanahakdangserver.common.ResponseDTO;
-import com.hanahakdangserver.lecture.dto.LectureRequest;
-import com.hanahakdangserver.lecture.service.LectureService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.hanahakdangserver.common.ResponseDTO;
+import com.hanahakdangserver.lecture.dto.LectureRequest;
+import com.hanahakdangserver.lecture.service.LectureService;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.CREATE_LECTURE_SUCCESS;
 
 @Tag(name = "강의", description = "강의 API 목록")

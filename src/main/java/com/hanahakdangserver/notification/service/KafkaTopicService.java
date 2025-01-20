@@ -3,8 +3,6 @@ package com.hanahakdangserver.notification.service;
 
 import java.util.Collections;
 
-import com.hanahakdangserver.notification.exception.KafkaTopicCreationFailException;
-import com.hanahakdangserver.notification.exception.KafkaTopicDeletionFailException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -13,6 +11,9 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.stereotype.Service;
+
+import com.hanahakdangserver.notification.exception.KafkaTopicCreationFailException;
+import com.hanahakdangserver.notification.exception.KafkaTopicDeletionFailException;
 
 
 /**
