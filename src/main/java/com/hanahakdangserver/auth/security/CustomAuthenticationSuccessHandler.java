@@ -1,6 +1,7 @@
 package com.hanahakdangserver.auth.security;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +42,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     response.setCharacterEncoding("UTF-8");
 
     // 응답 JSON 객체 생성
-    Map<String, String> responseBody = Map.of("message", LOG_IN_SUCCESS.getMessage());
+    Map<String, Object> responseBody = new LinkedHashMap<>();
+    responseBody.put("message", LOG_IN_SUCCESS.getMessage());
+    responseBody.put("result", null);
 
     // JSON 문자열로 변환
     String jsonResponse = objectMapper.writeValueAsString(responseBody);
