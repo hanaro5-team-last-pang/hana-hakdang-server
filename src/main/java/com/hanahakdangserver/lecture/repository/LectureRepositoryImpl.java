@@ -169,7 +169,9 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
                 .select(lectureTag.lecture.id)
                 .from(lectureTag)
                 .where(lectureTag.tag.id.in(containedTags))
-        ));
+        ))
+        // 멘토명이 keyword를 포함하는지 검사
+        .or(lecture.mentor.name.containsIgnoreCase(keyword));
 
     List<Lecture> resultList = queryFactory
         .selectDistinct(lecture)

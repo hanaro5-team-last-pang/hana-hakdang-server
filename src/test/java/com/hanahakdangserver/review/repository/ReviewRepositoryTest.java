@@ -20,6 +20,8 @@ import com.hanahakdangserver.lecture.repository.CategoryRepository;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.review.entity.Review;
 import com.hanahakdangserver.user.entity.CareerInfo;
+import com.hanahakdangserver.user.entity.User;
+import com.hanahakdangserver.user.enums.Role;
 import com.hanahakdangserver.user.repository.CareerInfoRepository;
 import com.hanahakdangserver.user.repository.UserRepository;
 
@@ -47,8 +49,8 @@ public class ReviewRepositoryTest {
   private ClassroomRepository classroomRepository;
 
   private Lecture lecture;
-//  private User mentor;
-//  private User reviewer;
+  private User mentor;
+  private User reviewer;
 
   @BeforeEach
   void setUp() {
@@ -65,15 +67,15 @@ public class ReviewRepositoryTest {
         .build();
     categoryRepository.save(category);
 
-//    mentor = User.builder()
-//        .name("Mentor User")
-//        .email("mentor@example.com")
-//        .password("password")
-//        .birthDate(LocalDate.of(1985, 5, 15))
-//        .role(Role.MENTOR)
-//        .careerInfo(careerInfo) // CareerInfo 설정
-//        .build();
-//    userRepository.save(mentor);
+    mentor = User.builder()
+        .name("Mentor User")
+        .email("mentor@example.com")
+        .password("password")
+        .birthDate(LocalDate.of(1985, 5, 15))
+        .role(Role.MENTOR)
+        .careerInfo(careerInfo) // CareerInfo 설정
+        .build();
+    userRepository.save(mentor);
 
     Classroom classroom = Classroom.builder()
         .id(1L)
@@ -82,7 +84,7 @@ public class ReviewRepositoryTest {
 
     lecture = Lecture.builder()
         .title("금융 강의")
-//        .mentor(mentor)
+        .mentor(mentor)
         .classroom(classroom) // Classroom 설정
         .category(category)
         .startTime(LocalDateTime.now())
@@ -99,19 +101,19 @@ public class ReviewRepositoryTest {
         .build();
     careerInfoRepository.save(reviewerCareerInfo);
 
-//    reviewer = User.builder()
-//        .name("Review User")
-//        .email("reviewer@example.com")
-//        .password("password")
-//        .birthDate(LocalDate.of(1990, 8, 20))
-//        .role(Role.MENTEE)
-//        .careerInfo(reviewerCareerInfo) // CareerInfo 설정
-//        .build();
-//    userRepository.save(reviewer);
+    reviewer = User.builder()
+        .name("Review User")
+        .email("reviewer@example.com")
+        .password("password")
+        .birthDate(LocalDate.of(1990, 8, 20))
+        .role(Role.MENTEE)
+        .careerInfo(reviewerCareerInfo) // CareerInfo 설정
+        .build();
+    userRepository.save(reviewer);
 
     Review review = Review.builder()
         .lecture(lecture)
-//        .user(reviewer)
+        .user(reviewer)
         .content("훌륭한 강의었습니다.")
         .score(5)
         .build();
