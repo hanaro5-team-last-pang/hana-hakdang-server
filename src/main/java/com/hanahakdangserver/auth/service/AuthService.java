@@ -172,11 +172,13 @@ public class AuthService {
   /**
    * 이메일 인증 확인을 처리합니다. 레디스 해시에서 일치하는 이메일을 가져와 만료시간, 토큰 일치 여부에 따라 인증합니다.
    *
-   * @param emailConfirmRequest 이메일 인증 확인 요청
+   * @param email
+   * @param authToken
    * @throws ResponseStatusException 이메일 인증 실패 시 예외
    */
-  public void verifyEmail(EmailConfirmRequest emailConfirmRequest) throws ResponseStatusException {
-    String email = emailConfirmRequest.getEmail();
+
+  public void verifyEmail(String email, String authToken) throws ResponseStatusException {
+
     EmailCheckDTO emailCheckDTO = getEmailCheckDTO(email);
 
     LocalDateTime expireTime = emailCheckDTO.getExpireTime();
@@ -184,7 +186,7 @@ public class AuthService {
       throw EMAIL_CHECK_EXPIRED.createResponseStatusException();
     }
 
-    String receivedToken = emailConfirmRequest.getToken();
+    String receivedToken = authToken;
     String savedToken = emailCheckDTO.getToken();
     if (!receivedToken.equals(savedToken)) {
       throw TOKEN_NOT_MATCHED.createResponseStatusException();

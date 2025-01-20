@@ -25,10 +25,12 @@ public class EmailService {
 
       String htmlContent = "<html>" +
           "<body>" +
-          "<p>회원가입을 완료하려면 아래 링크를 클릭하세요✨</p>" +
-          "<a href='http://localhost:8080/verify-email?email=" + email
-          + "&authToken="
-          + authToken + "'>회원가입 인증</a>" +
+          "<p>회원가입을 완료하려면 아래 버튼을 클릭하세요✨</p>" +
+          "<form action='http://localhost:8080/verify-email' method='POST'>" +
+          "<input type='hidden' name='email' value='" + email + "' />" +
+          "<input type='hidden' name='authToken' value='" + authToken + "' />" +
+          "<button type='submit'>회원가입 인증</button>" +
+          "</form>" +
           "</body>" +
           "</html>";
       helper.setText(htmlContent, true);
