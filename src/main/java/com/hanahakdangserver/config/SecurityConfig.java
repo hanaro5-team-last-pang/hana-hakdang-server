@@ -60,9 +60,9 @@ public class SecurityConfig {
             .permitAll()
             .requestMatchers("/profile-card/me/**").authenticated()
             .requestMatchers("/lectures/**", "/lectures/category/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "/lecture/register/**").authenticated()
-            .requestMatchers(HttpMethod.POST, "/lecture/{lecture_id}/enroll/**").authenticated()
-            .requestMatchers(HttpMethod.DELETE, "/lecture/{enrollment_id}/enroll-withdraw/**")
+            .requestMatchers(HttpMethod.POST, "/lectures/register/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/lectures/{lecture_id}/enroll/**").authenticated()
+            .requestMatchers(HttpMethod.DELETE, "/lectures/{enrollment_id}/enroll-withdraw/**")
             .authenticated()
             // 리뷰 요청에 대한 인증
             .requestMatchers("/review/lecture/").hasRole("MENTOR")

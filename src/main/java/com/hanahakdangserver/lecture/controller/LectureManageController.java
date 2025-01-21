@@ -21,17 +21,17 @@ import org.springframework.web.multipart.MultipartFile;
 import com.hanahakdangserver.auth.security.CustomUserDetails;
 import com.hanahakdangserver.common.ResponseDTO;
 import com.hanahakdangserver.lecture.dto.LectureRequest;
-import com.hanahakdangserver.lecture.service.LectureService;
+import com.hanahakdangserver.lecture.service.LectureManageService;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.CREATE_LECTURE_SUCCESS;
 
 @Log4j2
 @Tag(name = "강의", description = "강의 API 목록")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/lecture")
-public class LectureController {
+@RequestMapping("/lectures")
+public class LectureManageController {
 
-  private final LectureService lectureService;
+  private final LectureManageService lectureManageService;
 
   /**
    * 강의 엔티티 및 강의실 엔티티 생성 엔드포인트 추가) 이미지 S3 업로드
@@ -56,7 +56,7 @@ public class LectureController {
       @Valid @RequestPart(value = "data", required = false) LectureRequest lectureRequest
   ) throws IOException {
 
-    lectureService.registerNewLecture(userDetails.getId(), imageFile, lectureRequest);
+    lectureManageService.registerNewLecture(userDetails.getId(), imageFile, lectureRequest);
 
     return CREATE_LECTURE_SUCCESS.createResponseEntity(null);
   }
