@@ -37,6 +37,12 @@ out/
 .vscode/
 
 
-### env files ###
-.env.prod
-.env.prod
+### Git ###
+.github
+.gitattributes
+.gitignore
+
+dev
+deploy
+.env
+*.sh
