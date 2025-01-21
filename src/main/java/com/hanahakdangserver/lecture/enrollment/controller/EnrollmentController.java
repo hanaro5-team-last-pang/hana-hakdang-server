@@ -25,7 +25,7 @@ import static com.hanahakdangserver.lecture.enrollment.enums.EnrollmentResponseS
 @Tag(name = "수강신청", description = "수강신청 API 목록")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/lecture")
+@RequestMapping("/lectures")
 public class EnrollmentController {
 
   private final EnrollmentService enrollmentService;

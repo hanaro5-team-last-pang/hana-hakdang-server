@@ -45,7 +45,7 @@ import static com.hanahakdangserver.user.enums.UserResponseExceptionEnum.USER_NO
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
-public class LectureService {
+public class LectureManageService {
 
   private final LectureRepository lectureRepository;
   private final CategoryRepository categoryRepository;
