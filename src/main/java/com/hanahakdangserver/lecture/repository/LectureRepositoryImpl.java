@@ -164,8 +164,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
     log.info("keyword를 포함하는 태그 개수: {}", containedTags.size());
 
     // 키워드 조건
-    // 강의 제목, 강의 카테고리, 태그에 키워드가 포함되는지 여부
-    // TODO : 멘토명도 추후 추가 필요
+    // 강의 제목, 강의 카테고리, 태그, 멘토명에 키워드가 포함되는지 여부
     BooleanExpression keywordCondition = lecture.title.containsIgnoreCase(keyword)
         .or(lecture.category.name.in(containedCategories))
         .or(lecture.id.in(
@@ -186,6 +185,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
             lecture.startTime.goe(now),
             lecture.isCanceled.isFalse(),
             enrollment.isNull().or(enrollment.isCanceled.isFalse())
+                .or(enrollment.isCanceled.isTrue())
                 .or(enrollment.isCanceled.isTrue()),
             keywordCondition
         )
@@ -204,6 +204,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
                 lecture.startTime.goe(now),
                 lecture.isCanceled.isFalse(),
                 enrollment.isNull().or(enrollment.isCanceled.isFalse())
+                    .or(enrollment.isCanceled.isTrue())
                     .or(enrollment.isCanceled.isTrue()),
                 keywordCondition
             )
