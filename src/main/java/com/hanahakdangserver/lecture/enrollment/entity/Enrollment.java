@@ -1,4 +1,4 @@
-package com.hanahakdangserver.enrollment.entity;
+package com.hanahakdangserver.lecture.enrollment.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,4 +41,7 @@ public class Enrollment extends TimeBaseEntity {
   @Builder.Default
   private Boolean isCanceled = false;
 
+  public void updateIsCanceled(Boolean isCanceled) {
+    this.isCanceled = isCanceled;
+  }
 }

@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +48,8 @@ public class LectureController {
       @ApiResponse(responseCode = "404", description = "해당 태그가 존재하지 않습니다."),
       @ApiResponse(responseCode = "404", description = "해당 유저가 존재하지 않습니다.")
   })
-  @PostMapping
+  @PreAuthorize("isAuthenticated() and hasRole('MENTOR')")
+  @PostMapping("/register")
   public ResponseEntity<ResponseDTO<Void>> registerNewLecture(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
