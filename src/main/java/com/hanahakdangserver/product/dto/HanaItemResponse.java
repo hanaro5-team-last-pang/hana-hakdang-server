@@ -26,9 +26,5 @@ public class HanaItemResponse {
 
   @Schema(description = "상품 URL", example = "https://www.kebhana.com/cont/mall")
   private String hanaUrl;
-
-//  필요 없을 거 같아 주석
-//  @Schema(description = "강의 ID", example = "1")
-//  private Long lectureId;
-
+  
 }

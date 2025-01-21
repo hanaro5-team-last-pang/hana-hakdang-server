@@ -17,10 +17,7 @@ import lombok.ToString;
 @ToString
 @Schema(description = "답변 요청 DTO")
 public class AnswerRequest {
-
-//  @Schema(description = "유저 ID", example = "1", required = true)
-//  @NotNull(message = "유저 ID는 반드시 입력해야 합니다.")
-//  private Long userId;
+  
 
   @Schema(description = "문의 ID", example = "1", required = true)
   @NotNull(message = "문의 ID는 반드시 입력해야 합니다.")
