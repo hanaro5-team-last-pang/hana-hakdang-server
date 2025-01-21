@@ -64,6 +64,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/lectures/{lecture_id}/enroll/**").authenticated()
             .requestMatchers(HttpMethod.DELETE, "/lectures/{enrollment_id}/enroll-withdraw/**")
             .authenticated()
+            .requestMatchers("/classrooms/**").authenticated()
             // 리뷰 요청에 대한 인증
             .requestMatchers("/review/lecture/").hasRole("MENTOR")
             .requestMatchers(HttpMethod.GET, "/faq/**").authenticated() // 조회는 모든 인증 사용자 가능

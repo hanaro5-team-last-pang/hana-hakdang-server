@@ -7,5 +7,5 @@ import com.hanahakdangserver.classroom.entity.Classroom;
 
 @Repository
 public interface ClassroomRepository extends JpaRepository<Classroom, Long> {
-
+  
 }
