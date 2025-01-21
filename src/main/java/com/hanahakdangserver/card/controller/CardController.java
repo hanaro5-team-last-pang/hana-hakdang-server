@@ -7,10 +7,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hanahakdangserver.auth.security.CustomUserDetails;
 import com.hanahakdangserver.card.dto.ProfileCardResponse;
 import com.hanahakdangserver.card.service.CardService;
 import com.hanahakdangserver.common.ResponseDTO;
@@ -33,6 +35,20 @@ public class CardController {
   public ResponseEntity<ResponseDTO<Object>> getProfileCard(
       @PathVariable Long userId) {
     ProfileCardResponse cardResponse = cardService.getProfileCard(userId);
+    log.debug("result : {}",
+        GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse));
+    return GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse);
+  }
+
+  @Operation(summary = "내 명함 조회", description = "멘토는 본인의 명함 조회를 시도")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "명함 조회를 성공했습니다."),
+      @ApiResponse(responseCode = "400", description = "명함이 존재하지 않습니다.")
+  })
+  @GetMapping("/profile-card/me")
+  public ResponseEntity<ResponseDTO<Object>> getMyProfileCard(
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    ProfileCardResponse cardResponse = cardService.getProfileCard(userDetails.getId());
     log.debug("result : {}",
         GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse));
     return GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse);

@@ -55,7 +55,7 @@ public class SecurityConfig {
             .permitAll()
             .requestMatchers("/signup/**", "/check/**", "/send-email", "/verify-email", "/login")
             .permitAll()
-            .requestMatchers("/lecture/**").hasRole("MENTOR")
+            .requestMatchers("/lecture/**", "/profile-card/me").hasRole("MENTOR")
             .requestMatchers("/lectures/**").permitAll()
 //            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
 //            .permitAll() // 임시
