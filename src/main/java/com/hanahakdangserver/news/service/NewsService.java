@@ -1,12 +1,15 @@
 package com.hanahakdangserver.news.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,30 +18,30 @@ import com.hanahakdangserver.news.entity.News;
 import com.hanahakdangserver.news.repository.NewsRepository;
 
 
+@EnableAsync
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class NewsService {
 
-  private final WebClient.Builder webClientBuilder;
   private final NewsRepository newsRepository;
+  private final WebClient webClient;
 
   // Flask에서 데이터 가져오기
-  public List<Map<String, String>> fetchNewsFromPython() {
-    WebClient webClient = webClientBuilder.baseUrl("http://localhost:5001").build();
-    return webClient.get()
-        .uri("/news")
+  private List<Map<String, String>> fetchNewsFromPython() {
+    return webClient.get().uri("/news")
         .retrieve()
         .bodyToMono(List.class)
         .block();
   }
 
-  // 데이터베이스에 저장
-  @Transactional
+  @Async
+  @Transactional(readOnly = false)
   public void saveNewsFromPython() {
     List<Map<String, String>> articles = fetchNewsFromPython();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
 
+    List<News> newsList = new ArrayList<>();
     for (Map<String, String> article : articles) {
       LocalDateTime createdAt = LocalDateTime.parse(article.get("date"), formatter);
       News news = News.builder()
@@ -48,8 +51,9 @@ public class NewsService {
           .newsThumbnailUrl(article.get("newsThumbnailUrl"))
           .createdAt(createdAt)
           .build();
-      newsRepository.save(news);
+      newsList.add(news);
     }
+    newsRepository.saveAll(newsList);
   }
 
   // 데이터베이스에서 모든 뉴스 조회
