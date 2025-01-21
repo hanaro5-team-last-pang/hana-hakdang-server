@@ -1,9 +1,9 @@
+
 package com.hanahakdangserver.faq.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +20,8 @@ import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
 
+import static com.hanahakdangserver.faq.enums.FaqResponseExceptionEnum.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,23 +32,15 @@ public class FaqService {
   private final LectureRepository lectureRepository;
   private final UserRepository userRepository;
 
-
-  /**
-   * 문의 등록
-   *
-   * @param lectureId
-   * @param request
-   * @return 등록된 문의 내용
-   */
   @Transactional
   public FaqResponse createFaq(Long lectureId, FaqRequest request) {
     User user = userRepository.findById(request.getUserId())
-        .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        .orElseThrow(USER_NOT_FOUND::createResponseStatusException);
+
     Lecture lecture = lectureRepository.findById(lectureId)
-        .orElseThrow(() -> new EntityNotFoundException("강의를 찾을 수 없습니다."));
+        .orElseThrow(LECTURE_NOT_FOUND::createResponseStatusException);
 
     Faq faq = Faq.builder()
-//        .user(user)
         .lecture(lecture)
         .content(request.getContent())
         .build();
@@ -55,13 +49,6 @@ public class FaqService {
     return FaqMapper.toDto(savedFaq, List.of());
   }
 
-
-  /**
-   * 특정 강의에 대한 문의 조회
-   *
-   * @param lectureId
-   * @return 문의 내용 전체 (답변 포함)
-   */
   public List<FaqResponse> getFaqsByLectureId(Long lectureId) {
     List<Faq> faqs = faqRepository.findByLectureId(lectureId);
 
@@ -73,16 +60,11 @@ public class FaqService {
         .collect(Collectors.toList());
   }
 
-
-  /**
-   * 문의 삭제
-   *
-   * @param faqId
-   */
   @Transactional
   public void deleteFaq(Long faqId) {
     Faq faq = faqRepository.findById(faqId)
-        .orElseThrow(() -> new EntityNotFoundException("문의가 존재하지 않습니다."));
+        .orElseThrow(FAQ_NOT_FOUND::createResponseStatusException);
+
     faqRepository.delete(faq);
   }
 }

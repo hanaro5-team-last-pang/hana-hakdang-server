@@ -1,5 +1,6 @@
 package com.hanahakdangserver.faq.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -14,13 +15,18 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
+@Schema(description = "답변 요청 DTO")
 public class AnswerRequest {
 
-  @NotNull(message = "유저 ID는 필수입니다.")
+  @Schema(description = "유저 ID", example = "1", required = true)
+  @NotNull(message = "유저 ID는 반드시 입력해야 합니다.")
   private Long userId;
 
+  @Schema(description = "문의 ID", example = "1", required = true)
+  @NotNull(message = "문의 ID는 반드시 입력해야 합니다.")
   private Long faqId;
 
-  @NotBlank(message = "답변 내용은 필수입니다.")
+  @Schema(description = "답변 내용", example = "질문 내용에 대한 답변입니다.", required = true)
+  @NotBlank(message = "답변 내용은 반드시 입력해야 합니다.")
   private String content;
 }

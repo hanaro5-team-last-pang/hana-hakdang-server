@@ -2,82 +2,67 @@ package com.hanahakdangserver.review.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.hanahakdangserver.common.ResponseDTO;
 import com.hanahakdangserver.review.dto.ReviewRequest;
 import com.hanahakdangserver.review.dto.ReviewResponse;
+import com.hanahakdangserver.review.enums.ReviewResponseSuccessEnum;
 import com.hanahakdangserver.review.service.ReviewService;
 
-@RestController
+import static com.hanahakdangserver.review.enums.ReviewResponseSuccessEnum.*;
+
+@Tag(name = "리뷰", description = "리뷰 API 목록")
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/review")
 public class ReviewController {
 
   private final ReviewService reviewService;
 
-
-  /**
-   * 특정 강의에 대한 리뷰 조회
-   *
-   * @param lectureId
-   * @return 리뷰 목록
-   */
+  @Operation(summary = "특정 강의 리뷰 조회", description = "특정 강의에 등록된 리뷰를 조회합니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "리뷰 조회 성공"),
+      @ApiResponse(responseCode = "404", description = "해당 강의가 존재하지 않습니다.")
+  })
   @GetMapping("/lecture/{lectureId}")
   public ResponseEntity<List<ReviewResponse>> getReviewsByLectureId(@PathVariable Long lectureId) {
     List<ReviewResponse> reviews = reviewService.getReviewsByLectureId(lectureId);
     return ResponseEntity.ok(reviews);
   }
 
-
-  /**
-   * 리뷰 등록
-   *
-   * @param lectureId
-   * @param request
-   * @return 등록된 리뷰
-   */
+  @Operation(summary = "리뷰 등록", description = "특정 강의에 리뷰를 등록합니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "201", description = "리뷰 등록 성공"),
+      @ApiResponse(responseCode = "404", description = "해당 강의 또는 사용자가 존재하지 않습니다.")
+  })
   @PostMapping("/lecture/{lectureId}")
-  public ResponseEntity<ReviewResponse> createReview(
+  public ResponseEntity<ResponseDTO<ReviewResponse>> createReview(
       @PathVariable Long lectureId,
-      @RequestBody ReviewRequest request) {
+      @RequestBody ReviewRequest request
+  ) {
     ReviewResponse review = reviewService.createReview(lectureId, request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(review);
+    return CREATE_REVIEW_SUCCESS.createResponseEntity(review);
   }
 
 
-  /**
-   * 리뷰 삭제
-   *
-   * @param lectureId
-   * @param reviewId
-   * @return null
-   */
+  @Operation(summary = "리뷰 삭제", description = "특정 강의에 등록된 리뷰를 삭제합니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "204", description = "리뷰 삭제 성공"),
+      @ApiResponse(responseCode = "404", description = "해당 리뷰 또는 강의가 존재하지 않습니다.")
+  })
   @DeleteMapping("/lecture/{lectureId}/{reviewId}")
   public ResponseEntity<Void> deleteReview(
       @PathVariable Long lectureId,
-      @PathVariable Long reviewId) {
+      @PathVariable Long reviewId
+  ) {
     reviewService.deleteReview(lectureId, reviewId);
     return ResponseEntity.noContent().build();
   }
-
-  /**
-   * 멘토의 전체 강의 리뷰 조회 및 평균 평점 제공 ok
-   *
-   * @param mentorId
-   * @return 평균 평점
-   */
-//  @GetMapping("/mentor/{mentorId}")
-//  public ResponseEntity<Double> getMentorAverageScore(@PathVariable Long mentorId) {
-//    Double averageScore = reviewService.getMentorAverageScore(mentorId);
-//    return ResponseEntity.ok(averageScore);
-//  }
 }

@@ -1,6 +1,5 @@
 package com.hanahakdangserver.faq.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +14,8 @@ import com.hanahakdangserver.faq.repository.FaqRepository;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
 
+import static com.hanahakdangserver.faq.enums.FaqResponseExceptionEnum.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,7 +24,6 @@ public class AnswerService {
   private final AnswerRepository answerRepository;
   private final FaqRepository faqRepository;
   private final UserRepository userRepository;
-
 
   /**
    * 답변 등록
@@ -35,11 +35,11 @@ public class AnswerService {
   public AnswerResponse createAnswer(AnswerRequest request) {
     // FAQ 엔티티 조회
     Faq faq = faqRepository.findById(request.getFaqId())
-        .orElseThrow(() -> new EntityNotFoundException("문의가 존재하지 않습니다."));
+        .orElseThrow(FAQ_NOT_FOUND::createResponseStatusException);
 
     // 사용자 엔티티 조회
     User user = userRepository.findById(request.getUserId())
-        .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        .orElseThrow(USER_NOT_FOUND::createResponseStatusException);
 
     // Answer 엔티티 생성
     Answer answer = Answer.builder()
@@ -54,7 +54,6 @@ public class AnswerService {
     return AnswerMapper.toDto(savedAnswer);
   }
 
-
   /**
    * 답변 삭제
    *
@@ -63,7 +62,8 @@ public class AnswerService {
   @Transactional
   public void deleteAnswer(Long answerId) {
     Answer answer = answerRepository.findById(answerId)
-        .orElseThrow(() -> new EntityNotFoundException("답변이 존재하지 않습니다."));
+        .orElseThrow(ANSWER_NOT_FOUND::createResponseStatusException);
+
     answerRepository.delete(answer);
   }
 }
