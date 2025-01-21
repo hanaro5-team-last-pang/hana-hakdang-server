@@ -59,4 +59,19 @@ public class User extends TimeBaseEntity {
   @Column(nullable = false)
   @Builder.Default
   private Boolean isActive = true;
+
+
+  public User update(String profileImageUrl, String newPassword) {
+    return User.builder()
+        .id(this.id)
+        .careerInfo(this.careerInfo)
+        .role(this.role)
+        .name(this.name)
+        .email(this.email)
+        .password(newPassword != null ? newPassword : this.password)
+        .birthDate(this.birthDate)
+        .profileImageUrl(profileImageUrl != null ? profileImageUrl : this.profileImageUrl)
+        .isActive(this.isActive)
+        .build();
+  }
 }
