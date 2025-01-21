@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import com.hanahakdangserver.classroom.entity.Classroom;
-import com.hanahakdangserver.enrollment.entity.Enrollment;
+import com.hanahakdangserver.lecture.enrollment.entity.Enrollment;
 import com.hanahakdangserver.mixin.TimeBaseEntity;
 import com.hanahakdangserver.user.entity.User;
 

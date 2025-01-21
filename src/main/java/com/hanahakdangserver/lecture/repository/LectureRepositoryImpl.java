@@ -15,7 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import com.hanahakdangserver.enrollment.entity.QEnrollment;
+import com.hanahakdangserver.lecture.enrollment.entity.QEnrollment;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.entity.QLecture;
 import com.hanahakdangserver.lecture.entity.QLectureTag;
@@ -58,6 +58,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
             lecture.isCanceled.isFalse(),
             enrollment.isNull() // 연관된 enrollment가 없을 경우 포함
                 .or(enrollment.isCanceled.isFalse())
+                .or(enrollment.isCanceled.isTrue())
             // enrollment가 있을 경우 조건
         )
         .offset(pageRequest.getOffset())
@@ -75,6 +76,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
                 lecture.isCanceled.isFalse(),
                 enrollment.isNull()
                     .or(enrollment.isCanceled.isFalse())
+                    .or(enrollment.isCanceled.isTrue())
             )
             .fetchOne()
     ).orElse(0L); // 결과가 null일 경우 기본값 0 반환
@@ -110,7 +112,8 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
         .where(
             lecture.startTime.goe(now),
             lecture.isCanceled.isFalse(),
-            enrollment.isNull().or(enrollment.isCanceled.isFalse()),
+            enrollment.isNull().or(enrollment.isCanceled.isFalse())
+                .or(enrollment.isCanceled.isTrue()),
             lecture.category.name.in(categoryNames) // 주어진 카테고리에 해당하는 강의
         )
         .offset(pageRequest.getOffset())
@@ -126,7 +129,8 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
             .where(
                 lecture.startTime.goe(now),
                 lecture.isCanceled.isFalse(),
-                enrollment.isNull().or(enrollment.isCanceled.isFalse()),
+                enrollment.isNull().or(enrollment.isCanceled.isFalse())
+                    .or(enrollment.isCanceled.isTrue()),
                 lecture.category.name.in(categoryNames)
             )
             .fetchOne()
@@ -181,7 +185,8 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
         .where(
             lecture.startTime.goe(now),
             lecture.isCanceled.isFalse(),
-            enrollment.isNull().or(enrollment.isCanceled.isFalse()),
+            enrollment.isNull().or(enrollment.isCanceled.isFalse())
+                .or(enrollment.isCanceled.isTrue()),
             keywordCondition
         )
         .offset(pageRequest.getOffset())
@@ -198,7 +203,8 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
             .where(
                 lecture.startTime.goe(now),
                 lecture.isCanceled.isFalse(),
-                enrollment.isNull().or(enrollment.isCanceled.isFalse()),
+                enrollment.isNull().or(enrollment.isCanceled.isFalse())
+                    .or(enrollment.isCanceled.isTrue()),
                 keywordCondition
             )
             .fetchOne()
