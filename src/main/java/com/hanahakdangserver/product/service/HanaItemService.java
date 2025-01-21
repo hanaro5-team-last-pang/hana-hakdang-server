@@ -46,7 +46,7 @@ public class HanaItemService {
             .itemTitle(item.getItemTitle())
             .itemContent(item.getItemContent())
             .hanaUrl(item.getHanaUrl())
-            .lectureId(lectureId)
+//            .lectureId(lectureId)
             .build())
         .collect(Collectors.toList());
   }
