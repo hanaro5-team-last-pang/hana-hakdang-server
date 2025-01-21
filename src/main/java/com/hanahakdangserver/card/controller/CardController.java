@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +46,7 @@ public class CardController {
       @ApiResponse(responseCode = "200", description = "명함 조회를 성공했습니다."),
       @ApiResponse(responseCode = "400", description = "명함이 존재하지 않습니다.")
   })
+  @PreAuthorize("isAuthenticated() and hasRole('MENTOR')")
   @GetMapping("/profile-card/me")
   public ResponseEntity<ResponseDTO<Object>> getMyProfileCard(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
