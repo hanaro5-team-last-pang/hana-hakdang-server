@@ -18,9 +18,9 @@ import lombok.ToString;
 @Schema(description = "FAQ 등록 요청")
 public class FaqRequest {
 
-  @Schema(description = "사용자 ID", example = "1")
-  @NotNull(message = "사용자 ID는 반드시 입력해야 합니다.")
-  private Long userId;
+//  @Schema(description = "사용자 ID", example = "1")
+//  @NotNull(message = "사용자 ID는 반드시 입력해야 합니다.")
+//  private Long userId;
 
   @Schema(description = "문의 내용", example = "강의 일정에 대해 문의드립니다.")
   @NotBlank(message = "문의 내용은 반드시 입력해야 합니다.")
