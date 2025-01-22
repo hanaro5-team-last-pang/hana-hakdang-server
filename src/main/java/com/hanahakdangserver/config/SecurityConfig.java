@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,6 +33,7 @@ import com.hanahakdangserver.auth.security.CustomUsernamePasswordAuthenticationF
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -56,16 +58,20 @@ public class SecurityConfig {
             .permitAll()
             .requestMatchers("/signup/**", "/check/**", "/send-email", "/verify-email", "/login")
             .permitAll()
-            .requestMatchers("/lecture/**", "/profile-card/me/**").authenticated()
-            .requestMatchers("/lectures/**").permitAll()
+            .requestMatchers("/profile-card/me/**").authenticated()
+            .requestMatchers("/lectures/**", "/lectures/category/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/lectures/register/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/lectures/{lecture_id}/enroll/**").authenticated()
+            .requestMatchers(HttpMethod.DELETE, "/lectures/{enrollment_id}/enroll-withdraw/**")
+            .authenticated()
+            .requestMatchers("/classrooms/**").authenticated()
+            // 리뷰 요청에 대한 인증
             .requestMatchers("/review/lecture/").hasRole("MENTOR")
             .requestMatchers(HttpMethod.GET, "/faq/**").authenticated() // 조회는 모든 인증 사용자 가능
             .requestMatchers(HttpMethod.POST, "/faq/**").hasRole("MENTEE") // 등록은 멘티만 가능
             .requestMatchers(HttpMethod.DELETE, "/faq/**").hasRole("MENTEE") // 삭제는 멘티만 가능
-
-            // 리뷰 요청에 대한 인증
-            .requestMatchers("/review/**")
-            .authenticated()//            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
+            .requestMatchers("/review/**").authenticated()
+//            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
 //            .permitAll() // 임시
 //            .requestMatchers(HttpMethod.OPTIONS, "/**")
 //            .permitAll()

@@ -127,7 +127,7 @@ public class RedisString {
    * Redis에서 키의 값을 감소시킴. DECR 명령어 구현
    *
    * @param key   감소시킬 키
-   * @param delta 감소량 (양수음수)
+   * @param delta 감소량 (양수)
    * @return 감소된 값
    */
   public Long decrement(String key, long delta) {

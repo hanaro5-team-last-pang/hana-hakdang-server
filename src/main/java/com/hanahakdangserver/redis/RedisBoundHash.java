@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import static com.hanahakdangserver.redis.RedisExceptionEnum.CANT_CONVERT_INTO_DTO;
 import static com.hanahakdangserver.redis.RedisExceptionEnum.CANT_CONVERT_INTO_JSON;
+import static com.hanahakdangserver.redis.RedisExceptionEnum.ERROR_DURING_OPERATION;
 
 
 /**
@@ -56,21 +57,22 @@ public class RedisBoundHash<V> {
    * @param key   키
    * @param clazz 값의 타입 토큰
    * @return 해시에서 가져온 키
-   * @throws RuntimeException
    */
   public Optional<V> get(String key, Class<V> clazz) {
     try {
       String resultStr = boundHashOpts.get(key);
       if (resultStr == null) {
-        throw new RuntimeException("값을 찾을 수 없습니다");
+        return Optional.empty();
       }
       V resultObj = objectMapper.readValue(resultStr, clazz);
       log.debug("Getting {}-{} from Redis bound hash", key, resultObj);
       return Optional.of(resultObj);
-    } catch (Exception e) {
+    } catch (JsonProcessingException e) {
       log.error(CANT_CONVERT_INTO_DTO.getMessage());
-      return Optional.empty();
+    } catch (RuntimeException e) {
+      log.error(ERROR_DURING_OPERATION.getMessage());
     }
+    return Optional.empty();
   }
 
   /**

@@ -39,4 +39,4 @@ out/
 
 ### env files ###
 .env.prod
-.env.prod
+.env

@@ -90,7 +90,9 @@ public class LecturesService {
     } else {
       // 연관된 enrollment의 개수를 계산
       currParticipants = lecture.getEnrollments() != null
-          ? lecture.getEnrollments().size()
+          ? (int) lecture.getEnrollments().stream()
+          .filter(enrollment -> !enrollment.getIsCanceled()) // isCanceled가 false인 경우로 필터링
+          .count()
           : 0;
     }
 

@@ -19,6 +19,16 @@ public class RedisConfig {
   @Value("${spring.data.redis.port}")
   private int redisPort;
 
+  @Value("${classroom.bound-key.entrance}")
+  private String classroomEntranceHashBoundKey;
+
+  @Value("${classroom.bound-key.lecture-id}")
+  private String classroomLectureIdHashBoundKey;
+
+  @Value("${classroom.bound-key.mentee-id-set}")
+  private String classroomMenteeIdSetHashBoundKey;
+
+
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
     return new LettuceConnectionFactory(redisHost, redisPort);
@@ -41,4 +51,20 @@ public class RedisConfig {
   public ObjectMapper objectMapper() {
     return new ObjectMapper();
   }
+
+  @Bean
+  public String classroomEntranceHashBoundKey() {
+    return classroomEntranceHashBoundKey;
+  }
+
+  @Bean
+  public String classroomLectureIdHashBoundKey() {
+    return classroomLectureIdHashBoundKey;
+  }
+
+  @Bean
+  public String classroomMenteeIdSetHashBoundKey() {
+    return classroomMenteeIdSetHashBoundKey;
+  }
+
 }

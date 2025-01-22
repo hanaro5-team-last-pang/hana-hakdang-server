@@ -1,9 +1,13 @@
 package com.hanahakdangserver.lecture.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.lecture.projection.MentorIdOnly;
 
 @Repository
 public interface LectureRepository extends JpaRepository<Lecture, Long>, LectureRepositoryCustom {
@@ -32,4 +36,27 @@ public interface LectureRepository extends JpaRepository<Lecture, Long>, Lecture
 //  @Query("SELECT l FROM Lecture l WHERE l.isCanceled = :isCanceled")
 //  List<Lecture> findByIsCanceled(@Param("isCanceled") boolean isCanceled);
 
+  /**
+   * 강의실 ID와 멘토 ID를 기반으로 최신 강의를 가져옵니다.
+   *
+   * @param classroomId 강의실 ID
+   * @return 강의를 찾을 수 없으면 {@code Optional.empty()}이 반환
+   */
+  @Query("SELECT l "
+      + "FROM Lecture l "
+      + "WHERE l.classroom.id = :classroomId "
+      + "ORDER BY l.id DESC LIMIT 1")
+  Optional<Lecture> findLatestLectureIdByClassroomId(Long classroomId);
+
+
+  /**
+   * 강의를 개설한 멘토 ID를 검색
+   *
+   * @param lectureId 강의 ID
+   * @return 강의를 찾을 수 없으면 {@code Optional.empty()}를 반환
+   */
+  @Query("SELECT l.mentor.id as mentorId "
+      + "FROM Lecture l "
+      + "WHERE l.id = :lectureId")
+  Optional<MentorIdOnly> findMentorIdById(Long lectureId);
 }
