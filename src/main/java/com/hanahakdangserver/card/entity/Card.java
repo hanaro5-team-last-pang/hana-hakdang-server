@@ -49,4 +49,15 @@ public class Card extends TimeBaseEntity {
   @Type(JsonType.class)
   @Column(columnDefinition = "TEXT")
   private Map<String, String> detailInfo;
+
+  public Card update(String shortIntroduction, Map<String, String> simpleInfo,
+      Map<String, String> detailInfo) {
+    return Card.builder()
+        .id(this.id)
+        .mentor(this.mentor)
+        .shortIntroduction(shortIntroduction != null ? shortIntroduction : this.shortIntroduction)
+        .simpleInfo(simpleInfo != null ? simpleInfo : this.simpleInfo)
+        .detailInfo(detailInfo != null ? detailInfo : this.detailInfo)
+        .build();
+  }
 }

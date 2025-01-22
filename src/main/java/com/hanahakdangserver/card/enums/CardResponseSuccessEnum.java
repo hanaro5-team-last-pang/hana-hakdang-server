@@ -10,7 +10,8 @@ import com.hanahakdangserver.common.ResponseDTO;
 @Getter
 @AllArgsConstructor
 public enum CardResponseSuccessEnum {
-  GET_PROFILE_CARD_SUCCESS(HttpStatus.OK, "명함조회에 성공했습니다");
+  GET_PROFILE_CARD_SUCCESS(HttpStatus.OK, "명함조회에 성공했습니다"),
+  UPDATE_PROFILE_CARD_SUCCESS(HttpStatus.OK, "명함 수정을 완료했습니다");
 
   private final HttpStatus httpStatus;
   private final String message;

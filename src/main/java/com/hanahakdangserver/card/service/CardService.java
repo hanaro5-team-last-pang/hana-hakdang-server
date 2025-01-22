@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hanahakdangserver.card.dto.ProfileCardRequest;
 import com.hanahakdangserver.card.dto.ProfileCardResponse;
 import com.hanahakdangserver.card.entity.Card;
 import com.hanahakdangserver.card.mapper.CardMapper;
@@ -19,11 +20,23 @@ public class CardService {
 
   private final CardRepository cardRepository;
 
-  public ProfileCardResponse getProfileCard(Long userId) {
+  public ProfileCardResponse get(Long userId) {
     Card card = cardRepository.findByMentorId(userId)
         .orElseThrow(() -> CARD_NOT_FOUND.createResponseStatusException());
     log.debug("received cardDetailInfo : {}", card.getDetailInfo());
     return CardMapper.toDTO(card);
   }
 
+  @Transactional
+  public void update(Long userId, ProfileCardRequest cardRequest) {
+    Card currentCard = cardRepository.findByMentorId(userId)
+        .orElseThrow(() -> CARD_NOT_FOUND.createResponseStatusException());
+
+    Card card = currentCard.update
+        (cardRequest.getShortIntroduction(), cardRequest.getSimpleInfo(),
+            cardRequest.getDetailInfo());
+
+    cardRepository.save(card);
+
+  }
 }
