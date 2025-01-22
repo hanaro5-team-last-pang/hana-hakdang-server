@@ -5,9 +5,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.lecture.repository.LectureTagRepository;
 import com.hanahakdangserver.product.entity.Tag;
 import com.hanahakdangserver.product.repository.TagRepository;
+import com.hanahakdangserver.redis.RedisBoundHash;
 import com.hanahakdangserver.redis.RedisString;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
@@ -33,7 +35,6 @@ import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.T
 import static com.hanahakdangserver.user.enums.UserResponseExceptionEnum.USER_NOT_FOUND;
 
 @Log4j2
-@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class LectureManageService {
@@ -48,9 +49,30 @@ public class LectureManageService {
   private final SnowFlakeGenerator snowFlakeGenerator; // snowflake 생성기
   private final S3FileProcessor s3FileProcessor;
   private final RedisString redisString;
+  private final RedisBoundHash<Long> classroomLectureIdHash;
 
   @Value("${aws.s3.bucketName}")
   private String bucket;
+
+  public LectureManageService(LectureRepository lectureRepository,
+      CategoryRepository categoryRepository, ClassroomRepository classroomRepository,
+      TagRepository tagRepository, LectureTagRepository lectureTagRepository,
+      UserRepository userRepository, SnowFlakeGenerator snowFlakeGenerator,
+      S3FileProcessor s3FileProcessor, RedisString redisString,
+      String classroomLectureIdHashBoundKey, RedisTemplate<String, String> redisTemplate,
+      ObjectMapper objectMapper) {
+    this.lectureRepository = lectureRepository;
+    this.categoryRepository = categoryRepository;
+    this.classroomRepository = classroomRepository;
+    this.tagRepository = tagRepository;
+    this.lectureTagRepository = lectureTagRepository;
+    this.userRepository = userRepository;
+    this.snowFlakeGenerator = snowFlakeGenerator;
+    this.s3FileProcessor = s3FileProcessor;
+    this.redisString = redisString;
+    this.classroomLectureIdHash = new RedisBoundHash<>(classroomLectureIdHashBoundKey,
+        redisTemplate, objectMapper);
+  }
 
   /**
    * 강의 객체와 강의실 객체를 생성한 후 DB에 저장합니다.
@@ -109,13 +131,28 @@ public class LectureManageService {
     // TTL 계산: startTime에서 현재 시간 차이 + 1시간
     Instant now = Instant.now();
     Instant startTimeInstant = lecture.getStartTime()
-        .atZone(ZoneId.of("Asia/Seoul"))  // Asia/Seoul 타임존
+        .atZone(ZoneId.of("Asia/Seoul"))
         .toInstant();
 
     Duration ttlDuration = Duration.between(now, startTimeInstant);
     ttlDuration = ttlDuration.plusHours(1);
 
     redisString.putWithTTL(lectureKey, "0", ttlDuration); // 수강신청한 인원 수 0으로 초기화
+
+    // { 강의실 : 강의 } 관리를 위해 레디스의 classroomLectureIdHash에 저장
+    putLectureIdHash(uniqueId, lecture.getId());
+
+    // TODO : 강의 취소 시에는 classroomLectureIdHash에서 제거
+  }
+
+  /**
+   * 레디스 classroomLectureIdHash에 { classroomId : lectureId } 해시 저장
+   *
+   * @param classroomId key
+   * @param lectureId   value
+   */
+  private void putLectureIdHash(Long classroomId, Long lectureId) {
+    classroomLectureIdHash.put(classroomId.toString(), lectureId); // key는 String이기 때문
   }
 
 }

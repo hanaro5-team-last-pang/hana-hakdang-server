@@ -1,7 +1,9 @@
 package com.hanahakdangserver.lecture.enrollment.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,7 @@ import com.hanahakdangserver.lecture.enrollment.entity.Enrollment;
 import com.hanahakdangserver.lecture.enrollment.repository.EnrollmentRepository;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
+import com.hanahakdangserver.redis.RedisBoundSet;
 import com.hanahakdangserver.redis.RedisString;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
@@ -32,6 +35,9 @@ public class EnrollmentService {
   private final EnrollmentRepository enrollmentRepository;
 
   private final RedisString redisString;
+  private final RedisTemplate<String, String> redisTemplate;
+  private final ObjectMapper objectMapper;
+  private final String classroomMenteeIdSetHashBoundKey;
 
   /**
    * 수강 신청 가능한 강의에 대해 수강신청
@@ -42,33 +48,35 @@ public class EnrollmentService {
   @Transactional
   public void enrollLecture(Long userId, Long lectureId) {
 
-    // 이미 유저가 수강신청한 강의인지 확인
-    if (enrollmentRepository.isAlreadyEnrolled(userId, lectureId)) {
-      throw ALREADY_ENROLLED.createResponseStatusException();
-    }
-
     Lecture lecture = lectureRepository.findById(lectureId)
         .orElseThrow(LECTURE_NOT_FOUND::createResponseStatusException);
     User mentee = userRepository.findById(userId)
         .orElseThrow(USER_NOT_FOUND::createResponseStatusException);
 
-    // 수강신청 가능한 상태의 강의인지 확인
-    if (lecture.getIsFull() || lecture.getIsCanceled() || lecture.getStartTime().isBefore(now())) {
-      throw ENROLL_IS_NOT_ALLOWED.createResponseStatusException();
-    }
-
+    // Redis에서 INCR
     Long currCount = redisString.increment("lecture:" + lectureId, 1);
-    log.info("## 강의명: {}, 현재 수강신청 인원: {}명", lecture.getTitle(), currCount);
+    log.info("## 강의명: {}, 현재 수강신청 인원: {}명", lecture.getTitle(), currCount - 1);
 
-    // 아직 인원이 다 차지 않아 수강신청 가능한 강의
+    // 아직 인원이 다 차지 않아 수강신청 가능성이 있는 강의
     if (currCount <= Long.valueOf(lecture.getMaxParticipants())) {
+
+      // 이미 유저가 수강신청한 강의인지 확인
+      if (enrollmentRepository.isAlreadyEnrolled(userId, lectureId)) {
+        throw ALREADY_ENROLLED.createResponseStatusException();
+      }
+
+      // 수강신청 가능한 상태의 강의인지 확인
+      if (lecture.getIsFull() || lecture.getIsCanceled() || lecture.getStartTime()
+          .isBefore(now())) {
+        throw ENROLL_IS_NOT_ALLOWED.createResponseStatusException();
+      }
 
       // 기존에 해당 강의에 대해 수강신청 취소 했던 내역이 있는지 확인
       Enrollment enrollment = enrollmentRepository.findByUserIdAndLectureId(userId, lectureId)
           .orElse(null);
 
       if (enrollment == null) {
-        // 기존에 해당 강의에 대한 수강신청 내역이 전혀 없는 경우 DB에 저장
+        // 기존에 해당 강의에 대한 수강신청 내역이 전혀 없는 경우 새롭게 DB에 저장
         enrollmentRepository.save(
             Enrollment.builder()
                 .user(mentee)
@@ -83,6 +91,9 @@ public class EnrollmentService {
         // 인원이 가득 차 모집완료로 전환
         lecture.updateIsFull(true);
       }
+
+      // 수강 인원 관리를 위해 레디스 classroomMenteeSet에 저장
+      addToMenteeSet(lecture.getClassroom().getId(), userId);
 
     } else {
       redisString.decrement("lecture:" + lectureId, 1);
@@ -118,6 +129,27 @@ public class EnrollmentService {
       if (enrollment.getLecture().getIsFull()) {
         enrollment.getLecture().updateIsFull(false);
       }
+
+      // 레디스 classroomMenteeSet에서 mentee의 userId 제거
+      removeFromMenteeSet(enrollment.getLecture().getClassroom().getId(), userId);
     }
+  }
+
+  /**
+   * 수강신청 시에 레디스의 classroomMenteeSet에 mentee의 userId 저장
+   *
+   * @param classroomId classroomMenteeSet의 key 일부분
+   * @param menteeId    set에 저장될 mentee의 userId
+   */
+  private void addToMenteeSet(Long classroomId, Long menteeId) {
+    RedisBoundSet<Long> classroomMenteeSet = new RedisBoundSet<>(
+        classroomMenteeIdSetHashBoundKey + ":" + classroomId, redisTemplate, objectMapper);
+    classroomMenteeSet.add(menteeId);
+  }
+
+  private void removeFromMenteeSet(Long classroomId, Long menteeId) {
+    RedisBoundSet<Long> classroomMenteeSet = new RedisBoundSet<>(
+        classroomMenteeIdSetHashBoundKey + ":" + classroomId, redisTemplate, objectMapper);
+    classroomMenteeSet.remove(menteeId);
   }
 }
