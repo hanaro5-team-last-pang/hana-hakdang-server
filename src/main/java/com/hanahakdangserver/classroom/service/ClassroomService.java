@@ -36,10 +36,7 @@ public class ClassroomService {
   private final RedisBoundHash<Long> classroomLectureIdHash;
   private final RedisTemplate<String, String> redisTemplate;
   private final ObjectMapper objectMapper;
-
-
-  @Value("${classroom.bound-key.prefix.token}")
-  private String classroomTokenBoundKeyPrefix;
+  private final String classroomMenteeIdSetHashBoundKey;
 
   @Value("${classroom.interval-to-open-lecture}")
   private long intervalToOpenLecture;
@@ -48,7 +45,7 @@ public class ClassroomService {
       String classroomEntranceHashBoundKey,
       String classroomLectureIdHashBoundKey,
       ObjectMapper objectMapper, RedisTemplate<String, String> redisTemplate,
-      LectureRepository lectureRepository) {
+      LectureRepository lectureRepository, String classroomMenteeIdSetHashBoundKey) {
     this.lectureRepository = lectureRepository;
     this.classroomPasswordHash = new RedisBoundHash<>(classroomEntranceHashBoundKey, redisTemplate,
         objectMapper);
@@ -56,6 +53,7 @@ public class ClassroomService {
         redisTemplate, objectMapper);
     this.redisTemplate = redisTemplate;
     this.objectMapper = objectMapper;
+    this.classroomMenteeIdSetHashBoundKey = classroomMenteeIdSetHashBoundKey;
   }
 
   private Long getLectureId(Long classroomId) throws ResponseStatusException {
@@ -97,9 +95,9 @@ public class ClassroomService {
   }
 
   private boolean isEnrolled(Long classroomId, Long menteeId) {
-    RedisBoundSet<Long> classroomTokenSet = new RedisBoundSet<>(
-        classroomTokenBoundKeyPrefix + classroomId, redisTemplate, objectMapper);
-    return classroomTokenSet.exists(menteeId);
+    RedisBoundSet<Long> classroomMenteeSet = new RedisBoundSet<>(
+        classroomMenteeIdSetHashBoundKey + ":" + classroomId, redisTemplate, objectMapper);
+    return classroomMenteeSet.exists(menteeId);
   }
 
   public ClassroomEnterResponse enterClassroom(Long classroomId, Long menteeId)
