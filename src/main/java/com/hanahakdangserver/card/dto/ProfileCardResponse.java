@@ -18,7 +18,7 @@ import lombok.ToString;
 @ToString
 public class ProfileCardResponse {
 
-  @Schema(description = "멘토 이름", example = "1")
+  @Schema(description = "멘토 이름", example = "미스터 중")
   private String mentor_name;
 
   @Schema(description = "프로필 사진 상단에 있는 짧은 자기소개", example = "안녕하세요 정중일 멘토입니다.")

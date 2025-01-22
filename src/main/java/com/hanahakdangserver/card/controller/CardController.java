@@ -38,7 +38,7 @@ public class CardController {
       @ApiResponse(responseCode = "400", description = "명함이 존재하지 않습니다.")
   })
   @GetMapping("/profile-card/{userId}")
-  public ResponseEntity<ResponseDTO<Object>> getProfileCard(
+  public ResponseEntity<ResponseDTO<ProfileCardResponse>> getProfileCard(
       @PathVariable Long userId) {
     ProfileCardResponse cardResponse = cardService.get(userId);
     log.debug("result : {}",
@@ -53,7 +53,7 @@ public class CardController {
   })
   @PreAuthorize("isAuthenticated() and hasRole('MENTOR')")
   @GetMapping("/profile-card/me")
-  public ResponseEntity<ResponseDTO<Object>> getMyProfileCard(
+  public ResponseEntity<ResponseDTO<ProfileCardResponse>> getMyProfileCard(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     ProfileCardResponse cardResponse = cardService.get(userDetails.getId());
     log.debug("result : {}",
