@@ -38,8 +38,8 @@ public class CardService {
         .orElseThrow(() -> EMAIL_NOT_FOUND.createResponseStatusException());
     CareerInfo careerInfo = user.getCareerInfo();
 
-    Map<String, String> toSimpleInfo = CardMapper.toSimpleInfo(careerInfo);
-    Card defaultCard = CardMapper.toDefaultEntity(user, toSimpleInfo);
+    Map<String, String> defaultSimpleInfo = CardMapper.toDefaultSimpleInfo(careerInfo);
+    Card defaultCard = CardMapper.toDefaultEntity(user, defaultSimpleInfo);
 
     cardRepository.save(defaultCard);
   }
@@ -53,7 +53,7 @@ public class CardService {
     Card card = cardRepository.findByMentorId(mentorId)
         .orElseThrow(() -> CARD_NOT_FOUND.createResponseStatusException());
 
-    log.debug("received cardDetailInfo : {}", card.getDetailInfo());
+    log.debug("received shortIntroduction : {}", card.getShortIntroduction());
 
     return CardMapper.toDTO(card);
 
@@ -64,7 +64,7 @@ public class CardService {
     Card card = cardRepository.findByMentorId(mentorId)
         .orElseThrow(() -> CARD_NOT_FOUND.createResponseStatusException());
 
-    log.debug("received cardDetailInfo : {}", card.getDetailInfo());
+    log.debug("received shortIntroduction : {}", card.getShortIntroduction());
 
     return CardMapper.toDTO(card);
 
@@ -75,11 +75,15 @@ public class CardService {
     Card currentCard = cardRepository.findByMentorId(userId)
         .orElseThrow(() -> CARD_NOT_FOUND.createResponseStatusException());
 
-    Card card = currentCard.update
-        (cardRequest.getShortIntroduction(), cardRequest.getSimpleInfo(),
-            cardRequest.getDetailInfo());
+    Map<String, String> simpleInfo =
+        cardRequest.getSimpleInfo() != null ? CardMapper.toMapInfo(cardRequest.getSimpleInfo())
+            : currentCard.getSimpleInfo();
+    Map<String, String> detailInfo =
+        cardRequest.getDetailInfo() != null ? CardMapper.toMapInfo(cardRequest.getDetailInfo())
+            : currentCard.getDetailInfo();
+
+    Card card = currentCard.update(cardRequest.getShortIntroduction(), simpleInfo, detailInfo);
 
     cardRepository.save(card);
-
   }
 }
