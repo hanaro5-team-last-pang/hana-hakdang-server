@@ -3,12 +3,9 @@ package com.hanahakdangserver.lecture.repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.zookeeper.Op;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,13 +75,14 @@ public class LectureRepositoryTest {
     Category category = Category.builder().name("카테고리1").build();
     categoryRepository.save(category);
 
-    List<Lecture> lectureList = List.of(Lecture.builder()
+    List<Lecture> lectureList = List.of(
+        Lecture.builder()
             .mentor(mentor)
             .classroom(classroom)
             .category(category)
             .title("강의1")
             .startTime(LocalDateTime.now())
-            .duration(123)
+            .endTime(LocalDateTime.now().plusHours(1))
             .maxParticipants(2)
             .description("123")
             .build(),
@@ -94,7 +92,7 @@ public class LectureRepositoryTest {
             .category(category)
             .title("강의1")
             .startTime(LocalDateTime.now())
-            .duration(123)
+            .endTime(LocalDateTime.now().plusHours(1))
             .maxParticipants(2)
             .description("123")
             .build()
@@ -107,7 +105,7 @@ public class LectureRepositoryTest {
         .category(category)
         .title("강의1")
         .startTime(LocalDateTime.now())
-        .duration(123)
+        .endTime(LocalDateTime.now().plusHours(1))
         .maxParticipants(2)
         .description("123")
         .build();
@@ -137,7 +135,7 @@ public class LectureRepositoryTest {
         .category(category)
         .title("강의1")
         .startTime(LocalDateTime.now())
-        .duration(123)
+        .endTime(LocalDateTime.now().plusHours(1))
         .maxParticipants(2)
         .description("123")
         .build();
