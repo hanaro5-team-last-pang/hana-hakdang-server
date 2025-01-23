@@ -88,7 +88,7 @@ public class ReviewRepositoryTest {
         .classroom(classroom) // Classroom 설정
         .category(category)
         .startTime(LocalDateTime.now())
-        .duration(120)
+        .endTime(LocalDateTime.now().plusHours(1))
         .maxParticipants(20)
         .build();
     lectureRepository.save(lecture);

@@ -108,7 +108,7 @@ public class FaqRepositoryTest {
         .classroom(classroom)
         .category(category)
         .startTime(LocalDateTime.now())
-        .duration(120)
+        .endTime(LocalDateTime.now().plusHours(1))
         .maxParticipants(30)
         .build();
     lectureRepository.save(lecture);
