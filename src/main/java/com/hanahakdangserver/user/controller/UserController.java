@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -51,7 +50,6 @@ public class UserController {
   }
 
 
-  @PreAuthorize("isAuthenticated()")
   @Operation(summary = "유저 정보 조회", description = "현재 로그인 된 유저의 userId와 name을 반환합니다.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "유저 정보를 성공적으로 반환했습니다."),
