@@ -9,6 +9,9 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import com.hanahakdangserver.chat.dto.ChatMessageResponse;
+import com.hanahakdangserver.redis.RedisBoundList;
+
 
 @Configuration
 public class RedisConfig {
@@ -65,6 +68,13 @@ public class RedisConfig {
   @Bean
   public String classroomMenteeIdSetHashBoundKey() {
     return classroomMenteeIdSetHashBoundKey;
+  }
+
+  @Bean
+  public RedisBoundList<ChatMessageResponse> redisBoundList(
+      RedisTemplate<String, String> redisTemplate,
+      ObjectMapper objectMapper) {
+    return new RedisBoundList<>(redisTemplate, objectMapper);
   }
 
 }
