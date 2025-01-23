@@ -55,7 +55,7 @@ public class CardController {
   @GetMapping("/profile-card/me")
   public ResponseEntity<ResponseDTO<ProfileCardResponse>> getMyProfileCard(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
-    ProfileCardResponse cardResponse = cardService.get(userDetails.getId());
+    ProfileCardResponse cardResponse = cardService.getMyCard(userDetails.getId());
     log.debug("result : {}",
         GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse));
     return GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse);
