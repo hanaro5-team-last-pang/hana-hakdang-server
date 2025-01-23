@@ -19,6 +19,7 @@ import com.hanahakdangserver.auth.dto.LoginRequest;
 import com.hanahakdangserver.auth.dto.MenteeSignupRequest;
 import com.hanahakdangserver.auth.dto.MentorSignupRequest;
 import com.hanahakdangserver.auth.service.AuthService;
+import com.hanahakdangserver.card.service.CardService;
 import com.hanahakdangserver.common.ResponseDTO;
 import static com.hanahakdangserver.auth.enums.AuthResponseSuccessEnum.EMAIL_CHECK_SEND_SUCCESS;
 import static com.hanahakdangserver.auth.enums.AuthResponseSuccessEnum.EMAIL_CONFIRMED;
@@ -32,6 +33,7 @@ import static com.hanahakdangserver.auth.enums.AuthResponseSuccessEnum.SIGN_UP_S
 public class AuthController {
 
   private final AuthService authService;
+  private final CardService cardService;
 
   @Operation(summary = "멘티 회원 가입", description = "멘티로 회원 가입 요청합니다.")
   @PostMapping("/signup/mentee")
@@ -46,6 +48,7 @@ public class AuthController {
   public ResponseEntity<ResponseDTO<Object>> signupMentor(
       @Valid @RequestBody MentorSignupRequest mentorSignupRequest) {
     authService.signUpMentor(mentorSignupRequest);
+    cardService.create(mentorSignupRequest.getEmail());
     return SIGN_UP_SUCCESS.createResponseEntity();
   }
 
