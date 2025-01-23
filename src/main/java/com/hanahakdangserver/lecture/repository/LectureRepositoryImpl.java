@@ -22,6 +22,7 @@ import com.hanahakdangserver.lecture.entity.QLectureTag;
 import com.hanahakdangserver.lecture.enums.LectureCategory;
 import com.hanahakdangserver.product.entity.Tag;
 import com.hanahakdangserver.product.repository.TagRepository;
+import com.hanahakdangserver.user.entity.QUser;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -33,6 +34,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
   private final QLecture lecture = QLecture.lecture;
   private final QEnrollment enrollment = QEnrollment.enrollment;
   private final QLectureTag lectureTag = QLectureTag.lectureTag;
+  private final QUser user = QUser.user;
 
   private final TagRepository tagRepository;
 
@@ -212,6 +214,34 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
     ).orElse(0L); // 결과가 null일 경우 기본값 0 반환
 
     log.info("[키워드 검색 강의 조회] resultList 길이: {}, 페이지네이션 없이 totalCount 크기: {}", resultList.size(),
+        totalCount);
+
+    return new PageImpl<>(resultList, pageRequest, totalCount);
+  }
+
+  @Override
+  public Page<Lecture> searchAllLecturesOfMentor(PageRequest pageRequest, Long mentorId) {
+
+    List<Lecture> resultList = queryFactory
+        .selectDistinct(lecture)
+        .from(lecture)
+        .leftJoin(lecture.mentor, user)
+        .on(lecture.mentor.id.eq(mentorId))
+        .offset(pageRequest.getOffset())
+        .limit(pageRequest.getPageSize())
+        .fetch();
+
+    // 동일 조건으로 페이지네이션 없이 총 개수 계산
+    Long totalCount = Optional.ofNullable(
+        queryFactory
+            .select(lecture.countDistinct())
+            .from(lecture)
+            .leftJoin(lecture.mentor, user)
+            .on(lecture.mentor.id.eq(mentorId))
+            .fetchOne()
+    ).orElse(0L); // 결과가 null일 경우 기본값 0 반환
+
+    log.info("[멘토가 등록한 강의 조회] resultList 길이: {}, 페이지네이션 없이 totalCount 크기: {}", resultList.size(),
         totalCount);
 
     return new PageImpl<>(resultList, pageRequest, totalCount);

@@ -36,4 +36,11 @@ public interface LectureRepositoryCustom {
    * @return Lecture 엔티티에 대한 검색 결과
    */
   Page<Lecture> searchWithKeyword(PageRequest pageRequest, String keyword);
+
+  /**
+   * @param pageRequest 페이지네이션을 위한 Pageable 구현체
+   * @param mentorId    필터링 기준이 되는 멘토의 userId
+   * @return Lecture 엔티티에 대한
+   */
+  Page<Lecture> searchAllLecturesOfMentor(PageRequest pageRequest, Long mentorId);
 }

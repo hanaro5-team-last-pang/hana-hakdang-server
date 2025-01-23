@@ -26,6 +26,7 @@ import com.hanahakdangserver.lecture.enums.LectureCategory;
 import com.hanahakdangserver.lecture.service.LecturesService;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_CATEGORY_LIST_SUCCESS;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_LECTURE_DETAIL_SUCCESS;
+import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_MENTOR_LECTURES_SUCCESS;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_TOTAL_LIST_SUCCESS;
 
 @Tag(name = "강의 조회", description = "강의 조회 API 목록")
@@ -91,8 +92,12 @@ public class LecturesController {
   @PreAuthorize("isAuthenticated() and hasRole('MENTOR')")
   @GetMapping("/queue/mentor")
   public ResponseEntity<ResponseDTO<MentorLecturesResponse>> getMentorLecturesList(
-      @AuthenticationPrincipal
-      CustomUserDetails userDetails, @RequestParam Long lastId) {
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestParam(value = "page", defaultValue = "0") Integer pageNum) {
 
+    MentorLecturesResponse result = lecturesService.getMentorLecturesList(pageNum,
+        userDetails.getId());
+
+    return GET_MENTOR_LECTURES_SUCCESS.createResponseEntity(result);
   }
 }
