@@ -4,9 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
@@ -23,13 +21,12 @@ import lombok.ToString;
 
 import com.hanahakdangserver.lecture.enums.LectureCategory;
 
+@Schema(description = "강의 등록 요청")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 @Builder
 @ToString
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-@Schema(description = "강의 등록 요청")
 public class LectureRequest {
 
   @Schema(description = "강의 카테고리 ENUM", example = "FINANCIAL_PRODUCTS")

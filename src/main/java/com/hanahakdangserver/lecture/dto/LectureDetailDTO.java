@@ -1,11 +1,10 @@
 package com.hanahakdangserver.lecture.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
@@ -23,7 +22,6 @@ import lombok.ToString;
 @Builder
 @Getter
 @ToString
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class LectureDetailDTO {
 
   @Schema(description = "강의 Id", example = "1")
@@ -34,6 +32,9 @@ public class LectureDetailDTO {
 
   @Schema(description = "강의 카테고리", example = "디지털 교육")
   private String category;
+
+  @Schema(description = "강의 태그 목록", example = "[\"정기예금\", \"적금\"]")
+  private List<String> tags;
 
   @Schema(description = "강의 명칭", example = "정중일과 함께 하는 하나원큐앱 정복하기")
   private String title;

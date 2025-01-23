@@ -60,9 +60,10 @@ public class SecurityConfig {
             .permitAll()
             .requestMatchers("/profile-card/me/**").authenticated()
             .requestMatchers("/lectures/**", "/lectures/category/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/lectures/queue/mentor/**").authenticated()
             .requestMatchers(HttpMethod.POST, "/lectures/register/**").authenticated()
-            .requestMatchers(HttpMethod.POST, "/lectures/{lecture_id}/enroll/**").authenticated()
-            .requestMatchers(HttpMethod.DELETE, "/lectures/{enrollment_id}/enroll-withdraw/**")
+            .requestMatchers(HttpMethod.POST, "/lectures/{lectureId}/enroll/**").authenticated()
+            .requestMatchers(HttpMethod.DELETE, "/lectures/{enrollmentId}/enroll-withdraw/**")
             .authenticated()
             .requestMatchers("/classrooms/**").authenticated()
             // 리뷰 요청에 대한 인증
