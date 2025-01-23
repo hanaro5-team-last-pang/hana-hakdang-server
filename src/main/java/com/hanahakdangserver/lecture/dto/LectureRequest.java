@@ -46,8 +46,11 @@ public class LectureRequest {
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   private LocalDateTime startTime;
 
-  @Schema(description = "강의 진행 시간", example = "2")
-  private Integer duration;
+  @Schema(description = "강의 예상 종료 시간", example = "2025-01-23 12:30:00")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+  @JsonSerialize(using = LocalDateTimeSerializer.class)
+  private LocalDateTime endTime;
 
   @Schema(description = "최대 수강 가능 인원", example = "4")
   @NotNull(message = "최대 수강 가능 인원 수를 입력해주세요.")

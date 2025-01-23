@@ -106,7 +106,7 @@ public class LectureManageService {
             .category(category)
             .title(lectureRequest.getTitle())
             .startTime(lectureRequest.getStartTime())
-            .duration(lectureRequest.getDuration())
+            .endTime(lectureRequest.getEndTime())
             .maxParticipants(lectureRequest.getMaxParticipants())
             .description(lectureRequest.getDescription())
             .thumbnailUrl(thumbnailUrl)
