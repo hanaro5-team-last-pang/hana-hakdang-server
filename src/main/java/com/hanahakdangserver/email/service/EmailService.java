@@ -3,7 +3,6 @@ package com.hanahakdangserver.email.service;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -18,8 +17,8 @@ public class EmailService {
 
   private final JavaMailSender javaMailSender;
 
-  @Value("${front.port}")
-  private String port;
+//  @Value("${front.port}")
+//  private String port;
 
   @Async
   public void send(String email, String authToken) {
