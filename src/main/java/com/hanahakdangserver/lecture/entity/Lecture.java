@@ -79,7 +79,28 @@ public class Lecture extends TimeBaseEntity {
   @Builder.Default
   private Boolean isCanceled = false;
 
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean isDone = false;
+
+  public void updateStartTime(LocalDateTime startTime) {
+    this.startTime = startTime;
+  }
+
+  public void updateEndTime(LocalDateTime endTime) {
+    this.endTime = endTime;
+  }
+
   public void updateIsFull(boolean isFull) {
     this.isFull = isFull;
   }
+
+  public void updateIsCanceled(boolean isCanceled) {
+    this.isCanceled = isCanceled;
+  }
+
+  public void updateIsDone(boolean isDone) {
+    this.isDone = isDone;
+  }
+
 }

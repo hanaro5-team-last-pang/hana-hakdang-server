@@ -61,7 +61,7 @@ public class SecurityConfig {
             .requestMatchers("/profile-card/me/**").authenticated()
             .requestMatchers("/lectures/**", "/lectures/category/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/lectures/queue/mentor/**").authenticated()
-            .requestMatchers(HttpMethod.POST, "/lectures/register/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/lectures/register/").authenticated()
             .requestMatchers(HttpMethod.POST, "/lectures/{lectureId}/enroll/**").authenticated()
             .requestMatchers(HttpMethod.DELETE, "/lectures/{enrollmentId}/enroll-withdraw/**")
             .authenticated()

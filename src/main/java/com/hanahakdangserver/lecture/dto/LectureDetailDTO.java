@@ -46,13 +46,13 @@ public class LectureDetailDTO {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonSerialize(using = LocalDateTimeSerializer.class)
-  private LocalDateTime startDate;
+  private LocalDateTime startTime;
 
   @Schema(description = "강의 예상 종료시간", example = "2025-01-19 12:30:00")
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonSerialize(using = LocalDateTimeSerializer.class)
-  private LocalDateTime endDate;
+  private LocalDateTime endTime;
 
   @Schema(description = "강의 예상 진행 시간", example = "1")
   private Integer duration;
