@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hanahakdangserver.chat.dto.ChatMessageResponse;
 import com.hanahakdangserver.chat.service.ChatService;
+import com.hanahakdangserver.common.ResponseDTO;
 import static com.hanahakdangserver.chat.enums.ChatResponseSuccessEnum.GET_CHAT_MESSAGES_SUCCESS;
 
 @Tag(name = "채팅", description = "채팅 API")
@@ -30,7 +31,8 @@ public class ChatController {
       @ApiResponse(responseCode = "200", description = "채팅 내역 호출 성공했습니다."),
   })
   @GetMapping("/{classroomId}/messages")
-  public ResponseEntity<?> getChatMessages(@PathVariable Long classroomId) {
+  public ResponseEntity<ResponseDTO<List<ChatMessageResponse>>> getChatMessages(
+      @PathVariable Long classroomId) {
     List<ChatMessageResponse> messages = chatService.getChatMessage(classroomId);
     return GET_CHAT_MESSAGES_SUCCESS.createResponseEntity(messages);
   }
