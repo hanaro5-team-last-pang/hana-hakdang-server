@@ -203,7 +203,7 @@ public class LecturesService {
 
       // 강의 시작 가능시간을 넘겼지만 isCanceled가 false인 경우 자동 취소 강의로 처리
       if (!lecture.getIsCanceled() && !lecture.getIsDone()) {
-        lecture.updateIsCanceled(false);
+        lecture.updateIsCanceled(true);
       }
     } else {
       ableToStart = false;

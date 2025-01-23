@@ -85,10 +85,7 @@ public class LecturesController {
   }
 
   @Operation(summary = "등록한 강의 목록 조회", description = "멘토가 자신이 등록한 강의 목록을 조회한다.")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "등록한 강의 목록 조회에 성공했습니다."),
-      @ApiResponse(responseCode = "404", description = "해당 강의가 존재하지 않습니다..")
-  })
+  @ApiResponse(responseCode = "200", description = "등록한 강의 목록 조회에 성공했습니다.")
   @PreAuthorize("isAuthenticated() and hasRole('MENTOR')")
   @GetMapping("/queue/mentor")
   public ResponseEntity<ResponseDTO<MentorLecturesResponse>> getMentorLecturesList(
