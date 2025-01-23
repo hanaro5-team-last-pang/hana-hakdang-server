@@ -25,7 +25,7 @@ import com.hanahakdangserver.lecture.service.LectureManageService;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.CREATE_LECTURE_SUCCESS;
 
 @Log4j2
-@Tag(name = "강의", description = "강의 API 목록")
+@Tag(name = "멘토 강의", description = "멘토 강의 API 목록")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/lectures")

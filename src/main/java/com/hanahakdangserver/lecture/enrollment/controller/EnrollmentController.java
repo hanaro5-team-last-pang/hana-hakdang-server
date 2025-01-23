@@ -38,10 +38,10 @@ public class EnrollmentController {
       @ApiResponse(responseCode = "403", description = "수강신청이 불가능한 강의입니다.")
   })
   @PreAuthorize("isAuthenticated() and hasRole('MENTEE')")
-  @PostMapping("/{lecture_id}/enroll")
+  @PostMapping("/{lectureId}/enroll")
   public ResponseEntity<ResponseDTO<Void>> enrollLecture(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @PathVariable(value = "lecture_id") Long lectureId
+      @PathVariable(value = "lectureId") Long lectureId
   ) {
 
     enrollmentService.enrollLecture(userDetails.getId(), lectureId);
@@ -57,10 +57,10 @@ public class EnrollmentController {
       @ApiResponse(responseCode = "403", description = "수강신청이 불가능한 강의입니다.")
   })
   @PreAuthorize("isAuthenticated() and hasRole('MENTEE')")
-  @DeleteMapping("/{enrollment_id}/enroll-withdraw")
+  @DeleteMapping("/{enrollmentId}/enroll-withdraw")
   public ResponseEntity<ResponseDTO<Void>> withdrawEnrollment(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @PathVariable(value = "enrollment_id") Long enrollmentId
+      @PathVariable(value = "enrollmentId") Long enrollmentId
   ) {
 
     enrollmentService.withdrawEnrollment(userDetails.getId(), enrollmentId);

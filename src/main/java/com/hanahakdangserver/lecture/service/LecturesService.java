@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.LecturesResponse;
+import com.hanahakdangserver.lecture.dto.MentorLecturesResponse;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.enums.LectureCategory;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
@@ -73,6 +74,10 @@ public class LecturesService {
     }
 
     return converLectureToDetailDTO(lecture, true);
+  }
+
+  public MentorLecturesResponse getMentorLecturesList(Long mentorId, Long lastSentId) {
+    PageRequest pageRequest = PageRequest.of(1, PAGE_SIZE);
   }
 
   /**

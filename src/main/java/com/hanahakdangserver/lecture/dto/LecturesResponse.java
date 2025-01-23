@@ -2,8 +2,6 @@ package com.hanahakdangserver.lecture.dto;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,7 +16,6 @@ import lombok.ToString;
 @Builder
 @Getter
 @ToString
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class LecturesResponse {
 
   @Schema(description = "전체 강의 개수", example = "20")
