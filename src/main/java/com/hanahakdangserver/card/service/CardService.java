@@ -59,6 +59,17 @@ public class CardService {
 
   }
 
+  public ProfileCardResponse getMyCard(Long mentorId) {
+
+    Card card = cardRepository.findByMentorId(mentorId)
+        .orElseThrow(() -> CARD_NOT_FOUND.createResponseStatusException());
+
+    log.debug("received cardDetailInfo : {}", card.getDetailInfo());
+
+    return CardMapper.toDTO(card);
+
+  }
+
   @Transactional
   public void update(Long userId, ProfileCardRequest cardRequest) {
     Card currentCard = cardRepository.findByMentorId(userId)
