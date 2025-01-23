@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import static com.hanahakdangserver.redis.RedisExceptionEnum.CANT_CONVERT_INTO_DTO;
 import static com.hanahakdangserver.redis.RedisExceptionEnum.CANT_CONVERT_INTO_JSON;
 
+
 /**
  * 레디스 BoundList
  *
@@ -68,7 +69,7 @@ public class RedisBoundList<E> {
       boundListOpts.rightPush(elementJsonStr);
       log.debug("Pushed {} - {} into Redis bound list", key, element);
     } catch (JsonProcessingException e) {
-      throw CANT_CONVERT_INTO_JSON.createResponseStatusException();
+      log.error(CANT_CONVERT_INTO_JSON.getMessage());
     }
   }
 
@@ -92,7 +93,7 @@ public class RedisBoundList<E> {
   public List<E> getList(String key) {
     BoundListOperations<String, String> boundListOpts = getOrInsertBoundListOpts(key);
     List<String> list = boundListOpts.range(0, -1); // 전체 리스트 가져오기
-    log.debug("Redis Message: {}", list);
+    log.debug("Redis List: {}", list);
     if (list == null || list.isEmpty()) {
       return Collections.emptyList(); // 비어 있는 경우 빈 리스트 반환
     }
@@ -102,7 +103,8 @@ public class RedisBoundList<E> {
             return objectMapper.readValue(json, new TypeReference<E>() {
             });
           } catch (JsonProcessingException e) {
-            throw CANT_CONVERT_INTO_DTO.createResponseStatusException();
+            log.error(CANT_CONVERT_INTO_DTO.getMessage(), json, e);
+            return null; // 실패한 항목 무시
           }
         })
         .filter(Objects::nonNull)
