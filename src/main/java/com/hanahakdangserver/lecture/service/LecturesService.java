@@ -1,5 +1,6 @@
 package com.hanahakdangserver.lecture.service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,11 +111,24 @@ public class LecturesService {
         .title(lecture.getTitle())
         .description(description)
         .startDate(lecture.getStartTime())
-        .duration(lecture.getDuration())
+        .endDate(lecture.getEndTime())
+        .duration(calculateDuration(lecture.getStartTime(), lecture.getEndTime()))
         .currParticipants(currParticipants)
         .maxParticipants(lecture.getMaxParticipants())
         .isFull(lecture.getIsFull())
         .thumbnailImgUrl(lecture.getThumbnailUrl())
         .build();
+  }
+
+  /**
+   * 예상 종료시간과 시작 시간과의 차이를 통해 예상 진행 시간을 계산
+   *
+   * @param startTime 시작 시간
+   * @param endTime   예상 종료시간
+   * @return 시작 시간과 예상 종료시간의 차이를 hour 단위로 반환
+   */
+  private Integer calculateDuration(LocalDateTime startTime, LocalDateTime endTime) {
+    Duration diff = Duration.between(startTime, endTime);
+    return (int) Math.ceil(diff.toMinutes() / 60.0);
   }
 }

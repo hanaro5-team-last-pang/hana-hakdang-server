@@ -57,7 +57,7 @@ public class Lecture extends TimeBaseEntity {
   private LocalDateTime startTime;
 
   @Column(nullable = false)
-  private Integer duration;
+  private LocalDateTime endTime;
 
   @Column(nullable = false)
   private Integer maxParticipants;

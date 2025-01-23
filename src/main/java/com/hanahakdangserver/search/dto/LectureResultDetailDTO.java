@@ -38,14 +38,20 @@ public class LectureResultDetailDTO {
   @Schema(description = "강의 명칭", example = "정중일과 함께 하는 하나원큐앱 정복하기")
   private String title;
 
-  @Schema(description = "강의 진행 시간", example = "2")
-  private Integer duration;
-
   @Schema(description = "강의 시작시간", example = "2025-01-19 11:30:00")
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   private LocalDateTime startDate;
+
+  @Schema(description = "강의 예상 종료시간", example = "2025-01-19 12:30:00")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+  @JsonSerialize(using = LocalDateTimeSerializer.class)
+  private LocalDateTime endDate;
+
+  @Schema(description = "강의 진행 시간", example = "1")
+  private Integer duration;
 
   @Schema(description = "현재 수강신청한 인원", example = "4")
   private Integer currParticipants;

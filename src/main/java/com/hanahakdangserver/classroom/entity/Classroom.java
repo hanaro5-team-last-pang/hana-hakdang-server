@@ -21,7 +21,7 @@ public class Classroom {
 
   @Column(nullable = false)
   @Builder.Default
-  private Boolean isUsed = false;
+  private Boolean isUsed = true;
 
   public void updateIsUsed(Boolean isUsed) {
     this.isUsed = isUsed;
