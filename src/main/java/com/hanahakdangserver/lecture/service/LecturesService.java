@@ -25,6 +25,8 @@ import com.hanahakdangserver.lecture.dto.MentorLecturesResponse;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.enums.LectureCategory;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
+import com.hanahakdangserver.product.entity.Tag;
+import com.hanahakdangserver.product.repository.TagRepository;
 import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.LECTURE_NOT_FOUND;
 
 @Log4j2
@@ -38,6 +40,7 @@ public class LecturesService {
   private final Integer MENTOR_PAGE_SIZE = 20;
 
   private final LectureRepository lectureRepository;
+  private final TagRepository tagRepository;
 
   @Value("${classroom.interval-to-open-lecture}")
   private long intervalToOpenLecture;
@@ -144,17 +147,29 @@ public class LecturesService {
           : 0;
     }
 
-    // isDetail이 true면 description 반환 필요
+    List<String> tags;
+    // isDetail이 true면 description, 태그 목록 반환 필요
     if (isDetail) {
       description = lecture.getDescription();
+      tags = lecture.getTagList().stream().map(
+          tag -> {
+            Tag specificTag = tagRepository.findById(tag.getTag().getId()).orElse(null);
+            if (specificTag != null) {
+              return specificTag.getTagName();
+            }
+            return "";
+          }
+      ).collect(Collectors.toList());
     } else {
       description = null;
+      tags = null;
     }
 
     return LectureDetailDTO.builder()
         .lectureId(lecture.getId())
         .mentorName(lecture.getMentor().getName())
         .category(lecture.getCategory().getName())
+        .tags(tags)
         .title(lecture.getTitle())
         .description(description)
         .startTime(lecture.getStartTime())
