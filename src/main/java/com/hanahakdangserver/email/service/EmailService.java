@@ -3,6 +3,7 @@ package com.hanahakdangserver.email.service;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -17,8 +18,11 @@ public class EmailService {
 
   private final JavaMailSender javaMailSender;
 
-//  @Value("${front.port}")
-//  private String port;
+  @Value("${front.host}")
+  private String host;
+
+  @Value("${front.port}")
+  private String port;
 
   @Async
   public void send(String email, String authToken) {
@@ -27,9 +31,9 @@ public class EmailService {
       MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
       helper.setTo(email);
       helper.setSubject("하나학당 회원가입 인증 링크입니다✨");
-//      String content = String.format("http://%s/verify-email?email=%s&authToken=%s", port,
-//          email, authToken);
-      String content = authToken; //임시
+      String content = String.format("http://%s:%s/approval?email=%s&authToken=%s",
+          host, port, email, authToken);
+//      String content = authToken; //임시
       helper.setText(content, true);
 
       javaMailSender.send(mimeMessage);
