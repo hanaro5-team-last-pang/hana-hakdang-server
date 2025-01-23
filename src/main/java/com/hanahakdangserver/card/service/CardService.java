@@ -10,7 +10,10 @@ import com.hanahakdangserver.card.dto.ProfileCardResponse;
 import com.hanahakdangserver.card.entity.Card;
 import com.hanahakdangserver.card.mapper.CardMapper;
 import com.hanahakdangserver.card.repository.CardRepository;
+import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.lecture.repository.LectureRepository;
 import static com.hanahakdangserver.card.enums.CardResponseExceptionEnum.CARD_NOT_FOUND;
+import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.LECTURE_NOT_FOUND;
 
 @Log4j2
 @Service
@@ -19,12 +22,21 @@ import static com.hanahakdangserver.card.enums.CardResponseExceptionEnum.CARD_NO
 public class CardService {
 
   private final CardRepository cardRepository;
+  private final LectureRepository lectureRepository;
 
-  public ProfileCardResponse get(Long userId) {
-    Card card = cardRepository.findByMentorId(userId)
+  public ProfileCardResponse get(Long lectureId) {
+
+    Lecture lecture = lectureRepository.findById(lectureId)
+        .orElseThrow(() -> LECTURE_NOT_FOUND.createResponseStatusException());
+    Long mentorId = lecture.getMentor().getId();
+
+    Card card = cardRepository.findByMentorId(mentorId)
         .orElseThrow(() -> CARD_NOT_FOUND.createResponseStatusException());
+
     log.debug("received cardDetailInfo : {}", card.getDetailInfo());
+    
     return CardMapper.toDTO(card);
+
   }
 
   @Transactional

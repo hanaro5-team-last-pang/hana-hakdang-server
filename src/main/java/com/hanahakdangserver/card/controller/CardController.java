@@ -37,10 +37,10 @@ public class CardController {
       @ApiResponse(responseCode = "200", description = "명함 조회를 성공했습니다."),
       @ApiResponse(responseCode = "400", description = "명함이 존재하지 않습니다.")
   })
-  @GetMapping("/profile-card/{userId}")
+  @GetMapping("/profile-card/{lectureId}")
   public ResponseEntity<ResponseDTO<ProfileCardResponse>> getProfileCard(
-      @PathVariable Long userId) {
-    ProfileCardResponse cardResponse = cardService.get(userId);
+      @PathVariable Long lectureId) {
+    ProfileCardResponse cardResponse = cardService.get(lectureId);
     log.debug("result : {}",
         GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse));
     return GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse);
