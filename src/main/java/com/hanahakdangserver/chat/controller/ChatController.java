@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hanahakdangserver.chat.dto.ChatMessageResponse;
 import com.hanahakdangserver.chat.service.ChatService;
+import static com.hanahakdangserver.chat.enums.ChatResponseSuccessEnum.GET_CHAT_MESSAGES_SUCCESS;
 
 @Tag(name = "채팅", description = "채팅 API")
 @RestController
@@ -27,12 +28,10 @@ public class ChatController {
   @Operation(summary = "채팅 내역", description = "Redis에 저장된 채팅 내역 반환")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "채팅 내역 호출 성공했습니다."),
-      @ApiResponse(responseCode = "404", description = "해당 강의실에 채팅 내역이 없습니다.")
   })
-
   @GetMapping("/{classroomId}/messages")
   public ResponseEntity<?> getChatMessages(@PathVariable Long classroomId) {
     List<ChatMessageResponse> messages = chatService.getChatMessage(classroomId);
-    return ResponseEntity.ok(messages);
+    return GET_CHAT_MESSAGES_SUCCESS.createResponseEntity(messages);
   }
 }
