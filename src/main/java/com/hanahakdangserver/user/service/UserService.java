@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.hanahakdangserver.common.S3FileProcessor;
 import com.hanahakdangserver.user.dto.AccountRequest;
+import com.hanahakdangserver.user.dto.UserInfoResponse;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
 import static com.hanahakdangserver.auth.enums.AuthResponseExceptionEnum.NEW_PASSWORD_NOT_MATCHED;
@@ -73,4 +74,18 @@ public class UserService {
     User user = currentUser.update(profileImageUrl, encodedPassword);
     userRepository.save(user);
   }
+
+
+  /**
+   * 유저 정보 반환
+   *
+   * @param userId
+   * @return UserInfoResponse
+   */
+  public UserInfoResponse getUserInfo(Long userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> USER_NOT_FOUND.createResponseStatusException());
+    return new UserInfoResponse(user.getId(), user.getName());
+  }
+
 }

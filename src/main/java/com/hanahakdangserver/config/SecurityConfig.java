@@ -71,6 +71,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/faq/**").hasRole("MENTEE") // 등록은 멘티만 가능
             .requestMatchers(HttpMethod.DELETE, "/faq/**").hasRole("MENTEE") // 삭제는 멘티만 가능
             .requestMatchers("/review/**").authenticated()
+            .requestMatchers("/user-info").authenticated()
 //            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
 //            .permitAll() // 임시
 //            .requestMatchers(HttpMethod.OPTIONS, "/**")
