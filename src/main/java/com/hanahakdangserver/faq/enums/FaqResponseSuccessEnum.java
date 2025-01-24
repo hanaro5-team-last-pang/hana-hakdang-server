@@ -1,4 +1,4 @@
-package com.hanahakdangserver.review.enums;
+package com.hanahakdangserver.faq.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,10 +9,10 @@ import com.hanahakdangserver.common.ResponseDTO;
 
 @Getter
 @AllArgsConstructor
-public enum ReviewResponseSuccessEnum {
-  CREATE_REVIEW_SUCCESS(HttpStatus.CREATED, "리뷰 등록에 성공했습니다."),
-  DELETE_REVIEW_SUCCESS(HttpStatus.NO_CONTENT, "리뷰 삭제에 성공했습니다."),
-  GET_REVIEW_LIST_SUCCESS(HttpStatus.OK, "리뷰 조회에 성공했습니다.");
+public enum FaqResponseSuccessEnum {
+  CREATE_FAQ_SUCCESS(HttpStatus.CREATED, "문의 등록에 성공했습니다."),
+  DELETE_FAQ_SUCCESS(HttpStatus.NO_CONTENT, "문의 삭제에 성공했습니다."),
+  GET_FAQ_LIST_SUCCESS(HttpStatus.OK, "문의 조회에 성공했습니다.");
 
   private final HttpStatus httpStatus;
   private final String message;
@@ -29,4 +29,3 @@ public enum ReviewResponseSuccessEnum {
     return ResponseEntity.status(this.httpStatus).build();
   }
 }
-

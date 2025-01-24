@@ -1,9 +1,12 @@
 package com.hanahakdangserver.faq.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,25 +34,53 @@ public class FaqService {
   private final LectureRepository lectureRepository;
   private final UserRepository userRepository;
 
+  /**
+   * FAQ + Answer를 합쳐서 페이지네이션 처리
+   */
+  public List<Object> getPaginatedFaqs(Long lectureId, Pageable pageable) {
+    Page<Faq> faqPage = faqRepository.findByLectureId(lectureId, pageable);
+    List<Object> combinedList = new ArrayList<>();
+
+    for (Faq faq : faqPage.getContent()) {
+      // FAQ 추가
+      List<Answer> answers = answerRepository.findByFaqId(faq.getId());
+      combinedList.add(FaqMapper.toDto(faq, answers));
+
+      // 해당 FAQ의 답변 추가
+      answers.stream()
+          .map(FaqMapper::toAnswerResponse)
+          .forEach(combinedList::add);
+    }
+
+    return combinedList;
+  }
+  
   @Transactional
   public FaqResponse createFaq(Long lectureId, FaqRequest request, Long userId) {
+    // 사용자 조회
     User user = userRepository.findById(userId)
         .orElseThrow(USER_NOT_FOUND::createResponseStatusException);
 
+    // 강의 조회
     Lecture lecture = lectureRepository.findById(lectureId)
         .orElseThrow(LECTURE_NOT_FOUND::createResponseStatusException);
 
+    // Faq 엔티티 생성 및 저장
     Faq faq = Faq.builder()
         .lecture(lecture)
+        .user(user) // user 설정
         .content(request.getContent())
         .build();
 
     Faq savedFaq = faqRepository.save(faq);
+
+    // DTO 변환 후 반환
     return FaqMapper.toDto(savedFaq, List.of());
   }
 
-  public List<FaqResponse> getFaqsByLectureId(Long lectureId) {
-    List<Faq> faqs = faqRepository.findByLectureId(lectureId);
+
+  public List<FaqResponse> getFaqsByLectureId(Long lectureId, Pageable pageable) {
+    Page<Faq> faqs = faqRepository.findByLectureId(lectureId, pageable);
 
     return faqs.stream()
         .map(faq -> {
@@ -70,5 +101,4 @@ public class FaqService {
 
     faqRepository.delete(faq);
   }
-
 }

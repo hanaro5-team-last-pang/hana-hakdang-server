@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "FAQ 답변", description = "FAQ 답변 관련 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/faq/{faqId}/answers")
+@RequestMapping("lectures/faq/{faqId}/answers")
 @Log4j2
 public class AnswerController {
 
