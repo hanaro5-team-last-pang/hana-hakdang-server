@@ -6,13 +6,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.hanahakdangserver.faq.dto.AnswerRequest;
 import com.hanahakdangserver.faq.dto.AnswerResponse;
 import com.hanahakdangserver.faq.service.AnswerService;
-import com.hanahakdangserver.auth.security.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,13 +35,10 @@ public class AnswerController {
   })
   @PostMapping
   public ResponseEntity<AnswerResponse> createAnswer(
-      @AuthenticationPrincipal CustomUserDetails userDetails,
       @PathVariable Long faqId,
       @Valid @RequestBody AnswerRequest request) {
 
-    Long userId = userDetails.getId();
-
-    AnswerResponse response = answerService.createAnswer(request, userId);
+    AnswerResponse response = answerService.createAnswer(request);
 
     log.info("답변 등록 성공: faqId={}, answerId={}", faqId, response.getId());
 

@@ -30,14 +30,18 @@ public class ReviewService {
   private final LectureRepository lectureRepository;
   private final UserRepository userRepository;
 
+  private static final int PAGE_SIZE = 3; // 페이지 크기 상수 정의
+
   /**
    * 강의ID로 리뷰 가져오는 메서드
    *
    * @param lectureId
-   * @param pageable
+   * @param page
    * @return
    */
-  public ReviewResponse getReviewsByLectureId(Long lectureId, Pageable pageable) {
+  public ReviewResponse getReviewsByLectureId(Long lectureId, int page) {
+    Pageable pageable = PageRequest.of(page, PAGE_SIZE); // Service에서 Pageable 생성
+
     // 전체 리뷰 가져오기
     List<Review> allReviews = reviewRepository.findAllByLectureId(lectureId);
     String averageScore = ReviewMapper.calculateAverageScore(allReviews);
@@ -85,27 +89,8 @@ public class ReviewService {
     // 리뷰 저장
     reviewRepository.save(review);
 
-    // 전체 리뷰 데이터 다시 계산
-    List<Review> allReviews = reviewRepository.findAllByLectureId(lectureId);
-    String averageScore = ReviewMapper.calculateAverageScore(allReviews);
-    int totalCount = allReviews.size();
-    List<ReviewResponse.SubScore> subScores = ReviewMapper.calculateSubScores(allReviews);
-
-    // 페이징된 리뷰 데이터
-    Pageable pageable = PageRequest.of(0, 3); // 기본 첫 페이지 반환
-    Page<Review> pagedReviews = reviewRepository.findByLectureId(lectureId, pageable);
-    List<ReviewResponse.DetailedReview> detailedReviews = pagedReviews.stream()
-        .map(ReviewMapper::toDetailedReview)
-        .toList();
-
-    return ReviewResponse.builder()
-        .averageScore(averageScore)
-        .count(totalCount)
-        .subScores(subScores)
-        .reviews(detailedReviews)
-        .build();
+    return getReviewsByLectureId(lectureId, 0); // 첫 페이지 리뷰 데이터 반환
   }
-
 
   /**
    * 리뷰 삭제

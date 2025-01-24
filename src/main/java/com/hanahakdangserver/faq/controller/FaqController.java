@@ -38,18 +38,15 @@ public class FaqController {
       @ApiResponse(responseCode = "404", description = "해당 강의가 존재하지 않습니다.")
   })
   @GetMapping("/{lectureId}")
-  public ResponseEntity<ResponseDTO<List<Object>>> getPaginatedFaqsByLectureId(
+  public ResponseEntity<ResponseDTO<List<FaqResponse>>> getPaginatedFaqsByLectureId(
       @PathVariable Long lectureId,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "3") int size) {
+      @RequestParam(defaultValue = "0") int page) {
 
-    Pageable pageable = PageRequest.of(page, size);
-    List<Object> paginatedFaqs = faqService.getPaginatedFaqs(lectureId, pageable);
+    List<FaqResponse> paginatedFaqs = faqService.getPaginatedFaqs(lectureId, page);
 
-    log.info("FAQ + 답변 조회 성공: lectureId={}, page={}, size={}", lectureId, page, size);
+    log.info("FAQ + 답변 조회 성공: lectureId={}, page={}", lectureId, page);
     return FaqResponseSuccessEnum.GET_FAQ_LIST_SUCCESS.createResponseEntity(paginatedFaqs);
   }
-
 
   @PreAuthorize("isAuthenticated() and hasRole('MENTEE')")
   @Operation(summary = "문의 등록", description = "특정 강의에 대한 문의를 등록합니다.")

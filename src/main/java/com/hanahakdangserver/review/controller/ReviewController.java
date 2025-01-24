@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +20,7 @@ import com.hanahakdangserver.review.dto.ReviewResponse;
 import com.hanahakdangserver.review.service.ReviewService;
 import com.hanahakdangserver.auth.security.CustomUserDetails;
 
+import static com.hanahakdangserver.auth.enums.AuthResponseExceptionEnum.USER_NOT_FOUND;
 import static com.hanahakdangserver.review.enums.ReviewResponseSuccessEnum.CREATE_REVIEW_SUCCESS;
 import static com.hanahakdangserver.review.enums.ReviewResponseSuccessEnum.DELETE_REVIEW_SUCCESS;
 import static com.hanahakdangserver.review.enums.ReviewResponseSuccessEnum.GET_REVIEW_LIST_SUCCESS;
@@ -39,11 +41,9 @@ public class ReviewController {
   @GetMapping("/reviews/{lectureId}")
   public ResponseEntity<ResponseDTO<ReviewResponse>> getReviewsByLectureId(
       @PathVariable Long lectureId,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "3") int size
+      @RequestParam(defaultValue = "0") int page
   ) {
-    Pageable pageable = PageRequest.of(page, size);
-    ReviewResponse response = reviewService.getReviewsByLectureId(lectureId, pageable);
+    ReviewResponse response = reviewService.getReviewsByLectureId(lectureId, page);
     return GET_REVIEW_LIST_SUCCESS.createResponseEntity(response);
   }
 
@@ -60,7 +60,7 @@ public class ReviewController {
       @RequestBody ReviewRequest request
   ) {
     if (userDetails == null) {
-      throw new IllegalStateException("인증 정보가 없습니다.");
+      throw USER_NOT_FOUND.createResponseStatusException();
     }
     Long userId = userDetails.getId();
     ReviewResponse review = reviewService.createReview(lectureId, request, userId);
@@ -84,5 +84,5 @@ public class ReviewController {
     reviewService.deleteReview(lectureId, reviewId, userId);
     return DELETE_REVIEW_SUCCESS.createEmptyResponse();
   }
-  
+
 }

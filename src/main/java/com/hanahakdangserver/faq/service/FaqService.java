@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,27 +35,24 @@ public class FaqService {
   private final LectureRepository lectureRepository;
   private final UserRepository userRepository;
 
+  private static final int PAGE_SIZE = 3; // 페이지 크기 상수 정의
+
   /**
    * FAQ + Answer를 합쳐서 페이지네이션 처리
    */
-  public List<Object> getPaginatedFaqs(Long lectureId, Pageable pageable) {
+  public List<FaqResponse> getPaginatedFaqs(Long lectureId, int page) {
+    Pageable pageable = PageRequest.of(page, PAGE_SIZE); // Service에서 Pageable 생성
     Page<Faq> faqPage = faqRepository.findByLectureId(lectureId, pageable);
-    List<Object> combinedList = new ArrayList<>();
 
-    for (Faq faq : faqPage.getContent()) {
-      // FAQ 추가
-      List<Answer> answers = answerRepository.findByFaqId(faq.getId());
-      combinedList.add(FaqMapper.toDto(faq, answers));
-
-      // 해당 FAQ의 답변 추가
-      answers.stream()
-          .map(FaqMapper::toAnswerResponse)
-          .forEach(combinedList::add);
-    }
-
-    return combinedList;
+    // FAQ와 답변 데이터를 DTO로 변환
+    return faqPage.stream()
+        .map(faq -> {
+          List<Answer> answers = answerRepository.findByFaqId(faq.getId());
+          return FaqMapper.toDto(faq, answers);
+        })
+        .toList();
   }
-  
+
   @Transactional
   public FaqResponse createFaq(Long lectureId, FaqRequest request, Long userId) {
     // 사용자 조회
@@ -76,18 +74,6 @@ public class FaqService {
 
     // DTO 변환 후 반환
     return FaqMapper.toDto(savedFaq, List.of());
-  }
-
-
-  public List<FaqResponse> getFaqsByLectureId(Long lectureId, Pageable pageable) {
-    Page<Faq> faqs = faqRepository.findByLectureId(lectureId, pageable);
-
-    return faqs.stream()
-        .map(faq -> {
-          List<Answer> answers = answerRepository.findByFaqId(faq.getId());
-          return FaqMapper.toDto(faq, answers);
-        })
-        .collect(Collectors.toList());
   }
 
   @Transactional

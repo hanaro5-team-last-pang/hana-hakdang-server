@@ -75,7 +75,7 @@ public class ReviewResponse {
     @Schema(description = "리뷰 내용", example = "강의가 매우 유익했습니다.")
     private String content;
 
-    @Schema(description = "평점", example = "4.5")
+    @Schema(description = "평점", example = "5")
     private int score;
 
     @Schema(description = "리뷰 작성 시간", example = "2025-01-20T10:00:00")
