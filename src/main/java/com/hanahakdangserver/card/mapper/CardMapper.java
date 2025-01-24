@@ -39,6 +39,7 @@ public class CardMapper {
   public static ProfileCardResponse toDTO(Card card) {
     return ProfileCardResponse.builder()
         .mentor_name(card.getMentor().getName())
+        .profileImageUrl(card.getMentor().getProfileImageUrl())
         .short_introduction(card.getShortIntroduction())
         .simple_info(card.getSimpleInfo() != null ? toListInfo(card.getSimpleInfo()) : null)
         .detail_info(card.getDetailInfo() != null ? toListInfo(card.getDetailInfo()) : null)

@@ -22,6 +22,9 @@ public class ProfileCardResponse {
   @Schema(description = "멘토 이름", example = "미스터 중")
   private String mentor_name;
 
+  @Schema(description = "멘토 프로필 사진", example = "https://lastpang-file-bucket.s3.ap-northeast-2.amazonaws.com/55de2de7-58e1-4a1d-a682-d4572b6da31d포차코.png")
+  private String profileImageUrl;
+
   @Schema(description = "프로필 사진 상단에 있는 짧은 자기소개", example = "안녕하세요 정중일 멘토입니다.")
   private String short_introduction;
 
