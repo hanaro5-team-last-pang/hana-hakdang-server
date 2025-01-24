@@ -63,8 +63,13 @@ public class ClassroomService {
 
   private boolean canLectureBeOpened(Lecture lecture) {
     LocalDateTime now = LocalDateTime.now();
-    LocalDateTime openingTime = lecture.getStartTime().minusMinutes(intervalToOpenLecture);
-    return now.isAfter(openingTime) && now.isBefore(lecture.getStartTime());
+    // 15분 전
+    LocalDateTime openingTimeStart = lecture.getStartTime()
+        .minusMinutes(intervalToOpenLecture);
+    // 15분 후
+    LocalDateTime openingTimeEnd = lecture.getStartTime()
+        .plusMinutes(intervalToOpenLecture);
+    return now.isAfter(openingTimeStart) && now.isBefore(openingTimeEnd);
   }
 
   public ClassroomStartResponse startClassroom(Long classroomId)
@@ -83,6 +88,9 @@ public class ClassroomService {
     if (canLectureBeOpened(lecture)) {
       throw NOT_YET_TO_OPEN_CLASSROOM.createResponseStatusException();
     }
+
+    lecture.updateIsDone(true);
+    lecture.updateStartTime(LocalDateTime.now());
 
     String classroomIdStr = classroomId.toString();
     String password = UUID.randomUUID().toString();
