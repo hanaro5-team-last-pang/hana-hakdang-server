@@ -53,6 +53,7 @@ public class UserController {
   @Operation(summary = "유저 정보 조회", description = "현재 로그인 된 유저의 userId와 name을 반환합니다.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "유저 정보를 성공적으로 반환했습니다."),
+      @ApiResponse(responseCode = "400", description = "해당 유저가 존재하지 않습니다.")
   })
   @GetMapping("/user-info")
   public ResponseEntity<ResponseDTO<UserInfoResponse>> getUserInfo(

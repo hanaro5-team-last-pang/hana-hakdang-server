@@ -85,7 +85,7 @@ public class UserService {
   public UserInfoResponse getUserInfo(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> USER_NOT_FOUND.createResponseStatusException());
-    return new UserInfoResponse(user.getId(), user.getName());
+    return new UserInfoResponse(user.getId(), user.getName(), user.getRole().toString());
   }
 
 }

@@ -21,4 +21,7 @@ public class UserInfoResponse {
 
   @Schema(description = "유저이름", example = "한성민")
   private String name;
+
+  @Schema(description = "유저역할", example = "MENTEE")
+  private String role;
 }
