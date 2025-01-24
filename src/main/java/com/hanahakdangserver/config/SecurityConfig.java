@@ -66,12 +66,16 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.DELETE, "/lectures/{enrollmentId}/enroll-withdraw/**")
             .authenticated()
             .requestMatchers("/classrooms/**").authenticated()
-            // 리뷰 요청에 대한 인증
-            .requestMatchers("/review/lecture/").hasRole("MENTOR")
-            .requestMatchers(HttpMethod.GET, "/faq/**").authenticated() // 조회는 모든 인증 사용자 가능
-            .requestMatchers(HttpMethod.POST, "/faq/**").hasRole("MENTEE") // 등록은 멘티만 가능
-            .requestMatchers(HttpMethod.DELETE, "/faq/**").hasRole("MENTEE") // 삭제는 멘티만 가능
-            .requestMatchers("/review/**").authenticated()
+//            // 리뷰 요청에 대한 인증
+            .requestMatchers(HttpMethod.GET, "/lectures/reviews/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/lectures/reviews/{lectureId}/**")
+            .authenticated()
+            .requestMatchers(HttpMethod.DELETE, "/lectures/reviews/**").authenticated()
+
+            .requestMatchers(HttpMethod.GET, "/lectures/faq/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/lectures/faq/**").authenticated()
+            .requestMatchers(HttpMethod.DELETE, "/lectures/faq/**").authenticated()
+
             .requestMatchers("/user-info").authenticated()
 //            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
 //            .permitAll() // 임시

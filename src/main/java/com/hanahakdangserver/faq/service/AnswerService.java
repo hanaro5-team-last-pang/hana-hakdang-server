@@ -26,25 +26,20 @@ public class AnswerService {
    * 답변 등록
    *
    * @param request
-   * @param userId
-   * @return 등록된 답변 내용
+   * @@return 등록된 답변 내용
    */
   @Transactional
-  public AnswerResponse createAnswer(AnswerRequest request, Long userId) {
-    // FAQ 엔티티 조회
+  public AnswerResponse createAnswer(AnswerRequest request) {
     Faq faq = faqRepository.findById(request.getFaqId())
         .orElseThrow(FAQ_NOT_FOUND::createResponseStatusException);
 
-    // Answer 엔티티 생성
     Answer answer = Answer.builder()
         .faq(faq)
         .content(request.getContent())
         .build();
 
-    // Answer 저장
     Answer savedAnswer = answerRepository.save(answer);
 
-    // Mapper를 통해 DTO 반환
     return AnswerMapper.toDto(savedAnswer);
   }
 

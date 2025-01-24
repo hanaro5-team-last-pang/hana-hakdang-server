@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -122,17 +125,24 @@ public class FaqRepositoryTest {
     faqRepository.save(faq);
   }
 
-  @DisplayName("강의 ID를 기준으로 문의 내용 조회")
+  @DisplayName("강의 ID로 FAQ 조회")
   @Test
-  public void testFindByLectureId() {
+  public void shouldFindFaqsByLectureId() {
+    // Given
+    Pageable pageable = PageRequest.of(0, 3);
+
     // When
-    List<Faq> faqs = faqRepository.findByLectureId(lecture.getId());
+    Page<Faq> faqPage = faqRepository.findByLectureId(lecture.getId(), pageable);
+    List<Faq> faqs = faqPage.getContent(); // Page -> List 변환
 
     // Then
-    assertThat(faqs).isNotNull();
-    assertThat(faqs).isNotEmpty();
-    assertThat(faqs.get(0).getContent()).isEqualTo("강의는 무엇을 배우나요???");
-    assertThat(faqs.get(0).getLecture().getTitle()).isEqualTo("Test Lecture");
-    assertThat(faqs.get(0).getUser().getName()).isEqualTo("Mentee User");
+    assertThat(faqs).isNotNull().isNotEmpty();
+    assertThat(faqs.size()).isEqualTo(1);
+
+    Faq retrievedFaq = faqs.get(0);
+    assertThat(retrievedFaq.getContent()).isEqualTo("강의는 무엇을 배우나요???");
+    assertThat(retrievedFaq.getLecture().getTitle()).isEqualTo("Test Lecture");
+    assertThat(retrievedFaq.getUser().getName()).isEqualTo("Mentee User");
+    assertThat(retrievedFaq.getUser().getRole()).isEqualTo(Role.MENTEE);
   }
 }
