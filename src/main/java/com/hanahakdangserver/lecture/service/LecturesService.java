@@ -15,8 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static java.time.LocalDateTime.now;
-
 import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.LecturesResponse;
 import com.hanahakdangserver.lecture.dto.MentorLectureDetailDTO;
@@ -45,6 +43,12 @@ public class LecturesService {
   @Value("${classroom.interval-to-open-lecture}")
   private long intervalToOpenLecture;
 
+  /**
+   * 수강신청 가능한 전체 강의 목록 반환
+   *
+   * @param pageNum 페이지네이션을 위한 페이지 번호
+   * @return 전체 강의 목록을 담은 LecturesResponse
+   */
   public LecturesResponse getTotalLecturesList(Integer pageNum) {
 
     PageRequest pageRequest = PageRequest.of(pageNum, PAGE_SIZE);
@@ -76,6 +80,12 @@ public class LecturesService {
         .build();
   }
 
+  /**
+   * 특정 강의의 모든 정보를 조회하여 반환
+   *
+   * @param lectureId 상세조회 하고자 하는 강의 Id
+   * @return 강의의 모든 정보를 담은 LectureDetailDTO
+   */
   public LectureDetailDTO getLectureDetail(Long lectureId) {
 
     Lecture lecture = lectureRepository.findById(lectureId)
@@ -91,6 +101,13 @@ public class LecturesService {
     return convertLectureToDetailDTO(lecture, true);
   }
 
+  /**
+   * 특정 멘토가 등록한 모든 강의 목록을 반환
+   *
+   * @param pageNum  페이지네이션을 위한 페이지 번호
+   * @param mentorId 멘토의 userId
+   * @return 멘토의 모든 강의를 ableToStart, NotStarted, Done으로 분류하여 MentorLecturesResponse
+   */
   public MentorLecturesResponse getMentorLecturesList(Integer pageNum, Long mentorId) {
 
     PageRequest pageRequest = PageRequest.of(pageNum, MENTOR_PAGE_SIZE,
@@ -98,26 +115,7 @@ public class LecturesService {
 
     Page<Lecture> lectures = lectureRepository.searchAllLecturesOfMentor(pageRequest, mentorId);
 
-    List<MentorLectureDetailDTO> ableToStart = new ArrayList<>();
-    List<MentorLectureDetailDTO> notStarted = new ArrayList<>();
-    List<MentorLectureDetailDTO> done = new ArrayList<>();
-
-    for (Lecture lecture : lectures.getContent()) {
-
-      MentorLectureDetailDTO mentorLectureDetail = convertMentorLectureToDetailDTO(lecture);
-
-      if (mentorLectureDetail.getAbleToStart()) {
-        ableToStart.add(mentorLectureDetail);
-      } else if (!mentorLectureDetail.getIsCanceled() && now().isBefore(
-          mentorLectureDetail.getStartTime().plusMinutes(intervalToOpenLecture))) {
-        notStarted.add(mentorLectureDetail);
-      } else {
-        done.add(mentorLectureDetail);
-      }
-    }
-
-    MentorLecturesFilterDTO mentorFilter = MentorLecturesFilterDTO.builder()
-        .ableToStart(ableToStart).notStarted(notStarted).done(done).build();
+    MentorLecturesFilterDTO mentorFilter = filterMentorLectures(lectures.getContent());
 
     return MentorLecturesResponse.builder()
         .totalCount(lectures.getTotalElements())
@@ -133,37 +131,10 @@ public class LecturesService {
    * @return LectureDetailDTO
    */
   private LectureDetailDTO convertLectureToDetailDTO(Lecture lecture, Boolean isDetail) {
-    Integer currParticipants;
-    String description;
 
-    if (lecture.getIsFull()) {
-      currParticipants = lecture.getMaxParticipants();
-    } else {
-      // 연관된 enrollment의 개수를 계산
-      currParticipants = lecture.getEnrollments() != null
-          ? (int) lecture.getEnrollments().stream()
-          .filter(enrollment -> !enrollment.getIsCanceled()) // isCanceled가 false인 경우로 필터링
-          .count()
-          : 0;
-    }
-
-    List<String> tags;
-    // isDetail이 true면 description, 태그 목록 반환 필요
-    if (isDetail) {
-      description = lecture.getDescription();
-      tags = lecture.getTagList().stream().map(
-          tag -> {
-            Tag specificTag = tagRepository.findById(tag.getTag().getId()).orElse(null);
-            if (specificTag != null) {
-              return specificTag.getTagName();
-            }
-            return "";
-          }
-      ).collect(Collectors.toList());
-    } else {
-      description = null;
-      tags = null;
-    }
+    Integer currParticipants = calculateCurrentParticipants(lecture);
+    String description = isDetail ? lecture.getDescription() : null;
+    List<String> tags = isDetail ? fetchAndGetTags(lecture) : null;
 
     return LectureDetailDTO.builder()
         .lectureId(lecture.getId())
@@ -182,6 +153,23 @@ public class LecturesService {
         .build();
   }
 
+  private Integer calculateCurrentParticipants(Lecture lecture) {
+    if (lecture.getIsFull()) {
+      return lecture.getMaxParticipants();
+    }
+    return (int) lecture.getEnrollments().stream()
+        .filter(enrollment -> !enrollment.getIsCanceled())
+        .count();
+  }
+
+  private List<String> fetchAndGetTags(Lecture lecture) {
+    return lecture.getTagList().stream()
+        .map(tag -> tagRepository.findById(tag.getTag().getId())
+            .map(Tag::getTagName)
+            .orElse(""))
+        .collect(Collectors.toList());
+  }
+
   /**
    * 예상 종료시간과 시작 시간과의 차이를 통해 예상 진행 시간을 계산
    *
@@ -195,6 +183,53 @@ public class LecturesService {
   }
 
   /**
+   * 시작 가능, 예정, 완료 세 가지 상태로 분류된 멘토의 강의 목록을 DTO로 구성
+   *
+   * @param lectures 강의 목록
+   */
+  private MentorLecturesFilterDTO filterMentorLectures(List<Lecture> lectures) {
+    List<MentorLectureDetailDTO> ableToStart = new ArrayList<>();
+    List<MentorLectureDetailDTO> notStarted = new ArrayList<>();
+    List<MentorLectureDetailDTO> done = new ArrayList<>();
+
+    for (Lecture lecture : lectures) {
+      MentorLectureDetailDTO mentorLectureDetail = convertMentorLectureToDetailDTO(lecture);
+      categorizeLecture(mentorLectureDetail, ableToStart, notStarted, done);
+    }
+
+    return MentorLecturesFilterDTO.builder()
+        .ableToStart(ableToStart)
+        .notStarted(notStarted)
+        .done(done)
+        .build();
+  }
+
+  /**
+   * 멘토가 등록한 강의 목록을 시작 가능, 예정, 완료 세 가지 상태로 분류
+   *
+   * @param lectureDetail 강의 정보
+   * @param ableToStart   시작 가능한 강의를 담는 리스트
+   * @param notStarted    예정된 강의를 담는 리스트
+   * @param done          완료된 강의를 담는 리스트
+   */
+  private void categorizeLecture(MentorLectureDetailDTO lectureDetail,
+      List<MentorLectureDetailDTO> ableToStart,
+      List<MentorLectureDetailDTO> notStarted,
+      List<MentorLectureDetailDTO> done) {
+
+    LocalDateTime now = LocalDateTime.now();
+
+    if (lectureDetail.getAbleToStart()) {
+      ableToStart.add(lectureDetail);
+    } else if (!lectureDetail.getIsCanceled()
+        && now.isBefore(lectureDetail.getStartTime().plusMinutes(intervalToOpenLecture))) {
+      notStarted.add(lectureDetail);
+    } else {
+      done.add(lectureDetail);
+    }
+  }
+
+  /**
    * startTime과 isDone을 통해 강의 시작가능, 강의 예정, 완료된 강의 필터링
    *
    * @param lecture Lecture 객체
@@ -203,25 +238,13 @@ public class LecturesService {
   private MentorLectureDetailDTO convertMentorLectureToDetailDTO(Lecture lecture) {
 
     LocalDateTime now = LocalDateTime.now();
+    LocalDateTime startTime = lecture.getStartTime();
 
-    Boolean ableToStart;
+    Boolean ableToStart = determineAbleToStart(now, startTime);
 
-    if (now.isBefore(lecture.getStartTime().minusMinutes(intervalToOpenLecture))) {
-      // 현재 시간이 강의 시작시간 15분 전보다 이전인 경우 -> 예정된 강의지만 강의 시작은 불가능
-      ableToStart = false;
-    } else if (now.isBefore(lecture.getStartTime().plusMinutes(intervalToOpenLecture))) {
-      // 현재 시간이 강의 시작시간 15분 전, 15분 후 사이인 경우 -> 강의 시작 가능
-      ableToStart = true;
-    } else if (now.isAfter(lecture.getStartTime().plusMinutes(intervalToOpenLecture))) {
-      // 현재 시간이 강의 시작 가능 시간을 넘겨 버린 경우 -> 완료된 강의로 판단
-      ableToStart = false;
-
-      // 강의 시작 가능시간을 넘겼지만 isCanceled가 false인 경우 자동 취소 강의로 처리
-      if (!lecture.getIsCanceled() && !lecture.getIsDone()) {
-        lecture.updateIsCanceled(true);
-      }
-    } else {
-      ableToStart = false;
+    // 강의 시작 가능시간을 넘겼지만 isCanceled가 false인 경우 자동 취소 강의로 처리
+    if (shouldCancelLecture(now, lecture)) {
+      lecture.updateIsCanceled(true);
     }
 
     return MentorLectureDetailDTO.builder()
@@ -234,5 +257,21 @@ public class LecturesService {
         .startTime(lecture.getStartTime())
         .endTime(lecture.getEndTime())
         .build();
+  }
+
+  private Boolean determineAbleToStart(LocalDateTime now, LocalDateTime startTime) {
+    if (now.isBefore(startTime.minusMinutes(intervalToOpenLecture))) {
+      return false;
+    } else if (now.isBefore(startTime.plusMinutes(intervalToOpenLecture))) {
+      return true;
+    }
+    return false;
+  }
+
+  private boolean shouldCancelLecture(LocalDateTime now, Lecture lecture) {
+    LocalDateTime startTime = lecture.getStartTime();
+    return now.isAfter(startTime.plusMinutes(intervalToOpenLecture))
+        && !lecture.getIsCanceled()
+        && !lecture.getIsDone();
   }
 }
