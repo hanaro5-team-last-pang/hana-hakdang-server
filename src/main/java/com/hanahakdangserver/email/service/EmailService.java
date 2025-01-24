@@ -18,11 +18,8 @@ public class EmailService {
 
   private final JavaMailSender javaMailSender;
 
-  @Value("${front.host}")
-  private String host;
-
-  @Value("${front.port}")
-  private String port;
+  @Value("${front.domain}")
+  private String domain;
 
   @Async
   public void send(String email, String authToken) {
@@ -31,9 +28,8 @@ public class EmailService {
       MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
       helper.setTo(email);
       helper.setSubject("하나학당 회원가입 인증 링크입니다✨");
-      String content = String.format("http://%s:%s/approval?email=%s&authToken=%s",
-          host, port, email, authToken);
-//      String content = authToken; //임시
+//      String content = String.format("%s?email=%s&authToken=%s", domain, email, authToken);
+      String content = authToken; //임시
       helper.setText(content, true);
 
       javaMailSender.send(mimeMessage);
