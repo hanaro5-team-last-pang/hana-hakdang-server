@@ -11,7 +11,9 @@ import com.hanahakdangserver.common.ResponseDTO;
 @AllArgsConstructor
 public enum EnrollmentResponseSuccessEnum {
   ENROLL_SUCCESS(HttpStatus.OK, "수강신청에 성공했습니다."),
-  WITHDRAW_ENROLLMENT_SUCCESS(HttpStatus.OK, "수강신청 취소에 성공했습니다.");
+  WITHDRAW_ENROLLMENT_SUCCESS(HttpStatus.OK, "수강신청 취소에 성공했습니다."),
+  GET_ENROLLMENT_HISTORY_SUCCESS(HttpStatus.OK, "수강 내역 목록 조회에 성공했습니다."),
+  GET_ENROLLMENT_QUEUE_SUCCESS(HttpStatus.OK, "수강 예정 내역 목록 조회에 성공했습니다.");
 
   private final HttpStatus httpStatus;
   private final String message;

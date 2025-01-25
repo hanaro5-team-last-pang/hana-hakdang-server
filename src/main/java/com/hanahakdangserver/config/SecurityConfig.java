@@ -65,6 +65,8 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/lectures/{lectureId}/enroll/**").authenticated()
             .requestMatchers(HttpMethod.DELETE, "/lectures/{enrollmentId}/enroll-withdraw/**")
             .authenticated()
+            .requestMatchers(HttpMethod.GET, "/lectures/history/mentee/**").authenticated()
+            .requestMatchers(HttpMethod.GET, "/lectures/queue/mentee/**").authenticated()
             .requestMatchers("/classrooms/**").authenticated()
 //            // 리뷰 요청에 대한 인증
             .requestMatchers(HttpMethod.GET, "/lectures/reviews/**").permitAll()
