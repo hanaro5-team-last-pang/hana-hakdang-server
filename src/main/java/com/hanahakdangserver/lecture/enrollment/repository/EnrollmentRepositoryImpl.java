@@ -106,4 +106,41 @@ public class EnrollmentRepositoryImpl implements EnrollmentRepositoryCustom {
 
     return new PageImpl<>(resultList, pageRequest, totalCount);
   }
+
+  @Override
+  public Page<LectureEnrollmentDTO> getUpcomingLecturesByMenteeId(PageRequest pageRequest,
+      Long userId) {
+
+    BooleanExpression upcomingCondition = enrollment.isCanceled.isFalse()
+        .and(lecture.isCanceled.isFalse())
+        .and(lecture.endTime.after(LocalDateTime.now()))
+        .and(enrollment.user.id.eq(userId));
+
+    List<LectureEnrollmentDTO> resultList = queryFactory
+        .select(Projections.constructor(
+            LectureEnrollmentDTO.class,
+            lecture,
+            enrollment
+        ))
+        .from(enrollment)
+        .join(enrollment.lecture, lecture)
+        .where(upcomingCondition)
+        .offset(pageRequest.getOffset())
+        .limit(pageRequest.getPageSize())
+        .fetch();
+
+    Long totalCount = Optional.ofNullable(
+        queryFactory
+            .select(lecture.countDistinct())
+            .from(enrollment)
+            .join(enrollment.lecture, lecture)
+            .where(upcomingCondition)
+            .fetchOne()
+    ).orElse(0L);
+
+    log.info("[멘티의 예정된 강의 조회] resultList 길이: {}, 페이지네이션 없이 totalCount 크기: {}", resultList.size(),
+        totalCount);
+
+    return new PageImpl<>(resultList, pageRequest, totalCount);
+  }
 }
