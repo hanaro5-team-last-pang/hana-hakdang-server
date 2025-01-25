@@ -29,10 +29,18 @@ public interface EnrollmentRepositoryCustom {
   List<Enrollment> getExistingEnrollment(Long userId, Long lectureId);
 
   /**
-   * 유저가 과거 수강했던 Lecture 반환
+   * 유저가 과거 수강했던 Enrollment와 여기에 연관된 Lecture 반환
    *
    * @param userId 멘티의 유저 Id
-   * @return 수강 완료, 신청 취소, 강의 취소된 Lecture 객체가 담긴 List
+   * @return 수강 완료, 신청 취소, 강의 취소된 Lecture, Enrollment 객체가 담긴 DTO
    */
   Page<LectureEnrollmentDTO> getPastLecturesByMenteeId(PageRequest pageRequest, Long userId);
+
+  /**
+   * 유저가 앞으로 수강할 예정인 Enrollment와 여기에 연관된 Lecture 반환
+   *
+   * @param userId 멘티의 유저 Id
+   * @return 아직 수강하지 않은 Lecture, Enrollment 객체가 담긴 DTO
+   */
+  Page<LectureEnrollmentDTO> getUpcomingLecturesByMenteeId(PageRequest pageRequest, Long userId);
 }

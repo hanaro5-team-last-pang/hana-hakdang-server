@@ -62,12 +62,14 @@ public class EnrollmentService {
 
       // 이미 유저가 수강신청한 강의인지 확인
       if (enrollmentRepository.isAlreadyEnrolled(userId, lectureId)) {
+        redisString.decrement("lecture:" + lectureId, 1);
         throw ALREADY_ENROLLED.createResponseStatusException();
       }
 
       // 수강신청 가능한 상태의 강의인지 확인
       if (lecture.getIsFull() || lecture.getIsCanceled() || lecture.getStartTime()
           .isBefore(now())) {
+        redisString.decrement("lecture:" + lectureId, 1);
         throw ENROLL_IS_NOT_ALLOWED.createResponseStatusException();
       }
 
