@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -35,11 +36,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     SecurityContextHolder.getContext().setAuthentication(authentication);
     session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
-    response.setHeader("Set-Cookie",
-        session.getId() + "; Path=/; HttpOnly; Secure;");
-    response.setStatus(HttpServletResponse.SC_OK);
-    response.setContentType("application/json");
+    // 쿠키 생성
+    Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
+    sessionCookie.setPath("/");
+    sessionCookie.setHttpOnly(true);
     response.setCharacterEncoding("UTF-8");
+    sessionCookie.setSecure(request.isSecure());
+
+    response.addCookie(sessionCookie);
 
     // 응답 JSON 객체 생성
     Map<String, Object> responseBody = new LinkedHashMap<>();
