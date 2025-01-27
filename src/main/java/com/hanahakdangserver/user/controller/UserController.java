@@ -3,11 +3,14 @@ package com.hanahakdangserver.user.controller;
 import java.io.IOException;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.hanahakdangserver.auth.security.CustomUserDetails;
 import com.hanahakdangserver.common.ResponseDTO;
+import com.hanahakdangserver.common.SwaggerBody;
 import com.hanahakdangserver.user.dto.AccountRequest;
 import com.hanahakdangserver.user.dto.UserInfoResponse;
 import com.hanahakdangserver.user.service.UserService;
@@ -37,7 +41,9 @@ public class UserController {
       @ApiResponse(responseCode = "200", description = "계정 수정을 성공했습니다."),
       @ApiResponse(responseCode = "400", description = "계정 수정에 실패했습니다.")
   })
-  @PatchMapping("/account")
+  @SwaggerBody(content = @Content(
+      encoding = @Encoding(name = "accountData", contentType = MediaType.APPLICATION_JSON_VALUE)))
+  @PatchMapping(value = "/account", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<ResponseDTO<Object>> updateProfileCard
       (@RequestPart(value = "accountData", required = false) AccountRequest accountRequest,
           @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
