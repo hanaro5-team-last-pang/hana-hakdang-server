@@ -41,8 +41,7 @@ public class CardController {
   public ResponseEntity<ResponseDTO<ProfileCardResponse>> getProfileCard(
       @PathVariable Long lectureId) {
     ProfileCardResponse cardResponse = cardService.get(lectureId);
-    log.debug("result : {}",
-        GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse));
+    log.debug("result : {}", GET_PROFILE_CARD_SUCCESS.getMessage());
     return GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse);
   }
 
@@ -56,8 +55,7 @@ public class CardController {
   public ResponseEntity<ResponseDTO<ProfileCardResponse>> getMyProfileCard(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     ProfileCardResponse cardResponse = cardService.getMyCard(userDetails.getId());
-    log.debug("result : {}",
-        GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse));
+    log.debug("result : {}", GET_PROFILE_CARD_SUCCESS.getMessage());
     return GET_PROFILE_CARD_SUCCESS.createResponseEntity(cardResponse);
   }
 
@@ -73,8 +71,7 @@ public class CardController {
       @RequestBody ProfileCardRequest profileCardRequest) {
 
     cardService.update(userDetails.getId(), profileCardRequest);
-    log.debug("result : {}",
-        UPDATE_PROFILE_CARD_SUCCESS.createResponseEntity());
+    log.debug("result : {}", UPDATE_PROFILE_CARD_SUCCESS.getMessage());
     return UPDATE_PROFILE_CARD_SUCCESS.createResponseEntity();
   }
 }
