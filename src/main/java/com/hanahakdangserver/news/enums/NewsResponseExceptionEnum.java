@@ -7,7 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Getter
 @AllArgsConstructor
-public enum NewsExceptionEnum {
+public enum NewsResponseExceptionEnum {
 
   NEWS_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "뉴스 데이터를 가져오는 데 실패했습니다."),
   INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "날짜 형식이 올바르지 않습니다."),
@@ -19,5 +19,8 @@ public enum NewsExceptionEnum {
 
   public ResponseStatusException createResponseStatusException() {
     return new ResponseStatusException(this.httpStatus, this.message);
+    
   }
 }
+
+

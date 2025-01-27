@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hanahakdangserver.common.ResponseDTO;
 import com.hanahakdangserver.news.dto.NewsResponse;
 import com.hanahakdangserver.news.service.NewsService;
 
 import java.util.List;
+
+import static com.hanahakdangserver.news.enums.NewsResponseSuccessEnum.CRAWLING_REQUESTED;
+import static com.hanahakdangserver.news.enums.NewsResponseSuccessEnum.NEWS_FETCHED;
 
 @Tag(name = "뉴스", description = "뉴스 API 목록")
 @RestController
@@ -30,9 +34,9 @@ public class NewsController {
       @ApiResponse(responseCode = "500", description = "서버 내부 오류")
   })
   @GetMapping
-  public ResponseEntity<List<NewsResponse>> getAllNews() {
+  public ResponseEntity<ResponseDTO<List<NewsResponse>>> getAllNews() {
     List<NewsResponse> newsResponses = newsService.getAllNews();
-    return ResponseEntity.ok(newsResponses);
+    return NEWS_FETCHED.createResponseEntity(newsResponses);
   }
 
   @Operation(summary = "뉴스 크롤링 요청", description = "파이썬 서버에서 최신 뉴스를 크롤링하여 저장합니다.")
@@ -41,8 +45,8 @@ public class NewsController {
       @ApiResponse(responseCode = "500", description = "서버 내부 오류")
   })
   @PostMapping("/request-crawling")
-  public ResponseEntity<String> requestCrawling() {
+  public ResponseEntity<ResponseDTO<String>> requestCrawling() {
     newsService.saveNewsFromPython();
-    return ResponseEntity.ok("크롤링 요청 성공");
+    return CRAWLING_REQUESTED.createResponseEntity("크롤링 요청 성공");
   }
 }
