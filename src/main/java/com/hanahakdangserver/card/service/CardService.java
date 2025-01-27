@@ -35,7 +35,7 @@ public class CardService {
   @Transactional
   public void create(String email) {
     User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> EMAIL_NOT_FOUND.createResponseStatusException());
+        .orElseThrow(EMAIL_NOT_FOUND::createResponseStatusException);
     CareerInfo careerInfo = user.getCareerInfo();
 
     Map<String, String> defaultSimpleInfo = CardMapper.toDefaultSimpleInfo(careerInfo);
@@ -47,11 +47,11 @@ public class CardService {
   public ProfileCardResponse get(Long lectureId) {
 
     Lecture lecture = lectureRepository.findById(lectureId)
-        .orElseThrow(() -> LECTURE_NOT_FOUND.createResponseStatusException());
+        .orElseThrow(LECTURE_NOT_FOUND::createResponseStatusException);
     Long mentorId = lecture.getMentor().getId();
 
     Card card = cardRepository.findByMentorId(mentorId)
-        .orElseThrow(() -> CARD_NOT_FOUND.createResponseStatusException());
+        .orElseThrow(CARD_NOT_FOUND::createResponseStatusException);
 
     log.debug("received shortIntroduction : {}", card.getShortIntroduction());
 
@@ -62,7 +62,7 @@ public class CardService {
   public ProfileCardResponse getMyCard(Long mentorId) {
 
     Card card = cardRepository.findByMentorId(mentorId)
-        .orElseThrow(() -> CARD_NOT_FOUND.createResponseStatusException());
+        .orElseThrow(CARD_NOT_FOUND::createResponseStatusException);
 
     log.debug("received shortIntroduction : {}", card.getShortIntroduction());
 
@@ -73,7 +73,7 @@ public class CardService {
   @Transactional
   public void update(Long userId, ProfileCardRequest cardRequest) {
     Card currentCard = cardRepository.findByMentorId(userId)
-        .orElseThrow(() -> CARD_NOT_FOUND.createResponseStatusException());
+        .orElseThrow(CARD_NOT_FOUND::createResponseStatusException);
 
     Map<String, String> simpleInfo =
         cardRequest.getSimpleInfo() != null ? CardMapper.toMapInfo(cardRequest.getSimpleInfo())
