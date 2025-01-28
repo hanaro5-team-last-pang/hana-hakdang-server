@@ -3,6 +3,7 @@ package com.hanahakdangserver.lecture.service;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -126,11 +127,25 @@ public class LectureManageService {
     });
 
     // 동시성 처리를 위해 Redis에 현재 수강신청한 인원 관리
-    String lectureKey = "lecture:" + lecture.getId(); // lecture id를 사용하여 Redis 키 생성
+    putLectureIdString(lecture.getId(), lecture.getStartTime());
 
+    // { 강의실 : 강의 } 관리를 위해 레디스의 classroomLectureIdHash에 저장
+    putLectureIdHash(uniqueId, lecture.getId());
+
+    // TODO : 강의 취소 시에는 classroomLectureIdHash에서 제거
+  }
+
+  /**
+   * 레디스에 { lecture:lectureId : "0" } 저장
+   *
+   * @param lectureId key 생성을 위한 강의 Id
+   * @param startTime TTL 계산을 위한 강의 시작시간
+   */
+  private void putLectureIdString(Long lectureId, LocalDateTime startTime) {
+    String lectureKey = "lecture:" + lectureId; // lecture id를 사용하여 Redis 키 생성
     // TTL 계산: startTime에서 현재 시간 차이 + 1시간
     Instant now = Instant.now();
-    Instant startTimeInstant = lecture.getStartTime()
+    Instant startTimeInstant = startTime
         .atZone(ZoneId.of("Asia/Seoul"))
         .toInstant();
 
@@ -138,11 +153,6 @@ public class LectureManageService {
     ttlDuration = ttlDuration.plusHours(1);
 
     redisString.putWithTTL(lectureKey, "0", ttlDuration); // 수강신청한 인원 수 0으로 초기화
-
-    // { 강의실 : 강의 } 관리를 위해 레디스의 classroomLectureIdHash에 저장
-    putLectureIdHash(uniqueId, lecture.getId());
-
-    // TODO : 강의 취소 시에는 classroomLectureIdHash에서 제거
   }
 
   /**
