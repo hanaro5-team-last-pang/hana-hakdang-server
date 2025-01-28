@@ -3,7 +3,6 @@ package com.hanahakdangserver.product.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +14,9 @@ import com.hanahakdangserver.product.dto.HanaItemResponse;
 import com.hanahakdangserver.product.entity.HanaItem;
 import com.hanahakdangserver.product.entity.Tag;
 import com.hanahakdangserver.product.repository.HanaItemRepository;
+import static com.hanahakdangserver.product.enums.HanaItemResponseExceptionEnum.LECTURE_NOT_FOUND;
+import static com.hanahakdangserver.product.enums.HanaItemResponseExceptionEnum.TAGS_NOT_FOUND;
+import static com.hanahakdangserver.product.enums.HanaItemResponseExceptionEnum.PRODUCTS_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -32,13 +34,20 @@ public class HanaItemService {
    */
   public List<HanaItemResponse> getItemsByLectureId(Long lectureId) {
     Lecture lecture = lectureRepository.findById(lectureId)
-        .orElseThrow(() -> new EntityNotFoundException("강의를 조회하지 못 했습니다"));
+        .orElseThrow(LECTURE_NOT_FOUND::createResponseStatusException);
 
     List<LectureTag> tagList = lecture.getTagList(); // 강의 테이블에서 태그 리스트 가져오기
+    if (tagList.isEmpty()) {
+      throw TAGS_NOT_FOUND.createResponseStatusException();
+    }
+
     List<Long> tagIds = tagList.stream().map(LectureTag::getTag).map(Tag::getId)
         .collect(Collectors.toList());
 
     List<HanaItem> items = hanaItemRepository.findAllByTagIds(tagIds);
+    if (items.isEmpty()) {
+      throw PRODUCTS_NOT_FOUND.createResponseStatusException();
+    }
 
     return items.stream()
         .map(item -> HanaItemResponse.builder()
@@ -46,10 +55,7 @@ public class HanaItemService {
             .itemTitle(item.getItemTitle())
             .itemContent(item.getItemContent())
             .hanaUrl(item.getHanaUrl())
-//            .lectureId(lectureId)
             .build())
         .collect(Collectors.toList());
   }
-
-
 }

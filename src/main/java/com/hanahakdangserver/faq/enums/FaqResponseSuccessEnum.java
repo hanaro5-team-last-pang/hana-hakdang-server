@@ -12,7 +12,9 @@ import com.hanahakdangserver.common.ResponseDTO;
 public enum FaqResponseSuccessEnum {
   CREATE_FAQ_SUCCESS(HttpStatus.CREATED, "문의 등록에 성공했습니다."),
   DELETE_FAQ_SUCCESS(HttpStatus.NO_CONTENT, "문의 삭제에 성공했습니다."),
-  GET_FAQ_LIST_SUCCESS(HttpStatus.OK, "문의 조회에 성공했습니다.");
+  GET_FAQ_LIST_SUCCESS(HttpStatus.OK, "문의 조회에 성공했습니다."),
+  CREATE_ANSWER_SUCCESS(HttpStatus.CREATED, "답변 등록에 성공했습니다."),
+  DELETE_ANSWER_SUCCESS(HttpStatus.NO_CONTENT, "답변 삭제에 성공했습니다.");
 
   private final HttpStatus httpStatus;
   private final String message;

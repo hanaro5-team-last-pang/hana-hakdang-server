@@ -1,4 +1,3 @@
-
 package com.hanahakdangserver.product.controller;
 
 import java.util.List;
@@ -18,6 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import static com.hanahakdangserver.product.enums.HanaItemResponseSuccessEnum.RECOMMEND_PRODUCTS_SUCCESS;
+
 @Tag(name = "상품", description = "상품 관련 API")
 @RestController
 @RequestMapping("/product")
@@ -34,6 +35,6 @@ public class HanaItemController {
   @GetMapping("/recommend/{lectureId}")
   public ResponseEntity<List<HanaItemResponse>> recommendProducts(@PathVariable Long lectureId) {
     List<HanaItemResponse> products = hanaItemService.getItemsByLectureId(lectureId);
-    return ResponseEntity.ok(products);
+    return RECOMMEND_PRODUCTS_SUCCESS.createResponseEntity(products);
   }
 }

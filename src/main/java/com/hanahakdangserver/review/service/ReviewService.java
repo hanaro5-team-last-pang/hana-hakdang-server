@@ -13,11 +13,15 @@ import com.hanahakdangserver.review.dto.ReviewRequest;
 import com.hanahakdangserver.review.dto.ReviewResponse;
 import com.hanahakdangserver.review.entity.Review;
 import com.hanahakdangserver.review.mapper.ReviewMapper;
+import com.hanahakdangserver.review.projection.ReviewProjection;
 import com.hanahakdangserver.review.repository.ReviewRepository;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.hanahakdangserver.review.enums.ReviewResponseExceptionEnum.*;
 
@@ -37,31 +41,42 @@ public class ReviewService {
    *
    * @param lectureId
    * @param page
-   * @return
+   * @return 리뷰 데이터 반환
    */
   public ReviewResponse getReviewsByLectureId(Long lectureId, int page) {
-    Pageable pageable = PageRequest.of(page, PAGE_SIZE); // Service에서 Pageable 생성
+    Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+    Page<ReviewProjection> reviewProjections = reviewRepository.findReviewsByLectureId(lectureId,
+        pageable);
 
-    // 전체 리뷰 가져오기
-    List<Review> allReviews = reviewRepository.findAllByLectureId(lectureId);
-    String averageScore = ReviewMapper.calculateAverageScore(allReviews);
-    int totalCount = allReviews.size();
-    List<ReviewResponse.SubScore> subScores = ReviewMapper.calculateSubScores(allReviews);
+    // 평균 별점 계산
+    double averageScore = reviewProjections.stream()
+        .mapToDouble(ReviewProjection::getAverageScore)
+        .average()
+        .orElse(0.0);
 
-    // 페이징 처리된 리뷰 가져오기
-    Page<Review> pagedReviews = reviewRepository.findByLectureId(lectureId, pageable);
-    List<ReviewResponse.DetailedReview> detailedReviews = pagedReviews.stream()
+    // 별점별 개수 계산
+    Map<Integer, Long> scoreCounts = reviewProjections.stream()
+        .collect(Collectors.groupingBy(ReviewProjection::getScore, Collectors.counting()));
+
+    List<ReviewResponse.SubScore> subScores = new ArrayList<>();
+    for (int i = 5; i >= 1; i--) {
+      subScores.add(new ReviewResponse.SubScore(i, scoreCounts.getOrDefault(i, 0L).intValue()));
+    }
+
+    // 리뷰 리스트 매핑
+    List<ReviewResponse.DetailedReview> detailedReviews = reviewProjections.stream()
         .map(ReviewMapper::toDetailedReview)
         .toList();
 
     // DTO 생성
     return ReviewResponse.builder()
-        .averageScore(averageScore)
-        .count(totalCount)
+        .averageScore(String.format("%.1f", averageScore))
+        .count((int) reviewProjections.getTotalElements())
         .subScores(subScores)
         .reviews(detailedReviews)
         .build();
   }
+
 
   /**
    * 리뷰 생성 메서드
@@ -69,7 +84,7 @@ public class ReviewService {
    * @param lectureId
    * @param request
    * @param userId
-   * @return
+   * @return 리뷰 데이터
    */
   @Transactional
   public ReviewResponse createReview(Long lectureId, ReviewRequest request, Long userId) {

@@ -1,7 +1,6 @@
 package com.hanahakdangserver.news.service;
 
 import com.hanahakdangserver.news.entity.News;
-import com.hanahakdangserver.news.enums.NewsExceptionEnum;
 import com.hanahakdangserver.news.repository.NewsRepository;
 import com.hanahakdangserver.news.dto.NewsResponse;
 
@@ -17,6 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.hanahakdangserver.news.enums.NewsResponseExceptionEnum.INVALID_DATE_FORMAT;
+import static com.hanahakdangserver.news.enums.NewsResponseExceptionEnum.NEWS_FETCH_FAILED;
+import static com.hanahakdangserver.news.enums.NewsResponseExceptionEnum.NEWS_SAVE_FAILED;
+import static com.hanahakdangserver.news.enums.NewsResponseExceptionEnum.NO_NEWS_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +38,7 @@ public class NewsService {
           .bodyToMono(List.class)
           .block();
     } catch (Exception e) {
-      throw NewsExceptionEnum.NEWS_FETCH_FAILED.createResponseStatusException();
+      throw NEWS_FETCH_FAILED.createResponseStatusException();
     }
   }
 
@@ -42,7 +46,7 @@ public class NewsService {
   public void saveNewsFromPython() {
     List<Map<String, String>> articles = fetchNewsFromPython();
     if (articles == null || articles.isEmpty()) {
-      throw NewsExceptionEnum.NEWS_FETCH_FAILED.createResponseStatusException();
+      throw NEWS_FETCH_FAILED.createResponseStatusException();
     }
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
@@ -59,14 +63,14 @@ public class NewsService {
             .build();
         newsList.add(news);
       } catch (DateTimeParseException e) {
-        throw NewsExceptionEnum.INVALID_DATE_FORMAT.createResponseStatusException();
+        throw INVALID_DATE_FORMAT.createResponseStatusException();
       }
     }
 
     try {
       newsRepository.saveAll(newsList);
     } catch (Exception e) {
-      throw NewsExceptionEnum.NEWS_SAVE_FAILED.createResponseStatusException();
+      throw NEWS_SAVE_FAILED.createResponseStatusException();
     }
 
   }
@@ -74,7 +78,7 @@ public class NewsService {
   public List<NewsResponse> getAllNews() {
     List<News> newsList = newsRepository.findAll();
     if (newsList.isEmpty()) {
-      throw NewsExceptionEnum.NO_NEWS_FOUND.createResponseStatusException();
+      throw NO_NEWS_FOUND.createResponseStatusException();
     }
 
     return newsList.stream()

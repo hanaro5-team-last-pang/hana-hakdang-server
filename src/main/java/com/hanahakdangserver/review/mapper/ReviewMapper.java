@@ -2,6 +2,7 @@ package com.hanahakdangserver.review.mapper;
 
 import com.hanahakdangserver.review.dto.ReviewResponse;
 import com.hanahakdangserver.review.entity.Review;
+import com.hanahakdangserver.review.projection.ReviewProjection;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -35,17 +36,17 @@ public class ReviewMapper {
     return subScores;
   }
 
-  public static ReviewResponse.DetailedReview toDetailedReview(Review review) {
+  public static ReviewResponse.DetailedReview toDetailedReview(ReviewProjection projection) {
     return ReviewResponse.DetailedReview.builder()
-        .id(review.getId())
-        .lectureId(review.getLecture().getId())
-        .userId(review.getUser().getId())
-        .userName(review.getUser().getName())
-        .imageUrl(review.getUser().getProfileImageUrl())
-        .lectureTitle(review.getLecture().getTitle())
-        .content(review.getContent())
-        .score(review.getScore())
-        .createdAt(review.getCreatedAt())
+        .id(projection.getId())
+        .lectureId(projection.getLectureId())
+        .userId(projection.getUserId())
+        .userName(projection.getUserName())
+        .imageUrl(projection.getImageUrl())
+        .lectureTitle(projection.getLectureTitle())
+        .content(projection.getContent())
+        .score(projection.getScore())
+        .createdAt(projection.getCreatedAt())
         .build();
   }
 }
