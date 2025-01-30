@@ -11,7 +11,8 @@ import com.hanahakdangserver.common.ResponseDTO;
 @RequiredArgsConstructor
 public enum ClassroomResponseSuccessEnum {
   CLASSROOM_STARTED(HttpStatus.OK, "강의를 시작합니다"),
-  CLASSROOM_ENTERED(HttpStatus.OK, "강의실에 입장합니다.");
+  CLASSROOM_ENTERED(HttpStatus.OK, "강의실에 입장합니다."),
+  CLASSROOM_TERMINATED(HttpStatus.OK, "강의 종료에 성공했습니다.");
 
   private final HttpStatus httpStatus;
   private final String message;
