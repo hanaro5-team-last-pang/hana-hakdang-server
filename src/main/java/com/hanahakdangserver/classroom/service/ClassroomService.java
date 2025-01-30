@@ -83,7 +83,6 @@ public class ClassroomService {
     Lecture lecture = lectureRepository.findById(lectureId)
         .orElseThrow(NOT_FOUND_LECTURE::createResponseStatusException);
 
-    log.debug("강의: {}", lecture);
     if (lecture.getIsCanceled()) {
       throw LECTURE_CANCELED.createResponseStatusException();
     }
