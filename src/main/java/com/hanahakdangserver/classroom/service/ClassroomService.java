@@ -69,9 +69,12 @@ public class ClassroomService {
     // 15분 후
     LocalDateTime openingTimeEnd = lecture.getStartTime()
         .plusMinutes(intervalToOpenLecture);
+
+    log.info("시작 가능 시간: {} ~ {}", openingTimeStart, openingTimeEnd);
     return now.isAfter(openingTimeStart) && now.isBefore(openingTimeEnd);
   }
 
+  @Transactional
   public ClassroomStartResponse startClassroom(Long classroomId)
       throws ResponseStatusException {
     Long lectureId = getLectureId(classroomId);
@@ -85,7 +88,7 @@ public class ClassroomService {
       throw LECTURE_CANCELED.createResponseStatusException();
     }
 
-    if (canLectureBeOpened(lecture)) {
+    if (!canLectureBeOpened(lecture)) {
       throw NOT_YET_TO_OPEN_CLASSROOM.createResponseStatusException();
     }
 
@@ -102,9 +105,13 @@ public class ClassroomService {
         .build();
   }
 
-  private boolean isEnrolled(Long classroomId, Long menteeId) {
-    RedisBoundSet<Long> classroomMenteeSet = new RedisBoundSet<>(
+  private RedisBoundSet<Long> getRedisMenteeSet(Long classroomId) {
+    return new RedisBoundSet<>(
         classroomMenteeIdSetHashBoundKey + ":" + classroomId, redisTemplate, objectMapper);
+  }
+
+  private boolean isEnrolled(Long classroomId, Long menteeId) {
+    RedisBoundSet<Long> classroomMenteeSet = getRedisMenteeSet(classroomId);
     return classroomMenteeSet.exists(menteeId);
   }
 
@@ -129,5 +136,22 @@ public class ClassroomService {
         .mentorId(mentorIdOnly.getMentorId())
         .lectureId(lectureId)
         .build();
+  }
+
+  @Transactional
+  public void terminateClassroom(Long classroomId) throws ResponseStatusException {
+
+    Long lectureId = getLectureId(classroomId);
+    log.debug("강의 종료 시도, 강의 Id: {}", lectureId);
+
+    Lecture lecture = lectureRepository.findById(lectureId)
+        .orElseThrow(NOT_FOUND_LECTURE::createResponseStatusException);
+
+    lecture.updateEndTime(LocalDateTime.now()); // 강의 endTime 업데이트
+
+    // 레디스에서 관련 데이터 삭제
+    classroomLectureIdHash.delete(classroomId.toString());
+    classroomPasswordHash.delete(classroomId.toString());
+    redisTemplate.delete(classroomMenteeIdSetHashBoundKey + ":" + classroomId);
   }
 }

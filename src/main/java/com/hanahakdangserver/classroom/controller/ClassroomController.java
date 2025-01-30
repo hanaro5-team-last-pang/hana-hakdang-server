@@ -24,6 +24,7 @@ import com.hanahakdangserver.classroom.service.ClassroomService;
 import com.hanahakdangserver.common.ResponseDTO;
 import static com.hanahakdangserver.classroom.enums.ClassroomResponseSuccessEnum.CLASSROOM_ENTERED;
 import static com.hanahakdangserver.classroom.enums.ClassroomResponseSuccessEnum.CLASSROOM_STARTED;
+import static com.hanahakdangserver.classroom.enums.ClassroomResponseSuccessEnum.CLASSROOM_TERMINATED;
 
 @Tag(name = "강의실", description = "강의실 API")
 @Log4j2
@@ -73,5 +74,20 @@ public class ClassroomController {
     ClassroomEnterResponse enterResponse = classroomService.enterClassroom(classroomId,
         userDetails.getId());
     return CLASSROOM_ENTERED.createResponseEntity(enterResponse);
+  }
+
+  @Operation(summary = "강의 종료", description = "멘토가 강의를 종료합니다. 이후 웹소켓, WebRTC 연결도 해제됩니다.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "강의 종료에 성공했습니다."),
+      @ApiResponse(responseCode = "404", description = "강의 정보를 찾을 수 없습니다", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDTO.class)),
+      }),
+  })
+  @PostMapping("/{classroomId}/terminate")
+  @PreAuthorize("hasRole('MENTOR')")
+  public ResponseEntity<ResponseDTO<Void>> terminate(@PathVariable Long classroomId) {
+    log.info("Terminate classroom with id {}", classroomId);
+    classroomService.terminateClassroom(classroomId);
+    return CLASSROOM_TERMINATED.createResponseEntity(null);
   }
 }
