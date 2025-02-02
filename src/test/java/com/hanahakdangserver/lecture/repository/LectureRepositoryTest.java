@@ -18,7 +18,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.hanahakdangserver.classroom.entity.Classroom;
 import com.hanahakdangserver.classroom.repository.ClassroomRepository;
-import com.hanahakdangserver.classroom.utils.SnowFlakeGenerator;
+import com.hanahakdangserver.common.SnowFlakeGenerator;
 import com.hanahakdangserver.config.ClockConfig;
 import com.hanahakdangserver.config.QueryDslConfig;
 import com.hanahakdangserver.lecture.entity.Category;

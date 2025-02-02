@@ -2,6 +2,7 @@ package com.hanahakdangserver.classroom.service;
 
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,7 @@ import com.hanahakdangserver.classroom.dto.ClassroomStartResponse;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.projection.MentorIdOnly;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
+import com.hanahakdangserver.notification.service.NotificationService;
 import com.hanahakdangserver.redis.RedisBoundHash;
 import com.hanahakdangserver.redis.RedisBoundSet;
 import static com.hanahakdangserver.classroom.enums.ClassroomResponseExceptionEnum.CLASSROOM_NOT_USABLE;
@@ -31,6 +33,7 @@ import static com.hanahakdangserver.classroom.enums.ClassroomResponseExceptionEn
 @Transactional(readOnly = true)
 public class ClassroomService {
 
+  private final NotificationService notificationService;
   private final LectureRepository lectureRepository;
   private final RedisBoundHash<String> classroomPasswordHash;
   private final RedisBoundHash<Long> classroomLectureIdHash;
@@ -45,7 +48,9 @@ public class ClassroomService {
       String classroomEntranceHashBoundKey,
       String classroomLectureIdHashBoundKey,
       ObjectMapper objectMapper, RedisTemplate<String, String> redisTemplate,
+      NotificationService notificationService,
       LectureRepository lectureRepository, String classroomMenteeIdSetHashBoundKey) {
+    this.notificationService = notificationService;
     this.lectureRepository = lectureRepository;
     this.classroomPasswordHash = new RedisBoundHash<>(classroomEntranceHashBoundKey, redisTemplate,
         objectMapper);
@@ -98,15 +103,29 @@ public class ClassroomService {
     String password = UUID.randomUUID().toString();
     classroomPasswordHash.put(classroomIdStr, password);
 
+    sendStartNotification(classroomId, lectureId); // 강의 시작 알림 전송
+
     return ClassroomStartResponse.builder()
         .lectureId(lecture.getId())
         .password(password)
         .build();
   }
 
+  private void sendStartNotification(Long classroomId, Long lectureId) {
+    Set<Long> mentees = getMentees(classroomId);
+    mentees.forEach(menteeId -> {
+      notificationService.noticeLectureStarted(menteeId, lectureId);
+    });
+  }
+
   private RedisBoundSet<Long> getRedisMenteeSet(Long classroomId) {
     return new RedisBoundSet<>(
         classroomMenteeIdSetHashBoundKey + ":" + classroomId, redisTemplate, objectMapper);
+  }
+
+  private Set<Long> getMentees(Long classroomId) {
+    RedisBoundSet<Long> classroomMenteeSet = getRedisMenteeSet(classroomId);
+    return classroomMenteeSet.getAll(Long.class);
   }
 
   private boolean isEnrolled(Long classroomId, Long menteeId) {
