@@ -15,6 +15,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.hanahakdangserver.classroom.dto.ClassroomEnterResponse;
 import com.hanahakdangserver.classroom.dto.ClassroomStartResponse;
+import com.hanahakdangserver.classroom.entity.Classroom;
+import com.hanahakdangserver.classroom.repository.ClassroomRepository;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.projection.MentorIdOnly;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
@@ -24,6 +26,7 @@ import com.hanahakdangserver.redis.RedisBoundSet;
 import static com.hanahakdangserver.classroom.enums.ClassroomResponseExceptionEnum.CLASSROOM_NOT_USABLE;
 import static com.hanahakdangserver.classroom.enums.ClassroomResponseExceptionEnum.LECTURE_CANCELED;
 import static com.hanahakdangserver.classroom.enums.ClassroomResponseExceptionEnum.NOT_ENROLLED;
+import static com.hanahakdangserver.classroom.enums.ClassroomResponseExceptionEnum.NOT_FOUND_CLASSROOM;
 import static com.hanahakdangserver.classroom.enums.ClassroomResponseExceptionEnum.NOT_FOUND_LECTURE;
 import static com.hanahakdangserver.classroom.enums.ClassroomResponseExceptionEnum.NOT_YET_TO_OPEN_CLASSROOM;
 
@@ -35,6 +38,7 @@ public class ClassroomService {
 
   private final NotificationService notificationService;
   private final LectureRepository lectureRepository;
+  private final ClassroomRepository classroomRepository;
   private final RedisBoundHash<String> classroomPasswordHash;
   private final RedisBoundHash<Long> classroomLectureIdHash;
   private final RedisTemplate<String, String> redisTemplate;
@@ -49,9 +53,11 @@ public class ClassroomService {
       String classroomLectureIdHashBoundKey,
       ObjectMapper objectMapper, RedisTemplate<String, String> redisTemplate,
       NotificationService notificationService,
-      LectureRepository lectureRepository, String classroomMenteeIdSetHashBoundKey) {
+      LectureRepository lectureRepository, ClassroomRepository classroomRepository,
+      String classroomMenteeIdSetHashBoundKey) {
     this.notificationService = notificationService;
     this.lectureRepository = lectureRepository;
+    this.classroomRepository = classroomRepository;
     this.classroomPasswordHash = new RedisBoundHash<>(classroomEntranceHashBoundKey, redisTemplate,
         objectMapper);
     this.classroomLectureIdHash = new RedisBoundHash<>(classroomLectureIdHashBoundKey,
@@ -165,7 +171,11 @@ public class ClassroomService {
     Lecture lecture = lectureRepository.findById(lectureId)
         .orElseThrow(NOT_FOUND_LECTURE::createResponseStatusException);
 
+    Classroom classroom = classroomRepository.findById(classroomId)
+        .orElseThrow(NOT_FOUND_CLASSROOM::createResponseStatusException);
+
     lecture.updateEndTime(LocalDateTime.now()); // 강의 endTime 업데이트
+    classroom.updateIsUsed(false);
 
     // 레디스에서 관련 데이터 삭제
     classroomLectureIdHash.delete(classroomId.toString());
