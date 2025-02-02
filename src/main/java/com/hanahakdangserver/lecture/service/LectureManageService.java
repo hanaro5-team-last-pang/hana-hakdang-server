@@ -16,8 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.hanahakdangserver.classroom.entity.Classroom;
 import com.hanahakdangserver.classroom.repository.ClassroomRepository;
-import com.hanahakdangserver.classroom.utils.SnowFlakeGenerator;
 import com.hanahakdangserver.common.S3FileProcessor;
+import com.hanahakdangserver.common.SnowFlakeGenerator;
 import com.hanahakdangserver.lecture.dto.LectureRequest;
 import com.hanahakdangserver.lecture.entity.Category;
 import com.hanahakdangserver.lecture.entity.Lecture;

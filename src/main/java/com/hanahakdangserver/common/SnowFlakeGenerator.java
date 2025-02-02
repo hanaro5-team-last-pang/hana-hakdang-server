@@ -1,4 +1,4 @@
-package com.hanahakdangserver.classroom.utils;
+package com.hanahakdangserver.common;
 
 import java.io.Serializable;
 import java.time.Instant;
