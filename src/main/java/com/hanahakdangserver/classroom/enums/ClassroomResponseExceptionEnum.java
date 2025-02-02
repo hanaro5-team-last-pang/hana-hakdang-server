@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 public enum ClassroomResponseExceptionEnum {
 
   CLASSROOM_NOT_USABLE(HttpStatus.BAD_REQUEST, "사용할 수 없는 강의실입니다."),
+  NOT_FOUND_CLASSROOM(HttpStatus.NOT_FOUND, "존재하지 않는 강의실입니다."),
   NOT_FOUND_LECTURE(HttpStatus.NOT_FOUND, "강의 정보를 찾을 수 없습니다."),
   LECTURE_CANCELED(HttpStatus.BAD_REQUEST, "강의가 취소됐습니다."),
   NOT_YET_TO_OPEN_CLASSROOM(HttpStatus.BAD_REQUEST, "강의실을 열 수 있는 시간이 아닙니다."),
