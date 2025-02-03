@@ -85,7 +85,12 @@ public class UserService {
   public UserInfoResponse getUserInfo(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> USER_NOT_FOUND.createResponseStatusException());
-    return new UserInfoResponse(user.getId(), user.getName(), user.getRole().toString());
+    return UserInfoResponse.builder()
+        .userId(user.getId())
+        .name(user.getName())
+        .role(user.getRole().toString())
+        .profileImageUrl(user.getProfileImageUrl())
+        .build();
   }
 
 }
