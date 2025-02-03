@@ -2,23 +2,19 @@ package com.hanahakdangserver.config;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -27,9 +23,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.hanahakdangserver.auth.security.CustomAuthenticationFailureHandler;
-import com.hanahakdangserver.auth.security.CustomAuthenticationSuccessHandler;
-import com.hanahakdangserver.auth.security.CustomUsernamePasswordAuthenticationFilter;
+import com.hanahakdangserver.auth.security.CustomAuthenticationEntryPoint;
+import com.hanahakdangserver.auth.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -37,22 +32,23 @@ import com.hanahakdangserver.auth.security.CustomUsernamePasswordAuthenticationF
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final ObjectMapper objectMapper;
-  private final UserDetailsService userDetailsService;
-  private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
-  private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     http
-        .addFilterBefore(customJsonUsernamePasswordAuthenticationFilter(),
+        .exceptionHandling(exceptionHandling ->
+            exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint))
+        .addFilterBefore(jwtAuthenticationFilter,
             UsernamePasswordAuthenticationFilter.class)
         .httpBasic(HttpBasicConfigurer::disable) // HTTP 기본 인증 비활성화
         .csrf(CsrfConfigurer::disable) // CSRF 보호 비활성화
-        .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+        .formLogin(FormLoginConfigurer::disable) // 폼 로그인 비활성화; JWT 사용하기 때문
         .logout(AbstractHttpConfigurer::disable) // 로그아웃 비활성화
+        .sessionManagement(configurer -> configurer.sessionCreationPolicy(
+            SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/swagger-ui/**")
             .permitAll()
@@ -86,24 +82,6 @@ public class SecurityConfig {
             .anyRequest().permitAll());
 
     return http.build();
-  }
-
-  @Bean
-  public AuthenticationManager authenticationManager() {
-    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    provider.setUserDetailsService(userDetailsService);
-    provider.setPasswordEncoder(passwordEncoder());
-    return new ProviderManager(provider);
-  }
-
-  @Bean
-  public CustomUsernamePasswordAuthenticationFilter customJsonUsernamePasswordAuthenticationFilter() {
-    CustomUsernamePasswordAuthenticationFilter filter = new CustomUsernamePasswordAuthenticationFilter(
-        objectMapper);
-    filter.setAuthenticationManager(authenticationManager());
-    filter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
-    filter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
-    return filter;
   }
 
   @Bean
