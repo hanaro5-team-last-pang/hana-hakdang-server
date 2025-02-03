@@ -88,6 +88,8 @@ public class MenteeEnrollmentService {
     return MenteeEnrollmentDetailDTO.builder()
         .classroomId(
             isHistory ? null : lecture.getClassroom().getId()) // 수강 내역 조회 시에는 classroomId 반환X
+        .enrollmentId(
+            isHistory ? null : dto.getEnrollment().getId()) // 수강 내역 조회 시에는 enrollmentId 반환X
         .lectureId(lecture.getId())
         .mentorId(lecture.getMentor().getId())
         .mentorName(lecture.getMentor().getName())
