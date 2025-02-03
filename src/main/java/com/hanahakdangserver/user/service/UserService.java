@@ -76,6 +76,7 @@ public class UserService {
         .name(user.getName())
         .role(user.getRole().toString())
         .profileImageUrl(user.getProfileImageUrl())
+        .birthDate(user.getBirthDate())
         .build();
   }
 
