@@ -32,11 +32,12 @@ public class NewsService {
 
   private List<Map<String, String>> fetchNewsFromPython() {
     try {
-      return webClient.get()
-          .uri("/news")
+      List<Map<String, String>> response = webClient.get()
+          .uri("")
           .retrieve()
           .bodyToMono(List.class)
           .block();
+      return response;
     } catch (Exception e) {
       throw NEWS_FETCH_FAILED.createResponseStatusException();
     }
