@@ -29,6 +29,9 @@ public class MenteeEnrollmentDetailDTO {
   @Schema(description = "강의 Id", example = "1")
   private Long lectureId;
 
+  @Schema(description = "수강신청 Id", example = "1")
+  private Long enrollmentId;
+
   @Schema(description = "멘토 Id", example = "1")
   private Long mentorId;
 

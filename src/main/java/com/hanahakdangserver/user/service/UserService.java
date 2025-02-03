@@ -41,7 +41,7 @@ public class UserService {
   public void updateAccount(Long userId, MultipartFile imageFile, AccountRequest accountRequest)
       throws IOException {
 
-    String encodedPassword = null;
+    String newEncodedPassword = null;
     String profileImageUrl = null;
     User currentUser = userRepository.findById(userId)
         .orElseThrow(() -> USER_NOT_FOUND.createResponseStatusException());
@@ -53,25 +53,11 @@ public class UserService {
 
     //비밀번호 변경을 요청한 경우
     if (accountRequest != null) {
-
-      if (accountRequest.getNewPassword().isEmpty() || accountRequest.getConfirmPassword()
-          .isEmpty()) {
-        throw PASSWORD_BLANK.createResponseStatusException();
-      }
-
-      if (!accountRequest.getNewPassword().equals(accountRequest.getConfirmPassword())) {
-        throw NEW_PASSWORD_NOT_MATCHED.createResponseStatusException();
-      }
-
-      if (!passwordEncoder.matches(accountRequest.getCurrentPassword(),
-          currentUser.getPassword())) {
-        throw PASSWORD_NOT_MATCHED.createResponseStatusException();
-      }
-
-      encodedPassword = passwordEncoder.encode(accountRequest.getConfirmPassword());
+      newEncodedPassword = verifyPassword(currentUser.getPassword(), newEncodedPassword,
+          accountRequest);
     }
 
-    User user = currentUser.update(profileImageUrl, encodedPassword);
+    User user = currentUser.update(profileImageUrl, newEncodedPassword);
     userRepository.save(user);
   }
 
@@ -85,7 +71,34 @@ public class UserService {
   public UserInfoResponse getUserInfo(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> USER_NOT_FOUND.createResponseStatusException());
-    return new UserInfoResponse(user.getId(), user.getName(), user.getRole().toString());
+    return UserInfoResponse.builder()
+        .userId(user.getId())
+        .name(user.getName())
+        .role(user.getRole().toString())
+        .profileImageUrl(user.getProfileImageUrl())
+        .build();
+  }
+
+  /**
+   * 새 비밀번호 검증
+   */
+  public String verifyPassword(String currentPassword, String newEncodedPassword,
+      AccountRequest accountRequest) {
+    if (accountRequest.getNewPassword().isEmpty() || accountRequest.getConfirmPassword()
+        .isEmpty()) {
+      throw PASSWORD_BLANK.createResponseStatusException();
+    }
+
+    if (!accountRequest.getNewPassword().equals(accountRequest.getConfirmPassword())) {
+      throw NEW_PASSWORD_NOT_MATCHED.createResponseStatusException();
+    }
+
+    if (!passwordEncoder.matches(accountRequest.getCurrentPassword(), currentPassword)) {
+      throw PASSWORD_NOT_MATCHED.createResponseStatusException();
+    }
+
+    newEncodedPassword = passwordEncoder.encode(accountRequest.getConfirmPassword());
+    return newEncodedPassword;
   }
 
 }
