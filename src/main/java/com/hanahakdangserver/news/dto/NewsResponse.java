@@ -31,6 +31,6 @@ public class NewsResponse {
   @Schema(description = "뉴스 썸네일 URL", example = "https://cdn.fetimes.co.kr/news/thumbnail/202412/12345.jpg")
   private String newsThumbnailUrl;
 
-  @Schema(description = "작성일시", example = "2024-12-23 10:19")
+  @Schema(description = "작성일시", example = "2024-12-23")
   private String createdAt;
 }
