@@ -5,6 +5,9 @@ import com.hanahakdangserver.news.repository.NewsRepository;
 import com.hanahakdangserver.news.dto.NewsResponse;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,6 +30,7 @@ import static com.hanahakdangserver.news.enums.NewsResponseExceptionEnum.NO_NEWS
 @Transactional(readOnly = true)
 public class NewsService {
 
+  private static final int PAGE_SIZE = 6;
   private final NewsRepository newsRepository;
   private final WebClient webClient;
 
@@ -73,14 +77,18 @@ public class NewsService {
     } catch (Exception e) {
       throw NEWS_SAVE_FAILED.createResponseStatusException();
     }
-
   }
 
-  public List<NewsResponse> getAllNews() {
-    List<News> newsList = newsRepository.findAll();
+  public List<NewsResponse> getAllNews(int page) {
+    Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+    Page<News> newsPage = newsRepository.findAll(pageable);
+
+    List<News> newsList = newsPage.getContent();
     if (newsList.isEmpty()) {
       throw NO_NEWS_FOUND.createResponseStatusException();
     }
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     return newsList.stream()
         .map(news -> NewsResponse.builder()
@@ -89,7 +97,7 @@ public class NewsService {
             .content(news.getContent())
             .newsUrl(news.getNewsUrl())
             .newsThumbnailUrl(news.getNewsThumbnailUrl())
-            .createdAt(news.getCreatedAt().toString())
+            .createdAt(news.getCreatedAt().format(formatter))  // LocalDateTime → String 변환
             .build())
         .collect(Collectors.toList());
   }

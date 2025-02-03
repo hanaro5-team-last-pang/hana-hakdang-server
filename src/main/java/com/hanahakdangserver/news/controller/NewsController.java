@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanahakdangserver.common.ResponseDTO;
@@ -34,10 +35,13 @@ public class NewsController {
       @ApiResponse(responseCode = "500", description = "서버 내부 오류")
   })
   @GetMapping
-  public ResponseEntity<ResponseDTO<List<NewsResponse>>> getAllNews() {
-    List<NewsResponse> newsResponses = newsService.getAllNews();
+  public ResponseEntity<ResponseDTO<List<NewsResponse>>> getAllNews(
+      @RequestParam(defaultValue = "0") int page
+  ) {
+    List<NewsResponse> newsResponses = newsService.getAllNews(page);
     return NEWS_FETCHED.createResponseEntity(newsResponses);
   }
+
 
   @Operation(summary = "뉴스 크롤링 요청", description = "파이썬 서버에서 최신 뉴스를 크롤링하여 저장합니다.")
   @ApiResponses({
