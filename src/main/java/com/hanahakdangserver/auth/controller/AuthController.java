@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hanahakdangserver.auth.dto.EmailCheckRequest;
-import com.hanahakdangserver.auth.dto.EmailConfirmRequest;
 import com.hanahakdangserver.auth.dto.LoginRequest;
 import com.hanahakdangserver.auth.dto.MenteeSignupRequest;
 import com.hanahakdangserver.auth.dto.MentorSignupRequest;
@@ -23,7 +23,6 @@ import com.hanahakdangserver.card.service.CardService;
 import com.hanahakdangserver.common.ResponseDTO;
 import static com.hanahakdangserver.auth.enums.AuthResponseSuccessEnum.EMAIL_CHECK_SEND_SUCCESS;
 import static com.hanahakdangserver.auth.enums.AuthResponseSuccessEnum.EMAIL_CONFIRMED;
-import static com.hanahakdangserver.auth.enums.AuthResponseSuccessEnum.LOG_IN_SUCCESS;
 import static com.hanahakdangserver.auth.enums.AuthResponseSuccessEnum.SIGN_UP_SUCCESS;
 
 
@@ -72,4 +71,21 @@ public class AuthController {
     return EMAIL_CONFIRMED.createResponseEntity();
   }
 
+  @Operation(summary = "로그인", description = "유저가 이메일과 비밀번호를 이용해 로그인을 시도한다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "로그인 성공"),
+      @ApiResponse(responseCode = "400", description = "아이디 또는 비밀번호가 맞지 않습니다. 다시 확인해주세요."),
+      @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않습니다.")
+  })
+  @PostMapping("/login")
+  public ResponseEntity<ResponseDTO<Object>> login(@RequestBody @Valid LoginRequest loginRequest) {
+
+    String accessToken = authService.login(loginRequest);
+    // Access Token은 헤더에 저장
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Authorization", "Bearer " + accessToken);
+
+    return ResponseEntity.ok().headers(headers)
+        .body(ResponseDTO.builder().message("일반 로그인 성공").build());
+  }
 }

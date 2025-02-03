@@ -13,14 +13,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.hanahakdangserver.auth.dto.EmailCheckDTO;
 import com.hanahakdangserver.auth.dto.EmailCheckRequest;
-import com.hanahakdangserver.auth.dto.EmailConfirmRequest;
+import com.hanahakdangserver.auth.dto.LoginRequest;
 import com.hanahakdangserver.auth.dto.MenteeSignupRequest;
 import com.hanahakdangserver.auth.dto.MentorSignupRequest;
 import com.hanahakdangserver.auth.mapper.AuthMapper;
+import com.hanahakdangserver.auth.security.TokenProvider;
 import com.hanahakdangserver.email.service.EmailService;
 import com.hanahakdangserver.redis.RedisBoundHash;
 import com.hanahakdangserver.user.dto.RandomCareerInfoDTO;
 import com.hanahakdangserver.user.entity.CareerInfo;
+import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.mapper.CareerInfoMapper;
 import com.hanahakdangserver.user.mapper.UserMapper;
 import com.hanahakdangserver.user.repository.CareerInfoRepository;
@@ -32,6 +34,7 @@ import static com.hanahakdangserver.auth.enums.AuthResponseExceptionEnum.EMAIL_N
 import static com.hanahakdangserver.auth.enums.AuthResponseExceptionEnum.EMAIL_NOT_FOUND;
 import static com.hanahakdangserver.auth.enums.AuthResponseExceptionEnum.PASSWORD_NOT_MATCHED;
 import static com.hanahakdangserver.auth.enums.AuthResponseExceptionEnum.TOKEN_NOT_MATCHED;
+import static com.hanahakdangserver.auth.enums.AuthResponseExceptionEnum.USER_NOT_FOUND;
 import static com.hanahakdangserver.auth.utils.AuthUtils.generateToken;
 
 @Log4j2
@@ -44,6 +47,7 @@ public class AuthService {
   private final CareerInfoRepository careerInfoRepository;
   private final RedisBoundHash<EmailCheckDTO> redisBoundHash;
   private final EmailService emailService;
+  private final TokenProvider tokenProvider;
   @Value("${mail.expire-minute}")
   private Long mailExpireTime;
 
@@ -51,12 +55,13 @@ public class AuthService {
   public AuthService(UserRepository userRepository, CareerInfoRepository careerInfoRepository,
       RedisTemplate<String, ?> redisTemplate,
       String emailCheckHashKey, EmailService emailService, ObjectMapper objectMapper,
-      PasswordEncoder passwordEncoder) {
+      PasswordEncoder passwordEncoder, TokenProvider tokenProvider) {
     this.userRepository = userRepository;
     this.careerInfoRepository = careerInfoRepository;
     this.redisBoundHash = new RedisBoundHash<>(emailCheckHashKey, redisTemplate, objectMapper);
     this.passwordEncoder = passwordEncoder;
     this.emailService = emailService;
+    this.tokenProvider = tokenProvider;
   }
 
   /**
@@ -79,6 +84,12 @@ public class AuthService {
     return !password.equals(confirmedPassword);
   }
 
+  private void isPasswordMatches(String rawPassword, String encodedPassword)
+      throws ResponseStatusException {
+    if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+      throw PASSWORD_NOT_MATCHED.createResponseStatusException();
+    }
+  }
 
   /**
    * 멘티 회원가입
@@ -200,4 +211,12 @@ public class AuthService {
     redisBoundHash.put(email, newEmailCheckDTO);
   }
 
+  @Transactional
+  public String login(LoginRequest loginRequest) throws ResponseStatusException {
+    User user = userRepository.findByEmail(loginRequest.getEmail())
+        .orElseThrow(USER_NOT_FOUND::createResponseStatusException);
+    isPasswordMatches(loginRequest.getPassword(), user.getPassword()); // 비밀번호 일치하는지 체크
+
+    return tokenProvider.generateAccessToken(loginRequest.getEmail()); // access token 생성
+  }
 }
