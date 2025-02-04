@@ -86,6 +86,6 @@ public class AuthController {
     headers.add("Authorization", "Bearer " + accessToken);
 
     return ResponseEntity.ok().headers(headers)
-        .body(ResponseDTO.builder().message("일반 로그인 성공").build());
+        .body(ResponseDTO.builder().message("로그인 성공").build());
   }
 }
