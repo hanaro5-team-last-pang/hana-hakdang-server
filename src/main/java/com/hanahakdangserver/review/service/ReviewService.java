@@ -96,7 +96,7 @@ public class ReviewService {
     Lecture lecture = lectureRepository.findById(lectureId)
         .orElseThrow(LECTURE_NOT_FOUND::createResponseStatusException);
 
-    boolean hasEnrolled = enrollmentRepository.userEnrollLecture(user, lecture);
+    boolean hasEnrolled = enrollmentRepository.existsByUserAndLecture(user, lecture);
     if (!hasEnrolled) {
       throw UNAUTHORIZED_ACTION.createResponseStatusException(); // 수강하지 않은 강의에 리뷰 작성 불가
     }
@@ -134,7 +134,7 @@ public class ReviewService {
       throw UNAUTHORIZED_ACTION.createResponseStatusException();
     }
 
-    boolean hasEnrolled = enrollmentRepository.userEnrollLecture(review.getUser(),
+    boolean hasEnrolled = enrollmentRepository.existsByUserAndLecture(review.getUser(),
         review.getLecture());
     if (!hasEnrolled) {
       throw UNAUTHORIZED_ACTION.createResponseStatusException(); // 수강하지 않은 강의의 리뷰 삭제 불가

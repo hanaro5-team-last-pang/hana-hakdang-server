@@ -15,7 +15,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long>,
 
   Optional<Enrollment> findByUserIdAndLectureId(Long studentId, Long lectureId);
 
-  boolean userEnrollLecture(User user, Lecture lecture); // 유저가 해당 강의를 수강을 했는지 체크하는 메서드
+  boolean existsByUserAndLecture(User user, Lecture lecture); // 유저가 해당 강의를 수강을 했는지 체크하는 메서드
 
   //  // 강의 등록 사용자 목록 조회
 //  @Query("SELECT e.user FROM Enrollment e WHERE e.lecture.id = :lectureId")
