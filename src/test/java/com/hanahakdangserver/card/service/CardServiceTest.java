@@ -101,7 +101,7 @@ public class CardServiceTest {
 
   @DisplayName("명함 생성을 시도한다.")
   @Test
-  public void when_CreateUserCard_expect_success() throws IOException {
+  void when_CreateUserCard_expect_success() throws IOException {
     // given
     when(userRepository.findByEmail(customUserDetails.getUsername())).thenReturn(Optional.of(user));
 
@@ -114,7 +114,7 @@ public class CardServiceTest {
 
   @DisplayName("명함 조회를 시도한다.")
   @Test
-  public void when_GetUserCard_expect_success() throws IOException {
+  void when_GetUserCard_expect_success() throws IOException {
     // given
     Lecture lecture = Lecture.builder()
         .id(1L)
@@ -134,7 +134,7 @@ public class CardServiceTest {
 
   @DisplayName("명함 수정을 시도한다.")
   @Test
-  public void when_UpdateUserCard_expect_success() throws IOException {
+  void when_UpdateUserCard_expect_success() throws IOException {
     // given
     when(cardRepository.findByMentorId(1L)).thenReturn(Optional.of(card));
 

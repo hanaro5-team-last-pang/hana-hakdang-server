@@ -106,7 +106,7 @@ public class UserServiceTest {
 
   @DisplayName("비밀번호 변경에 대한 계정 수정을 시도한다.")
   @Test
-  public void when_UpdatePassword_expect_success() throws IOException {
+  void when_UpdatePassword_expect_success() throws IOException {
     // given
     when(userRepository.findById(customUserDetails.getId())).thenReturn(Optional.of(user));
 
@@ -126,7 +126,7 @@ public class UserServiceTest {
 
   @DisplayName("유저조회를 시도한다.")
   @Test
-  public void when_GetUserInfo_expect_success() throws IOException {
+  void when_GetUserInfo_expect_success() throws IOException {
     // given
     when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
