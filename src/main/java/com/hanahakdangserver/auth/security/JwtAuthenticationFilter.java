@@ -44,9 +44,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     try {
       if (tokenProvider.validateToken(accessToken)) {
         // TODO : 로그아웃 구현
-//        if (!redisHandler.keyExists(accessToken)) {
-//          setAuthentication(accessToken); // 토큰이 유효하고 로그아웃 블랙리스트에도 없을 경우, 토큰에서 Authentication 객체를 가지고 와서 SecurityContext에 저장
-//        }
         setAuthentication(accessToken);
       }
     } catch (ExpiredJwtException e) {
