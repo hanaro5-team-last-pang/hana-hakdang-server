@@ -12,6 +12,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class TokenProvider {
@@ -69,8 +71,18 @@ public class TokenProvider {
       return false;
     }
 
-    Claims claims = this.parseClaims(token);
-    return !claims.getExpiration().before(new Date());
+    try {
+      Claims claims = this.parseClaims(token);
+      boolean isValid = !claims.getExpiration().before(new Date());
+      log.info("유효한 토큰 여부: {}", isValid);
+      return isValid;
+    } catch (ExpiredJwtException e) {
+      log.warn("만료된 토큰: {}", token);
+      return false;
+    } catch (Exception e) {
+      log.warn("유효하지 않은 토큰: {}", token);
+      return false;
+    }
   }
 
   public Claims parseClaims(String token) {
@@ -80,7 +92,11 @@ public class TokenProvider {
       return Jwts.parserBuilder().
           setSigningKey(encryptedKey).build().parseClaimsJws(token).getBody();
     } catch (ExpiredJwtException e) {
+      log.warn("JWT가 만료되었습니다: {}", e.getMessage());
       return e.getClaims();
+    } catch (Exception e) {
+      log.error("JWT 파싱 중 오류 발생: {}", e.getMessage());
+      throw e; // validateToken 호출하는 쪽에서 이 예외를 캐치하도록 함
     }
   }
 
