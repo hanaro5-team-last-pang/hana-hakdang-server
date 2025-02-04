@@ -75,6 +75,8 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.DELETE, "/lectures/faq/**").authenticated()
 
             .requestMatchers("/user-info").authenticated()
+
+            .requestMatchers("/account").authenticated()
 //            .requestMatchers("/error/**", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg")
 //            .permitAll() // 임시
 //            .requestMatchers(HttpMethod.OPTIONS, "/**")
