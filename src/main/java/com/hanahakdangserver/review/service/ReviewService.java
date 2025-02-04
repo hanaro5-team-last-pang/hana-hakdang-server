@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hanahakdangserver.lecture.enrollment.repository.EnrollmentRepository;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.review.dto.ReviewRequest;
@@ -33,6 +34,7 @@ public class ReviewService {
   private final ReviewRepository reviewRepository;
   private final LectureRepository lectureRepository;
   private final UserRepository userRepository;
+  private final EnrollmentRepository enrollmentRepository;
 
   private static final int PAGE_SIZE = 3; // 페이지 크기 상수 정의
 
@@ -79,7 +81,7 @@ public class ReviewService {
 
 
   /**
-   * 리뷰 생성 메서드
+   * 리뷰 생성 메서드 (강의 수강 여부 검증 추가)
    *
    * @param lectureId
    * @param request
@@ -93,6 +95,11 @@ public class ReviewService {
 
     Lecture lecture = lectureRepository.findById(lectureId)
         .orElseThrow(LECTURE_NOT_FOUND::createResponseStatusException);
+
+    boolean hasEnrolled = enrollmentRepository.userEnrollLecture(user, lecture);
+    if (!hasEnrolled) {
+      throw UNAUTHORIZED_ACTION.createResponseStatusException(); // 수강하지 않은 강의에 리뷰 작성 불가
+    }
 
     Review review = Review.builder()
         .user(user)
@@ -108,7 +115,7 @@ public class ReviewService {
   }
 
   /**
-   * 리뷰 삭제
+   * 리뷰 삭제 (강의 수강 여부 검증 추가)
    *
    * @param lectureId
    * @param reviewId
@@ -125,6 +132,12 @@ public class ReviewService {
 
     if (!review.getUser().getId().equals(userId)) {
       throw UNAUTHORIZED_ACTION.createResponseStatusException();
+    }
+
+    boolean hasEnrolled = enrollmentRepository.userEnrollLecture(review.getUser(),
+        review.getLecture());
+    if (!hasEnrolled) {
+      throw UNAUTHORIZED_ACTION.createResponseStatusException(); // 수강하지 않은 강의의 리뷰 삭제 불가
     }
 
     reviewRepository.delete(review);
