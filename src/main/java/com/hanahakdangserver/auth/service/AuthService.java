@@ -219,7 +219,7 @@ public class AuthService {
     isPasswordMatches(loginRequest.getPassword(), user.getPassword()); // 비밀번호 일치하는지 체크
 
     String accessToken = tokenProvider.generateAccessToken(
-        loginRequest.getEmail()); // access token 생성
+        user.getId(), loginRequest.getEmail()); // access token 생성
 
     return LoginResponse.builder().accessToken(accessToken).build();
   }

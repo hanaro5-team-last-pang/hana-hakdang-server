@@ -35,20 +35,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       }
       filterChain.doFilter(request, response); // 다음 필터로 넘어가기
     } catch (Exception e) {
-      handleInvalidToken(request, response, AuthResponseExceptionEnum.AUTHORIZATION_FAILED);
+      handleInvalidToken(request, AuthResponseExceptionEnum.AUTHORIZATION_FAILED);
     }
   }
 
   private void handleAccessToken(String accessToken, HttpServletRequest request,
-      HttpServletResponse response) throws IOException {
+      HttpServletResponse response) throws IOException, ExpiredJwtException {
     try {
       if (tokenProvider.validateToken(accessToken)) {
         // TODO : 로그아웃 구현
         setAuthentication(accessToken);
+      } else {
+        log.info("액세스 토큰 검증 실패");
+        handleInvalidToken(request, AuthResponseExceptionEnum.UNAUTHORIZED_TOKEN);
       }
     } catch (ExpiredJwtException e) {
       log.warn("Access token has expired", e);
-      handleInvalidToken(request, response, AuthResponseExceptionEnum.UNAUTHORIZED_TOKEN);
+      handleInvalidToken(request, AuthResponseExceptionEnum.UNAUTHORIZED_TOKEN);
     }
   }
 
@@ -59,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   }
 
   // 토큰 관련 예외 처리
-  private void handleInvalidToken(HttpServletRequest request, HttpServletResponse response,
+  private void handleInvalidToken(HttpServletRequest request,
       AuthResponseExceptionEnum errorCode) throws IOException {
     request.setAttribute(ERROR_CODE_ATTRIBUTE, errorCode);
   }
