@@ -62,7 +62,7 @@ public class SearchService {
     ).collect(Collectors.toList());
 
     return SearchResponse.builder().totalCount(searchResult.getTotalElements())
-        .resultList(lectureResultDetails).build();
+        .lectureList(lectureResultDetails).build();
   }
 
   /**
