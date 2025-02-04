@@ -18,6 +18,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 import com.hanahakdangserver.auth.security.CustomUserDetails;
 import com.hanahakdangserver.common.S3FileProcessor;
 import com.hanahakdangserver.user.dto.AccountRequest;
+import com.hanahakdangserver.user.dto.UserInfoResponse;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.enums.Role;
 import com.hanahakdangserver.user.repository.UserRepository;
@@ -120,5 +122,19 @@ public class UserServiceTest {
     // then
     verify(userRepository, times(1)).save(any(User.class));
     verify(passwordEncoder, times(1)).encode("5678");
+  }
+
+  @DisplayName("유저조회를 시도한다.")
+  @Test
+  public void when_GetUserInfo_expect_success() throws IOException {
+    // given
+    when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+    // when
+    UserInfoResponse userInfoResponse = userService.getUserInfo(user.getId());
+
+    // then
+    assertNotNull(userInfoResponse);
+    verify(userRepository, times(1)).findById(user.getId());
   }
 }

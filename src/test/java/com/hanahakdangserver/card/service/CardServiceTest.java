@@ -124,10 +124,10 @@ public class CardServiceTest {
     when(cardRepository.findByMentorId(lecture.getMentor().getId())).thenReturn(Optional.of(card));
 
     // when
-    ProfileCardResponse actualResponse = cardService.get(1L);
+    ProfileCardResponse profileCardResponse = cardService.get(1L);
 
     // then
-    assertNotNull(actualResponse);
+    assertNotNull(profileCardResponse);
     verify(cardRepository, times(1)).findByMentorId(customUserDetails.getId());
   }
 
