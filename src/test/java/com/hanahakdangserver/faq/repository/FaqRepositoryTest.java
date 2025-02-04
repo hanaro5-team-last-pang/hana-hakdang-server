@@ -22,6 +22,7 @@ import com.hanahakdangserver.classroom.repository.ClassroomRepository;
 import com.hanahakdangserver.config.ClockConfig;
 import com.hanahakdangserver.config.QueryDslConfig;
 import com.hanahakdangserver.faq.entity.Faq;
+import com.hanahakdangserver.lecture.enrollment.repository.EnrollmentRepository;
 import com.hanahakdangserver.lecture.entity.Category;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.repository.CategoryRepository;
@@ -55,10 +56,12 @@ public class FaqRepositoryTest {
   @Autowired
   private ClassroomRepository classroomRepository;
 
+  @Autowired
+  private EnrollmentRepository enrollmentRepository;
+
   private Lecture lecture;
   private User mentor;
   private User mentee;
-  ;
 
   @BeforeEach
   void setUp() {
@@ -92,7 +95,7 @@ public class FaqRepositoryTest {
     mentee = User.builder()
         .name("Mentee User")
         .email("mentee@example.com")
-        .password("password")
+        .password("securepassword")
         .birthDate(LocalDate.of(1990, 8, 20))
         .role(Role.MENTEE)
         .build();
