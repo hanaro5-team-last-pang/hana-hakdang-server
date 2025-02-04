@@ -1,11 +1,15 @@
 package com.hanahakdangserver.auth.security;
 
 import java.util.Date;
+import java.util.Optional;
+import javax.crypto.SecretKey;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,29 +32,36 @@ public class TokenProvider {
   private final CustomUserDetailsService customUserDetailsService;
 
   // 액세스 토큰 생성
-  public String generateAccessToken(String username) {
-    Claims claims = Jwts.claims().setSubject(username);
+  public String generateAccessToken(Long userId, String userEmail) {
 
     Date now = new Date();
     Date expiredDate = new Date(now.getTime() + TOKEN_EXPIRE_TIME);
 
+    SecretKey encryptedKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+
     return Jwts.builder()
-        .setClaims(claims)
+        .claim("id", userId) // 원래는 user id를 직접 넣지는 않으나 웹소켓 서버에서 사용하기 위해 부득이하게 추가
+        .claim("email", userEmail)
         .setIssuedAt(now)
         .setExpiration(expiredDate)
-        .signWith(SignatureAlgorithm.HS512, this.secretKey)
+        .signWith(encryptedKey, SignatureAlgorithm.HS512)
         .compact();
   }
 
   public Authentication getUserAuthentication(String jwt) {
     UserDetails userDetails =
-        this.customUserDetailsService.loadUserByUsername(this.getUsername(jwt));
+        this.customUserDetailsService.loadUserByUsername(this.getUsername(jwt).orElse(null));
     return new UsernamePasswordAuthenticationToken(userDetails, "",
         userDetails.getAuthorities());
   }
 
-  public String getUsername(String token) {
-    return this.parseClaims(token).getSubject();
+  public Optional<String> getUsername(String token) {
+    try {
+      Object email = this.parseClaims(token).get("email");
+      return email instanceof String ? Optional.of((String) email) : Optional.empty();
+    } catch (Exception e) {
+      return Optional.empty();
+    }
   }
 
   public boolean validateToken(String token) {
@@ -63,9 +74,11 @@ public class TokenProvider {
   }
 
   public Claims parseClaims(String token) {
+    SecretKey encryptedKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+
     try {
       return Jwts.parserBuilder().
-          setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+          setSigningKey(encryptedKey).build().parseClaimsJws(token).getBody();
     } catch (ExpiredJwtException e) {
       return e.getClaims();
     }
