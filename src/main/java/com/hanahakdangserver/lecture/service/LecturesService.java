@@ -3,6 +3,7 @@ package com.hanahakdangserver.lecture.service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,8 +16,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hanahakdangserver.lecture.dto.LectureCategoriesResponse;
 import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.LecturesResponse;
+import com.hanahakdangserver.lecture.dto.LectureCategoriesDetailDTO;
 import com.hanahakdangserver.lecture.dto.MentorLectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.MentorLecturesFilterDTO;
 import com.hanahakdangserver.lecture.dto.MentorLecturesResponse;
@@ -273,5 +276,21 @@ public class LecturesService {
     return now.isAfter(startTime.plusMinutes(intervalToOpenLecture))
         && !lecture.getIsCanceled()
         && !lecture.getIsDone();
+  }
+
+  /**
+   * 강의 카테고리 전체 목록을 조회하여 반환
+   *
+   * @return LectureCategoriesResponse
+   */
+  public LectureCategoriesResponse getCategories() {
+    List<LectureCategoriesDetailDTO> categories = Arrays.stream(
+            LectureCategory.values())
+        .map(category -> new LectureCategoriesDetailDTO(category.name(), category.getDescription()))
+        .collect(Collectors.toList());
+
+    return LectureCategoriesResponse.builder()
+        .categories(categories)
+        .build();
   }
 }

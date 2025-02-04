@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hanahakdangserver.auth.security.CustomUserDetails;
 import com.hanahakdangserver.common.ResponseDTO;
+import com.hanahakdangserver.lecture.dto.LectureCategoriesResponse;
 import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.LecturesResponse;
 import com.hanahakdangserver.lecture.dto.MentorLecturesResponse;
@@ -27,6 +28,7 @@ import com.hanahakdangserver.lecture.service.LecturesService;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_CATEGORY_LIST_SUCCESS;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_LECTURE_DETAIL_SUCCESS;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_MENTOR_LECTURES_SUCCESS;
+import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_TOTAL_CATEGORY_LIST_SUCCESS;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_TOTAL_LIST_SUCCESS;
 
 @Tag(name = "강의 조회", description = "강의 조회 API 목록")
@@ -96,5 +98,17 @@ public class LecturesController {
         userDetails.getId());
 
     return GET_MENTOR_LECTURES_SUCCESS.createResponseEntity(result);
+  }
+
+
+  @Operation(summary = "카테고리 전체 목록 조회", description = "강의 카테고리 목록을 조회할 수 있다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "카테고리 전체 목록 조회 성공")
+  })
+  @GetMapping("/categories")
+  public ResponseEntity<ResponseDTO<LectureCategoriesResponse>> getCategories() {
+    LectureCategoriesResponse response = lecturesService.getCategories();
+
+    return GET_TOTAL_CATEGORY_LIST_SUCCESS.createResponseEntity(response);
   }
 }
