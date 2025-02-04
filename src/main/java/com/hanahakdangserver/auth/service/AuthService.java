@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.hanahakdangserver.auth.dto.EmailCheckDTO;
 import com.hanahakdangserver.auth.dto.EmailCheckRequest;
 import com.hanahakdangserver.auth.dto.LoginRequest;
+import com.hanahakdangserver.auth.dto.LoginResponse;
 import com.hanahakdangserver.auth.dto.MenteeSignupRequest;
 import com.hanahakdangserver.auth.dto.MentorSignupRequest;
 import com.hanahakdangserver.auth.mapper.AuthMapper;
@@ -212,11 +213,14 @@ public class AuthService {
   }
 
   @Transactional
-  public String login(LoginRequest loginRequest) throws ResponseStatusException {
+  public LoginResponse login(LoginRequest loginRequest) throws ResponseStatusException {
     User user = userRepository.findByEmail(loginRequest.getEmail())
         .orElseThrow(USER_NOT_FOUND::createResponseStatusException);
     isPasswordMatches(loginRequest.getPassword(), user.getPassword()); // 비밀번호 일치하는지 체크
 
-    return tokenProvider.generateAccessToken(loginRequest.getEmail()); // access token 생성
+    String accessToken = tokenProvider.generateAccessToken(
+        loginRequest.getEmail()); // access token 생성
+
+    return LoginResponse.builder().accessToken(accessToken).build();
   }
 }

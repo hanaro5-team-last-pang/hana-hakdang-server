@@ -20,9 +20,13 @@ public enum AuthResponseSuccessEnum {
   private final String message;
 
 
-  public ResponseEntity<com.hanahakdangserver.common.ResponseDTO<Object>> createResponseEntity() {
+  public ResponseEntity<ResponseDTO<Object>> createResponseEntity() {
     ResponseDTO<Object> response = ResponseDTO.builder().message(message).build();
     return ResponseEntity.status(httpStatus).body(response);
   }
 
+  public ResponseEntity<ResponseDTO<Object>> createResponseEntity(Object result) {
+    ResponseDTO<Object> response = ResponseDTO.builder().message(message).result(result).build();
+    return ResponseEntity.status(httpStatus).body(response);
+  }
 }
