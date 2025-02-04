@@ -77,7 +77,7 @@ public class FaqController {
   }
 
   // FAQ 삭제
-  @PreAuthorize("isAuthenticated()")
+  @PreAuthorize("isAuthenticated() and hasRole('MENTEE')")
   @Operation(summary = "문의 삭제", description = "특정 문의를 삭제합니다.")
   @ApiResponses({
       @ApiResponse(responseCode = "204", description = "문의 삭제 성공"),
@@ -106,8 +106,11 @@ public class FaqController {
   @PostMapping("/{faqId}/answers")
   public ResponseEntity<ResponseDTO<AnswerResponse>> createAnswer(
       @PathVariable Long faqId,
+      @AuthenticationPrincipal CustomUserDetails userDetails,
       @Valid @RequestBody AnswerRequest request) {
-    AnswerResponse response = answerService.createAnswer(request);
+
+    Long userId = userDetails.getId();
+    AnswerResponse response = answerService.createAnswer(faqId, request, userId);
 
     return CREATE_ANSWER_SUCCESS.createResponseEntity(response);
   }
@@ -122,9 +125,11 @@ public class FaqController {
   @DeleteMapping("/{faqId}/answers/{answerId}")
   public ResponseEntity<Void> deleteAnswer(
       @PathVariable Long faqId,
+      @AuthenticationPrincipal CustomUserDetails userDetails,
       @PathVariable Long answerId) {
 
-    answerService.deleteAnswer(answerId);
+    Long userId = userDetails.getId();
+    answerService.deleteAnswer(faqId, answerId, userId);
 
     return DELETE_ANSWER_SUCCESS.createEmptyResponse();
   }
