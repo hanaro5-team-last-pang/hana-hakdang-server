@@ -22,5 +22,5 @@ public class SearchResponse {
   private Long totalCount;
 
   @Schema(description = "검색 결과 목록")
-  private List<LectureResultDetailDTO> resultList;
+  private List<LectureResultDetailDTO> lectureList;
 }
