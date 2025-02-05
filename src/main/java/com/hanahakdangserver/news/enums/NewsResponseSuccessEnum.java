@@ -35,4 +35,13 @@ public enum NewsResponseSuccessEnum {
         .build();
     return ResponseEntity.status(httpStatus).body(response);
   }
+
+  public ResponseEntity<ResponseDTO<NewsResponse>> createResponseEntity(NewsResponse body) {
+    ResponseDTO<NewsResponse> response = ResponseDTO.<NewsResponse>builder()
+        .message(message)
+        .result(body)
+        .build();
+    return ResponseEntity.status(httpStatus).body(response);
+  }
+
 }

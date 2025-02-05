@@ -35,11 +35,11 @@ public class NewsController {
       @ApiResponse(responseCode = "500", description = "서버 내부 오류")
   })
   @GetMapping
-  public ResponseEntity<ResponseDTO<List<NewsResponse>>> getAllNews(
+  public ResponseEntity<ResponseDTO<NewsResponse>> getAllNews(
       @RequestParam(defaultValue = "0") int page
   ) {
-    List<NewsResponse> newsResponses = newsService.getAllNews(page);
-    return NEWS_FETCHED.createResponseEntity(newsResponses);
+    NewsResponse newsResponse = newsService.getAllNews(page);
+    return NEWS_FETCHED.createResponseEntity(newsResponse);
   }
 
 
