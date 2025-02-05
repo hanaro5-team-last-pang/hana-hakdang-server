@@ -98,7 +98,7 @@ class NewsServiceTest {
   }
 
   @Test
-  @DisplayName("DB 저장된 뉴스 데이터 불러오기")
+  @DisplayName("DB 저장된 뉴스 데이터 불러오기 (전체 개수 포함)")
   void getAllNewsFromDB() {
     // Given
     Pageable pageable = PageRequest.of(0, 6);
@@ -109,23 +109,31 @@ class NewsServiceTest {
             LocalDateTime.parse("2025.02.02 14:20", FORMATTER))
     );
 
-    Page<News> mockPage = new PageImpl<>(mockNewsList, pageable, mockNewsList.size());
+    Page<News> mockPage = new PageImpl<>(mockNewsList, pageable, 10); // 전체 뉴스 개수: 10
     when(newsRepository.findAll(pageable)).thenReturn(mockPage);
 
     // When
-    List<NewsResponse> result = newsService.getAllNews(0);
+    NewsResponse result = newsService.getAllNews(0);
 
     // Then
     assertNotNull(result);
-    assertEquals(2, result.size());
+    assertEquals(10, result.getTotalCount());  // 전체 뉴스 개수 확인
+    assertEquals(2, result.getNewsList().size());  // 현재 페이지 뉴스 개수 확인
 
-    assertEquals("2025-02-03", result.get(0).getCreatedAt());
-    assertEquals("2025-02-02", result.get(1).getCreatedAt());
-
-    NewsResponse firstNews = result.get(0);
+    // 첫 번째 뉴스 검증
+    NewsResponse.NewsItem firstNews = result.getNewsList().get(0);
     assertEquals("테스트 뉴스 1", firstNews.getTitle());
     assertEquals("내용 1", firstNews.getContent());
     assertEquals("https://example.com/1", firstNews.getNewsUrl());
     assertEquals("https://example.com/image1.jpg", firstNews.getNewsThumbnailUrl());
+    assertEquals("2025-02-03", firstNews.getCreatedAt());
+
+    // 두 번째 뉴스 검증
+    NewsResponse.NewsItem secondNews = result.getNewsList().get(1);
+    assertEquals("테스트 뉴스 2", secondNews.getTitle());
+    assertEquals("내용 2", secondNews.getContent());
+    assertEquals("https://example.com/2", secondNews.getNewsUrl());
+    assertEquals("https://example.com/image2.jpg", secondNews.getNewsThumbnailUrl());
+    assertEquals("2025-02-02", secondNews.getCreatedAt());
   }
 }
