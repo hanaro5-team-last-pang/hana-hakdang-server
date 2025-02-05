@@ -90,23 +90,16 @@ public class LecturesController {
       @PathVariable(value = "lectureId") Long lectureId,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    LectureDetailDTO result;
-    if (userDetails == null) {
-      result = lecturesService.getLectureDetail(lectureId, AccessRole.NOT_LOGIN,
-          null);
-    } else {
-      List<String> roles = userDetails.getAuthorities()
-          .stream()
-          .map(GrantedAuthority::getAuthority)
-          .toList();
-      if (roles.get(0).equals("ROLE_MENTOR")) {
-        result = lecturesService.getLectureDetail(lectureId, AccessRole.MENTOR,
-            userDetails.getId());
-      } else {
-        result = lecturesService.getLectureDetail(lectureId, AccessRole.MENTEE,
-            userDetails.getId());
-      }
-    }
+    AccessRole accessRole = (userDetails == null)
+        ? AccessRole.NOT_LOGIN
+        : userDetails.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .anyMatch(role -> role.equals("ROLE_MENTOR"))
+            ? AccessRole.MENTOR
+            : AccessRole.MENTEE;
+
+    Long userId = (userDetails != null) ? userDetails.getId() : null;
+    LectureDetailDTO result = lecturesService.getLectureDetail(lectureId, accessRole, userId);
 
     return GET_LECTURE_DETAIL_SUCCESS.createResponseEntity(result);
   }
