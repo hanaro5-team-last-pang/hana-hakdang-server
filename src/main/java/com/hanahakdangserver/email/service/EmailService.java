@@ -27,7 +27,7 @@ public class EmailService {
     try {
       MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
       helper.setTo(email);
-      helper.setSubject("하나학당 회원가입 인증 링크입니다✨");
+      helper.setSubject("하나학회 회원가입 인증 링크입니다✨");
       String content = String.format("<a href='%s?email=%s&authToken=%s'>회원가입 인증 링크</a>", domain,
           email, authToken);
 //      String content = authToken; //임시
