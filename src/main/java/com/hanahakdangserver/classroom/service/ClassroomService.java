@@ -2,6 +2,8 @@ package com.hanahakdangserver.classroom.service;
 
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -73,13 +75,16 @@ public class ClassroomService {
   }
 
   private boolean canLectureBeOpened(Lecture lecture) {
-    LocalDateTime now = LocalDateTime.now();
-    // 15분 전
-    LocalDateTime openingTimeStart = lecture.getStartTime()
-        .minusMinutes(intervalToOpenLecture);
-    // 15분 후
-    LocalDateTime openingTimeEnd = lecture.getStartTime()
-        .plusMinutes(intervalToOpenLecture);
+    ZoneId seoulZone = ZoneId.of("Asia/Seoul");
+    ZonedDateTime now = ZonedDateTime.now(seoulZone);
+
+    ZonedDateTime openingTimeStart = lecture.getStartTime()
+        .atZone(seoulZone)
+        .minusMinutes(intervalToOpenLecture); // 15분 전
+
+    ZonedDateTime openingTimeEnd = lecture.getStartTime()
+        .atZone(seoulZone)
+        .plusMinutes(intervalToOpenLecture); // 15분 후
 
     log.info("시작 가능 시간: {} ~ {}", openingTimeStart, openingTimeEnd);
     return now.isAfter(openingTimeStart) && now.isBefore(openingTimeEnd);
