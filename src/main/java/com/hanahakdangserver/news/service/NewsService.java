@@ -1,5 +1,6 @@
 package com.hanahakdangserver.news.service;
 
+import com.hanahakdangserver.common.ResponseDTO;
 import com.hanahakdangserver.news.entity.News;
 import com.hanahakdangserver.news.repository.NewsRepository;
 import com.hanahakdangserver.news.dto.NewsResponse;
@@ -79,7 +80,8 @@ public class NewsService {
     }
   }
 
-  public List<NewsResponse> getAllNews(int page) {
+
+  public NewsResponse getAllNews(int page) {
     Pageable pageable = PageRequest.of(page, PAGE_SIZE);
     Page<News> newsPage = newsRepository.findAll(pageable);
 
@@ -90,8 +92,8 @@ public class NewsService {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    return newsList.stream()
-        .map(news -> NewsResponse.builder()
+    List<NewsResponse.NewsItem> newsItems = newsList.stream()
+        .map(news -> NewsResponse.NewsItem.builder()
             .id(news.getId())
             .title(news.getTitle())
             .content(news.getContent())
@@ -100,5 +102,10 @@ public class NewsService {
             .createdAt(news.getCreatedAt().format(formatter))  // LocalDateTime → String 변환
             .build())
         .collect(Collectors.toList());
+
+    return NewsResponse.builder()
+        .totalCount(newsPage.getTotalElements())
+        .newsList(newsItems)
+        .build();
   }
 }
