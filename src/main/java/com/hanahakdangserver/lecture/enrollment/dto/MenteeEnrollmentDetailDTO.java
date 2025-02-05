@@ -24,7 +24,7 @@ import lombok.ToString;
 public class MenteeEnrollmentDetailDTO {
 
   @Schema(description = "강의실 Id", example = "16259194734854144")
-  private Long classroomId;
+  private String classroomId;
 
   @Schema(description = "강의 Id", example = "1")
   private Long lectureId;
