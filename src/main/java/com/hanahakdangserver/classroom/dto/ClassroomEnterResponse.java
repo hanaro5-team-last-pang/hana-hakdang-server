@@ -25,4 +25,7 @@ public class ClassroomEnterResponse {
   @Schema(description = "강의 ID")
   private Long lectureId;
 
+  @Schema(description = "강의 제목")
+  private String lectureTitle;
+
 }

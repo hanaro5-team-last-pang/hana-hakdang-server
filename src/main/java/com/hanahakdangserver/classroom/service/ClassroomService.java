@@ -114,6 +114,7 @@ public class ClassroomService {
     return ClassroomStartResponse.builder()
         .lectureId(lecture.getId())
         .password(password)
+        .lectureTitle(lecture.getTitle())
         .build();
   }
 
@@ -144,6 +145,9 @@ public class ClassroomService {
     Long lectureId = getLectureId(classroomId);
     log.debug("강의 참가, 강의 Id: {}", lectureId);
 
+    Lecture lecture = lectureRepository.findById(lectureId)
+        .orElseThrow(NOT_FOUND_LECTURE::createResponseStatusException);
+
     if (!isEnrolled(classroomId, menteeId)) {
       throw NOT_ENROLLED.createResponseStatusException();
     }
@@ -159,6 +163,7 @@ public class ClassroomService {
         .password(classroomPwd)
         .mentorId(mentorIdOnly.getMentorId())
         .lectureId(lectureId)
+        .lectureTitle(lecture.getTitle())
         .build();
   }
 
