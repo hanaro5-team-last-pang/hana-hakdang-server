@@ -14,7 +14,7 @@ import com.hanahakdangserver.notification.service.NotificationService;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/notificatioins")
+@RequestMapping("/notifications")
 public class NotificationController {
 
   private final NotificationService notificationService;
