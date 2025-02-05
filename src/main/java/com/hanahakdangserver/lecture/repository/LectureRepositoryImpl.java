@@ -226,7 +226,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
         .selectDistinct(lecture)
         .from(lecture)
         .leftJoin(lecture.mentor, user)
-        .on(lecture.mentor.id.eq(mentorId))
+        .where(lecture.mentor.id.eq(mentorId))
         .offset(pageRequest.getOffset())
         .limit(pageRequest.getPageSize())
         .fetch();
@@ -237,7 +237,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom {
             .select(lecture.countDistinct())
             .from(lecture)
             .leftJoin(lecture.mentor, user)
-            .on(lecture.mentor.id.eq(mentorId))
+            .where(lecture.mentor.id.eq(mentorId))
             .fetchOne()
     ).orElse(0L); // 결과가 null일 경우 기본값 0 반환
 
