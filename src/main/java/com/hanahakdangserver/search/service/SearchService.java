@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class SearchService {
 
   public SearchResponse getSearchResult(String keyword, Integer pageNum) {
 
-    PageRequest pageRequest = PageRequest.of(pageNum, PAGE_SIZE);
+    PageRequest pageRequest = PageRequest.of(pageNum, PAGE_SIZE, Sort.by("startTime").ascending());
     Page<Lecture> searchResult = lectureRepository.searchWithKeyword(pageRequest, keyword);
 
     List<LectureResultDetailDTO> lectureResultDetails = searchResult.getContent().stream().map(

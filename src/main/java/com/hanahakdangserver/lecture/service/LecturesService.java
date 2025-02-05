@@ -60,7 +60,7 @@ public class LecturesService {
    */
   public LecturesResponse getTotalLecturesList(Integer pageNum) {
 
-    PageRequest pageRequest = PageRequest.of(pageNum, PAGE_SIZE);
+    PageRequest pageRequest = PageRequest.of(pageNum, PAGE_SIZE, Sort.by("startTime").ascending());
     Page<Lecture> lectures = lectureRepository.searchAllPossibleLectures(pageRequest);
 
     List<LectureDetailDTO> lectureDetails = lectures.getContent().stream().map(
@@ -76,7 +76,7 @@ public class LecturesService {
   public LecturesResponse getCategoryLecturesList(List<LectureCategory> categoryList,
       Integer pageNum) {
 
-    PageRequest pageRequest = PageRequest.of(pageNum, PAGE_SIZE);
+    PageRequest pageRequest = PageRequest.of(pageNum, PAGE_SIZE, Sort.by("startTime").ascending());
     Page<Lecture> lectures = lectureRepository.searchAllCategoryLectures(pageRequest, categoryList);
 
     List<LectureDetailDTO> lectureDetails = lectures.getContent().stream().map(
@@ -120,7 +120,7 @@ public class LecturesService {
   public MentorLecturesResponse getMentorLecturesList(Integer pageNum, Long mentorId) {
 
     PageRequest pageRequest = PageRequest.of(pageNum, MENTOR_PAGE_SIZE,
-        Sort.by("startTime").descending());
+        Sort.by("startTime").ascending());
 
     Page<Lecture> lectures = lectureRepository.searchAllLecturesOfMentor(pageRequest, mentorId);
 
