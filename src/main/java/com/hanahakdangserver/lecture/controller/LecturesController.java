@@ -8,8 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +26,7 @@ import com.hanahakdangserver.lecture.dto.LectureCategoriesResponse;
 import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.LecturesResponse;
 import com.hanahakdangserver.lecture.dto.MentorLecturesResponse;
+import com.hanahakdangserver.lecture.enums.AccessRole;
 import com.hanahakdangserver.lecture.enums.LectureCategory;
 import com.hanahakdangserver.lecture.service.LectureCountService;
 import com.hanahakdangserver.lecture.service.LecturesService;
@@ -35,6 +38,7 @@ import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_TOTAL_LIST_SUCCESS;
 
 @Tag(name = "강의 조회", description = "강의 조회 API 목록")
+@Log4j2
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/lectures")
@@ -83,9 +87,26 @@ public class LecturesController {
   })
   @GetMapping("/{lectureId}")
   public ResponseEntity<ResponseDTO<LectureDetailDTO>> getLectureDetail(
-      @PathVariable(value = "lectureId") Long lectureId) {
+      @PathVariable(value = "lectureId") Long lectureId,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    LectureDetailDTO result = lecturesService.getLectureDetail(lectureId);
+    LectureDetailDTO result;
+    if (userDetails == null) {
+      result = lecturesService.getLectureDetail(lectureId, AccessRole.NOT_LOGIN,
+          null);
+    } else {
+      List<String> roles = userDetails.getAuthorities()
+          .stream()
+          .map(GrantedAuthority::getAuthority)
+          .toList();
+      if (roles.get(0).equals("ROLE_MENTOR")) {
+        result = lecturesService.getLectureDetail(lectureId, AccessRole.MENTOR,
+            userDetails.getId());
+      } else {
+        result = lecturesService.getLectureDetail(lectureId, AccessRole.MENTEE,
+            userDetails.getId());
+      }
+    }
 
     return GET_LECTURE_DETAIL_SUCCESS.createResponseEntity(result);
   }

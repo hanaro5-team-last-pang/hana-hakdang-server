@@ -68,4 +68,7 @@ public class LectureDetailDTO {
 
   @Schema(description = "강의 썸네일 url", example = "www.hanaro-hanahakdang.com")
   private String thumbnailImgUrl;
+
+  @Schema(description = "수강신청 버튼 활성화 여부; 비로그인 유저&수강신청 안 한 멘티면 NOT_ENROLLED, 멘토는 MENTOR, 수강신청 한 멘티면 ENROLLED", example = "ENROLLED")
+  private String enrollStatus;
 }

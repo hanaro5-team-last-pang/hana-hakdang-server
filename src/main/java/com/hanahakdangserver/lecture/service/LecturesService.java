@@ -15,19 +15,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.hanahakdangserver.lecture.dto.LectureCategoriesDetailDTO;
 import com.hanahakdangserver.lecture.dto.LectureCategoriesResponse;
 import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.LecturesResponse;
-import com.hanahakdangserver.lecture.dto.LectureCategoriesDetailDTO;
 import com.hanahakdangserver.lecture.dto.MentorLectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.MentorLecturesFilterDTO;
 import com.hanahakdangserver.lecture.dto.MentorLecturesResponse;
+import com.hanahakdangserver.lecture.enrollment.repository.EnrollmentRepository;
 import com.hanahakdangserver.lecture.entity.Lecture;
+import com.hanahakdangserver.lecture.enums.AccessRole;
 import com.hanahakdangserver.lecture.enums.LectureCategory;
 import com.hanahakdangserver.lecture.repository.LectureRepository;
 import com.hanahakdangserver.product.entity.Tag;
 import com.hanahakdangserver.product.repository.TagRepository;
+import com.hanahakdangserver.user.repository.UserRepository;
 import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.LECTURE_NOT_FOUND;
 
 @Log4j2
@@ -41,6 +45,8 @@ public class LecturesService {
   private final Integer MENTOR_PAGE_SIZE = 20;
 
   private final LectureRepository lectureRepository;
+  private final EnrollmentRepository enrollmentRepository;
+  private final UserRepository userRepository;
   private final TagRepository tagRepository;
 
   @Value("${classroom.interval-to-open-lecture}")
@@ -58,7 +64,7 @@ public class LecturesService {
     Page<Lecture> lectures = lectureRepository.searchAllPossibleLectures(pageRequest);
 
     List<LectureDetailDTO> lectureDetails = lectures.getContent().stream().map(
-        lecture -> convertLectureToDetailDTO(lecture, false)
+        lecture -> convertLectureToDetailDTO(lecture, false, null, null)
     ).collect(Collectors.toList());
 
     return LecturesResponse.builder()
@@ -74,7 +80,7 @@ public class LecturesService {
     Page<Lecture> lectures = lectureRepository.searchAllCategoryLectures(pageRequest, categoryList);
 
     List<LectureDetailDTO> lectureDetails = lectures.getContent().stream().map(
-        lecture -> convertLectureToDetailDTO(lecture, false)
+        lecture -> convertLectureToDetailDTO(lecture, false, null, null)
     ).collect(Collectors.toList());
 
     return LecturesResponse.builder()
@@ -89,7 +95,7 @@ public class LecturesService {
    * @param lectureId 상세조회 하고자 하는 강의 Id
    * @return 강의의 모든 정보를 담은 LectureDetailDTO
    */
-  public LectureDetailDTO getLectureDetail(Long lectureId) {
+  public LectureDetailDTO getLectureDetail(Long lectureId, AccessRole role, Long userId) {
 
     Lecture lecture = lectureRepository.findById(lectureId)
         .orElseThrow(LECTURE_NOT_FOUND::createResponseStatusException);
@@ -101,7 +107,7 @@ public class LecturesService {
       lecture.updateIsFull(true);
     }
 
-    return convertLectureToDetailDTO(lecture, true);
+    return convertLectureToDetailDTO(lecture, true, role, userId);
   }
 
   /**
@@ -131,13 +137,16 @@ public class LecturesService {
    *
    * @param lecture  DTO로 변환이 필요한 Lecture 엔티티
    * @param isDetail DTO에 description, 태그 목록이 필요한지 여부, false면 builder에 null이 들어감
+   * @param role     상세 조회하는 유저가 비로그인, 멘토, 멘티인지 여부, NOT_LOGIN / MENTOR / METEE; 상세 조회가 아닐 경우 null
    * @return LectureDetailDTO
    */
-  private LectureDetailDTO convertLectureToDetailDTO(Lecture lecture, Boolean isDetail) {
+  private LectureDetailDTO convertLectureToDetailDTO(Lecture lecture, Boolean isDetail,
+      AccessRole role, Long userId) {
 
     Integer currParticipants = calculateCurrentParticipants(lecture);
     String description = isDetail ? lecture.getDescription() : null;
     List<String> tags = isDetail ? fetchAndGetTags(lecture) : null;
+    String enrollStatus = checkEnrollStatus(userId, lecture.getId(), role);
 
     return LectureDetailDTO.builder()
         .lectureId(lecture.getId())
@@ -153,6 +162,7 @@ public class LecturesService {
         .maxParticipants(lecture.getMaxParticipants())
         .isFull(lecture.getIsFull())
         .thumbnailImgUrl(lecture.getThumbnailUrl())
+        .enrollStatus(enrollStatus)
         .build();
   }
 
@@ -183,6 +193,20 @@ public class LecturesService {
   private Integer calculateDuration(LocalDateTime startTime, LocalDateTime endTime) {
     Duration diff = Duration.between(startTime, endTime);
     return (int) Math.ceil(diff.toMinutes() / 60.0);
+  }
+
+  private String checkEnrollStatus(Long userId, Long lectureId, AccessRole role)
+      throws ResponseStatusException {
+    if (role == null) { // 강의 상세 조회가 아닌 경우 role이 null로 들어옴
+      return null;
+    }
+
+    return switch (role) {
+      case MENTOR, NOT_LOGIN -> role.getStatus();
+      case MENTEE -> enrollmentRepository.findByUserIdAndLectureId(userId, lectureId)
+          .map(e -> "ENROLLED")
+          .orElse("NOT_ENROLLED");
+    };
   }
 
   /**
