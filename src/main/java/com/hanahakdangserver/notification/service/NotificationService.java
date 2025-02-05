@@ -77,4 +77,8 @@ public class NotificationService {
     String content = "수강신청 하신 <" + lecture.getTitle() + "> 강의가 지금 시작되었습니다!";
     createNotification(receiverId, "LECTURE_STARTED", content);
   }
+
+  public void noticeTestData(Long receiverId) {
+    createNotification(receiverId, "TEST", "서버 테스트 알림입니다.");
+  }
 }
