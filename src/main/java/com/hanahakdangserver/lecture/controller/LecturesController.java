@@ -19,12 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hanahakdangserver.auth.security.CustomUserDetails;
 import com.hanahakdangserver.common.ResponseDTO;
+import com.hanahakdangserver.lecture.dto.LectureCategoriesCountDTO;
 import com.hanahakdangserver.lecture.dto.LectureCategoriesResponse;
 import com.hanahakdangserver.lecture.dto.LectureDetailDTO;
 import com.hanahakdangserver.lecture.dto.LecturesResponse;
 import com.hanahakdangserver.lecture.dto.MentorLecturesResponse;
 import com.hanahakdangserver.lecture.enums.LectureCategory;
+import com.hanahakdangserver.lecture.service.LectureCountService;
 import com.hanahakdangserver.lecture.service.LecturesService;
+import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_CATEGORY_COUNT_SUCCESS;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_CATEGORY_LIST_SUCCESS;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_LECTURE_DETAIL_SUCCESS;
 import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET_MENTOR_LECTURES_SUCCESS;
@@ -38,6 +41,7 @@ import static com.hanahakdangserver.lecture.enums.LectureResponseSuccessEnum.GET
 public class LecturesController {
 
   private final LecturesService lecturesService;
+  private final LectureCountService lectureCountService;
 
   @Operation(summary = "전체 강의 목록 조회", description = "아직 시작되지 않은 강의의 전체 목록을 조회할 수 있다.")
   @ApiResponses({
@@ -110,5 +114,14 @@ public class LecturesController {
     LectureCategoriesResponse response = lecturesService.getCategories();
 
     return GET_TOTAL_CATEGORY_LIST_SUCCESS.createResponseEntity(response);
+  }
+
+
+  @Operation(summary = "특정 5개 카테고리별 강의 개수 조회", description = "금융 상품, 디지털 교육, 종합 자산 관리, 투자, 하나금융연구소 카테고리만 조회")
+  @ApiResponse(responseCode = "200", description = "특정 5개 카테고리별 강의 개수 조회 성공")
+  @GetMapping("/count")
+  public ResponseEntity<ResponseDTO<List<LectureCategoriesCountDTO>>> getCategoryCounts() {
+    List<LectureCategoriesCountDTO> response = lectureCountService.getCategoryCounts();
+    return GET_CATEGORY_COUNT_SUCCESS.createResponseEntity(response);
   }
 }

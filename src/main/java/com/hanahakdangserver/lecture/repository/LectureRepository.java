@@ -1,11 +1,14 @@
 package com.hanahakdangserver.lecture.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.hanahakdangserver.lecture.entity.Category;
 import com.hanahakdangserver.lecture.entity.Lecture;
 import com.hanahakdangserver.lecture.projection.MentorIdOnly;
 
@@ -59,4 +62,16 @@ public interface LectureRepository extends JpaRepository<Lecture, Long>, Lecture
       + "FROM Lecture l "
       + "WHERE l.id = :lectureId")
   Optional<MentorIdOnly> findMentorIdById(Long lectureId);
+
+
+  // 특정 카테고리들의 강의 개수 조회
+  @Query("SELECT c.name, COUNT(l) FROM Lecture l " +
+      "JOIN l.category c " +
+      "WHERE c.name IN :categoryNames " +
+      "GROUP BY c.name")
+  List<Object[]> findLectureCountsForSpecificCategories(
+      @Param("categoryNames") List<String> categoryNames);
+
+
 }
+
