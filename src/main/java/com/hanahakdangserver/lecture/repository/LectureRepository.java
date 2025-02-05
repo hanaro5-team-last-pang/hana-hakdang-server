@@ -67,11 +67,9 @@ public interface LectureRepository extends JpaRepository<Lecture, Long>, Lecture
   // 특정 카테고리들의 강의 개수 조회
   @Query("SELECT c.name, COUNT(l) FROM Lecture l " +
       "JOIN l.category c " +
-      "WHERE c.name IN :categoryNames " +
+      "WHERE c.name IN :categoryNames AND l.isDone = false " +
       "GROUP BY c.name")
   List<Object[]> findLectureCountsForSpecificCategories(
       @Param("categoryNames") List<String> categoryNames);
-
-
 }
 

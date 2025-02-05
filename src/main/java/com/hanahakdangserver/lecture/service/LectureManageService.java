@@ -31,6 +31,7 @@ import com.hanahakdangserver.redis.RedisBoundHash;
 import com.hanahakdangserver.redis.RedisString;
 import com.hanahakdangserver.user.entity.User;
 import com.hanahakdangserver.user.repository.UserRepository;
+
 import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.CATEGORY_NOT_FOUND;
 import static com.hanahakdangserver.lecture.enums.LectureResponseExceptionEnum.TAG_NOT_FOUND;
 import static com.hanahakdangserver.user.enums.UserResponseExceptionEnum.USER_NOT_FOUND;
