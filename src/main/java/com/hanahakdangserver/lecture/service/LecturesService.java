@@ -275,7 +275,7 @@ public class LecturesService {
     }
 
     return MentorLectureDetailDTO.builder()
-        .classroomId(lecture.getClassroom().getId())
+        .classroomId(lecture.getClassroom().getId().toString())
         .lectureId(lecture.getId())
         .title(lecture.getTitle())
         .isCanceled(lecture.getIsCanceled())
